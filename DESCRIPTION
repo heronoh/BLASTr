@@ -1,0 +1,39 @@
+Package: BLASTr
+Title: Run BLAST from R
+Version: 0.0.0.9001
+Authors@R:
+    c(
+      person(
+        family = "Lucio Rezende",
+        given = "Queiroz",
+        email = "luciorqueiroz@gmail.com",
+        role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0002-6090-1834")
+      ),
+      person(
+        family = "Hilario",
+        given = "Heron",
+        email = "heronoh@gmail.com",
+        role = c("aut"),
+        comment = c(ORCID = "0000-0002-2548-1053")
+      )
+    )
+Description: Run BLAST from R, with nice standards for ASV search.
+    This package contains nice set of functions for identifying
+    sequences from high throughput metagenomic experiments.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+Suggests:
+    furrr,
+    processx,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports:
+    cli,
+    dplyr,
+    purrr,
+    readr,
+    tibble,
+    tidyr
