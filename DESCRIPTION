@@ -38,3 +38,4 @@ Imports:
     readr,
     tibble,
     tidyr
+URL: https://villabioinfo.github.io/BLASTr/
