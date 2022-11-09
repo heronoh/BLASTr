@@ -6,8 +6,9 @@ shell_exec <- function(cmd, .envir = parent.frame()) {
       message = "Package {.pkg processx} package is not installed."
     )
   }
+  bash_bin <- check_bin("bash")
   cmd_res <- processx::run(
-    command = "bash",
+    command = bash_bin,
     args = c(
       "-c",
       glue::glue(cmd, .envir = .envir)
