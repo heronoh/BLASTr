@@ -11,7 +11,7 @@ The goal of BLASTr is to ...
 You can install the development version of BLASTr from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
+# install.packages("remotes")
 remotes::install_github("villabioinfo/BLASTr")
 ```
 
@@ -24,6 +24,7 @@ library(BLASTr)
 options(BLASTr.num_threads = length(future::availableWorkers()) - 2)
 options(BLASTr.db_path = fs::path())
 
+run_blast()
 
 ```
 

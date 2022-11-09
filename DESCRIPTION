@@ -27,6 +27,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Suggests:
     furrr,
+    future,
     processx,
     testthat (>= 3.0.0),
     withr
@@ -34,6 +35,7 @@ Config/testthat/edition: 3
 Imports:
     cli,
     dplyr,
+    glue,
     purrr,
     readr,
     tibble,
