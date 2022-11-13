@@ -1,6 +1,7 @@
 #2 - Running BLASTr function with supplied ASVs ----
 #2a - Set parallelization ----
 
+
 #' Run Parallel BLAST
 #'
 #' Run parallel BLAST for set of sequences
