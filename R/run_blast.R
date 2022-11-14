@@ -10,7 +10,7 @@
 #' @param num_alignments Number of alignments to be returned.
 #'   Default: the 3 best alignments.
 #' @param num_thread Number of threads to be used
-#' @param perc_id Percent identity to be used
+#' @param perc_ID Percent identity to be used
 #' @param perc_qcov_hsp Percent query coverage to be used
 #'
 #' @export
@@ -19,20 +19,20 @@ run_blast <- function(
   db_path,
   num_alignments = 3,
   num_thread,
-  perc_id,
+  perc_ID,
   perc_qcov_hsp
 ) {
-    if (is.null(db_path)) {
-    db_path <- getOption(
-      "BLASTr.db_path",
-      default = NULL
-    )
-  }
-  if (is.null(db_path)) {
-    cli::cli_abort(
-      message = "No BLAST database provided."
-    )
-  }
+  #   if (is.null(db_path)) {
+  #   db_path <- getOption(
+  #     "BLASTr.db_path",
+  #     default = NULL
+  #   )
+  # }
+  # if (is.null(db_path)) {
+  #   cli::cli_abort(
+  #     message = "No BLAST database provided."
+  #   )
+  # }
   if (is.null(num_thread)) {
     num_thread <- getOption(
       "BLASTr.num_thread",
@@ -41,7 +41,7 @@ run_blast <- function(
   }
   # blast_cmd <- "blastn -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity 80 -qcov_hsp_perc 80 -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
   blastn_bin <- check_bin("blastn")
-  blast_cmd <- "{blastn_bin} -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity {perc_id} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
+  blast_cmd <- "{blastn_bin} -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity {perc_ID} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
 
   blast_cmd_in <- paste0("echo -e '>seq1\n{asv}' | ", blast_cmd)
 
