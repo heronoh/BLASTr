@@ -12,22 +12,21 @@
 get_blast_results <- function(
   asv,
   num_thread,
-  total_cores,
   db_path,
-  perc_ID,
+  perc_id,
   perc_qcov_hsp
 ) {
-  #  if (is.null(db_path)) {
-  #   db_path <- getOption(
-  #     "BLASTr.db_path",
-  #     default = NULL
-  #   )
-  # }
-  # if (is.null(db_path)) {
-  #   cli::cli_abort(
-  #     message = "No BLAST database provided."
-  #   )
-  # }
+   if (is.null(db_path)) {
+    db_path <- getOption(
+      "BLASTr.db_path",
+      default = NULL
+    )
+  }
+  if (is.null(db_path)) {
+    cli::cli_abort(
+      message = "No BLAST database provided."
+    )
+  }
   if (is.null(num_thread)) {
     num_thread <- getOption(
       "BLASTr.num_thread",
@@ -38,13 +37,12 @@ get_blast_results <- function(
     asv = asv,
     num_thread = num_thread,
     db_path = db_path,
-    perc_ID = perc_ID,
+    perc_id = perc_id,
     perc_qcov_hsp = perc_qcov_hsp
   )
-# test blast_res content ----
   if (blast_res$status != 0) {
     cli::cli_abort(
-      message = "{.pkg BLASTr} has not run correctly."
+      message = "{.pkg BLAST} has not run correctly."
     )
   }
   # `%>%` <- dplyr::`%>%`
@@ -54,7 +52,6 @@ get_blast_results <- function(
     df_to_return <- tibble::tibble(`OTU` = asv)
     return(df_to_return)
   }
-
   blast_table <- blast_res$stdout |>
     readr::read_delim(
       delim = "\t",
@@ -78,9 +75,9 @@ get_blast_results <- function(
       comment = "#"
     )
 
-  blast_table$`subject header` <- purrr::map_chr(.x = blast_table$subject,
-                                                 .f = get_fasta_header,
-                                                 db_path = db_path
+  blast_table$`subject header` <- purrr::map_chr(
+    blast_table$subject,
+    get_fasta_header
   )
   blast_table <- dplyr::relocate(
     blast_table,
