@@ -4,12 +4,9 @@
 #' @param db_path Path to BLAST DB
 #'
 #' @export
-get_fasta_header <- function(
-  id,
-  db_path
-) {
-  # id <- "JQ365494.1"
-   if (is.null(db_path)) {
+get_fasta_header <- function(id,
+                             db_path) {
+  if (is.null(db_path)) {
     db_path <- getOption(
       "BLASTr.db_path",
       default = NULL

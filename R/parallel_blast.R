@@ -1,5 +1,5 @@
-#2 - Running BLASTr function with supplied ASVs ----
-#2a - Set parallelization ----
+# 2 - Running BLASTr function with supplied ASVs ----
+# 2a - Set parallelization ----
 
 
 #' Run Parallel BLAST
@@ -13,16 +13,14 @@
 #' @inheritParams run_blast
 #'
 #' @export
-parallel_blast <- function(
-  asvs,
-  db_path,
-  out_file,
-  out_RDS,
-  num_thread,
-  total_cores,
-  perc_ID,
-  perc_qcov_hsp
-){
+parallel_blast <- function(asvs,
+                           db_path,
+                           out_file,
+                           out_RDS,
+                           num_thread,
+                           total_cores,
+                           perc_ID,
+                           perc_qcov_hsp) {
   # TODO: Convert ASVs to vector, if needed
 
 
@@ -45,23 +43,25 @@ parallel_blast <- function(
   # }
   if (total_cores > 1) {
     future::plan(future::multisession(), workers = total_cores)
-    blast_res <- furrr::future_map_dfr(.x = asvs,
-                                       .f = get_blast_results,
-                                       .options = furrr::furrr_options(seed = NULL),
-                                       num_thread = 1,
-                                       # .progress = TRUE,
-                                       db_path = db_path,
-                                       perc_ID = perc_ID,
-                                       perc_qcov_hsp = perc_qcov_hsp
-                                       )
-    } else {
-      blast_res <- purrr::map_dfr(.x = asvs,
-                                  .f = get_blast_results,
-                                  num_thread = 1,
-                                  db_path = db_path,
-                                  perc_ID = perc_ID,
-                                  perc_qcov_hsp = perc_qcov_hsp
-                                )
+    blast_res <- furrr::future_map_dfr(
+      .x = asvs,
+      .f = get_blast_results,
+      .options = furrr::furrr_options(seed = NULL),
+      num_thread = 1,
+      # .progress = TRUE,
+      db_path = db_path,
+      perc_ID = perc_ID,
+      perc_qcov_hsp = perc_qcov_hsp
+    )
+  } else {
+    blast_res <- purrr::map_dfr(
+      .x = asvs,
+      .f = get_blast_results,
+      num_thread = 1,
+      db_path = db_path,
+      perc_ID = perc_ID,
+      perc_qcov_hsp = perc_qcov_hsp
+    )
   }
   if (!is.na(out_file)) {
     readr::write_csv(
@@ -78,4 +78,3 @@ parallel_blast <- function(
   }
   return(blast_res)
 }
-

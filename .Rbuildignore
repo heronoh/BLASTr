@@ -1,7 +1,9 @@
+^.*\.Rproj$
 ^LICENSE\.md$
+^\.Rproj\.user$
+^\.github$
+^\.pre-commit-config\.yaml$
 ^_pkgdown\.yml$
+^dev$
 ^docs$
 ^pkgdown$
-^\.github$
-^.*\.Rproj$
-^\.Rproj\.user$

@@ -1,4 +1,4 @@
-#1b - run_blast ----
+# 1b - run_blast ----
 ###                  function to run blast for each ASV/OTU                  ###
 # run_blast <- function(asv, db_path, num_alignments = 3, num_thread = 40,blast_cmd) {
 #' Run BLAST
@@ -14,14 +14,12 @@
 #' @param perc_qcov_hsp Percent query coverage to be used
 #'
 #' @export
-run_blast <- function(
-  asv,
-  db_path,
-  num_alignments = 3,
-  num_thread,
-  perc_ID,
-  perc_qcov_hsp
-) {
+run_blast <- function(asv,
+                      db_path,
+                      num_alignments = 3,
+                      num_thread,
+                      perc_ID,
+                      perc_qcov_hsp) {
   #   if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",
@@ -47,7 +45,7 @@ run_blast <- function(
 
   # print(blast_cmd_in)
 
-  #previous version of completeBLAST command inside the function
+  # previous version of completeBLAST command inside the function
   # blast_cmd_original <- "echo -e '>seq1\n{asv}' | blastn -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity 80 -qcov_hsp_perc 80 -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
 
   blast_res <- shell_exec(
