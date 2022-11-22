@@ -42,7 +42,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_blast_results</span><span class="op">(</span><span class="va">asv</span>, <span class="va">num_thread</span>, <span class="va">db_path</span>, <span class="va">perc_id</span>, <span class="va">perc_qcov_hsp</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_blast_results</span><span class="op">(</span></span>
+<span>  <span class="va">asv</span>,</span>
+<span>  <span class="va">num_thread</span>,</span>
+<span>  <span class="va">total_cores</span>,</span>
+<span>  <span class="va">db_path</span>,</span>
+<span>  <span class="va">perc_ID</span>,</span>
+<span>  <span class="va">perc_qcov_hsp</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -59,7 +66,7 @@
 <dd><p>Path to BLAST database</p></dd>
 
 
-<dt>perc_id</dt>
+<dt>perc_ID</dt>
 <dd><p>Percent identity to be used</p></dd>
 
 
