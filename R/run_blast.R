@@ -1,6 +1,5 @@
 #1b - run_blast ----
 ###                  function to run blast for each ASV/OTU                  ###
-# run_blast <- function(asv, db_path, num_alignments = 3, num_thread = 40,blast_cmd) {
 #' Run BLAST
 #'
 #' Run BLAST for a single sequence
@@ -39,8 +38,9 @@ run_blast <- function(
       default = 1
     )
   }
-  # blast_cmd <- "blastn -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity 80 -qcov_hsp_perc 80 -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
+
   blastn_bin <- check_bin("blastn")
+
   blast_cmd <- "{blastn_bin} -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity {perc_ID} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
 
   blast_cmd_in <- paste0("echo -e '>seq1\n{asv}' | ", blast_cmd)
