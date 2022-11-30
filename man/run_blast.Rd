@@ -4,7 +4,15 @@
 \alias{run_blast}
 \title{Run BLAST}
 \usage{
-run_blast(asv, db_path, num_alignments, num_threads, perc_ID, perc_qcov_hsp)
+run_blast(
+  asv,
+  db_path,
+  num_alignments,
+  num_threads,
+  blast_type,
+  perc_ID,
+  perc_qcov_hsp
+)
 }
 \arguments{
 \item{db_path}{Complete path do formatted BLAST database.}
@@ -12,6 +20,8 @@ run_blast(asv, db_path, num_alignments, num_threads, perc_ID, perc_qcov_hsp)
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
 
 \item{num_threads}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
+
+\item{blast_type}{One of the available BLAST+ search engines: "blastn", "blastp", "blastx", "tblastn", "tblastx".}
 
 \item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
 

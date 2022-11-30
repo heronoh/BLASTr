@@ -10,6 +10,7 @@ parallel_blast(
   out_file,
   out_RDS,
   num_threads,
+  blast_type,
   total_cores,
   perc_ID,
   perc_qcov_hsp,
@@ -27,6 +28,8 @@ parallel_blast(
 
 \item{num_threads}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
 
+\item{blast_type}{BLAST+ executable to be used on search.}
+
 \item{total_cores}{Total available cores to parallelize BLAST. Chech your max with \emph{future::availableCores()}}
 
 \item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
@@ -34,8 +37,6 @@ parallel_blast(
 \item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
 
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
-
-\item{blast_type}{BLAST+ executable to be used on search.}
 }
 \value{
 A tibble with the BLAST tabular output.

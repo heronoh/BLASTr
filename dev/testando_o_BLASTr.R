@@ -17,7 +17,7 @@ library(BLASTr)
 
 # options(BLASTr.dbapth = "/data/databases/nt/nt")
 
-blast_res <- BLASTr::parallel_blast(asvs = ASVs_test[1],
+blast_res <- BLASTr::parallel_blast(asvs = ASVs_test,
                db_path = "/data/databases/nt/nt",
                out_file = "/home/heron/prjcts/omics/BLASTr_run/blast_out.csv",
                out_RDS = "/home/heron/prjcts/omics/BLASTr_run/blast_out.RDS",
@@ -26,9 +26,8 @@ blast_res <- BLASTr::parallel_blast(asvs = ASVs_test[1],
                perc_ID = 80,
                num_thread = 1,
                perc_qcov_hsp = 80,
-               num_alignments = 4
-               # ,
-               # blast_type = "blastn"
+               num_alignments = 4,
+               blast_type = "blastn"
                )
 
 blast_res1 <- BLASTr::run_blast(asv = ASVs_test[3],

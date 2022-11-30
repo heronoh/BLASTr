@@ -8,6 +8,7 @@ get_blast_results(
   asv,
   num_threads,
   db_path,
+  blast_type,
   perc_ID,
   perc_qcov_hsp,
   num_alignments
@@ -17,6 +18,8 @@ get_blast_results(
 \item{num_threads}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
 
 \item{db_path}{Complete path do formatted BLAST database.}
+
+\item{blast_type}{One of the available BLAST+ search engines: "blastn", "blastp", "blastx", "tblastn", "tblastx".}
 
 \item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
 

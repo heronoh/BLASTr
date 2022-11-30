@@ -8,6 +8,7 @@
 #' @param perc_ID Lowest identity percentage cutoff. Passed on to BLAST+ _-perc_identity_.
 #' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ _-qcov_hsp_perc_.
 #' @param num_alignments Number of alignments to retrieve from BLAST. Max = 6.
+#' @param blast_type One of the available BLAST+ search engines: "blastn", "blastp", "blastx", "tblastn", "tblastx".
 #'
 #' @return Unformatted BLAST results. For results formatted as tibble, please use *BLASTr::get_blast_results()*
 #'
@@ -26,7 +27,7 @@ run_blast <- function(
   db_path,
   num_alignments,
   num_threads,
-  # blast_type,
+  blast_type,
   perc_ID,
   perc_qcov_hsp
   ) {
@@ -48,10 +49,11 @@ run_blast <- function(
     )
   }
 
-  blast_bin <- check_bin("blastn")
+  # blast_bin <- check_bin("blastn")
 
   # blast_type <- "blastn"
-  # blast_bin <- check_bin(blast_type)
+
+  blast_bin <- check_bin(blast_type)
 
   blast_cmd <- "{blast_bin} -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity {perc_ID} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_threads)} -num_alignments {as.character(num_alignments)}"
 

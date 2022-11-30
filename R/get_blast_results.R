@@ -20,7 +20,7 @@ get_blast_results <- function(
   asv,
   num_threads,
   db_path,
-  # blast_type,
+  blast_type,
   perc_ID,
   perc_qcov_hsp,
   num_alignments
@@ -45,7 +45,7 @@ get_blast_results <- function(
 
   blast_res <- run_blast(
     asv = asv,
-    # blast_type = blast_type,
+    blast_type = blast_type,
     num_threads = num_threads,
     db_path = db_path,
     perc_ID = perc_ID,
