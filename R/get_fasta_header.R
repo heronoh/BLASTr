@@ -1,9 +1,11 @@
 #'  Retrieve FASTA names from BLAST DB based on subjectIDs
 #'
-#' @param id SubjectID from BLAST results
-#' @param db_path Path to BLAST DB
+#' @inheritParams run_blast
+#'
+#' @param id SubjectID from BLAST results or any NCBI Nucleotide identifier.
 #'
 #' @export
+
 get_fasta_header <- function(id,
                              db_path) {
   if (is.null(db_path)) {

@@ -16,3 +16,4 @@ Path to tool executable, if available.
 Helper function to check if a CLI tool is available.
 This function fails if tool is not available on PATH.
 }
+\keyword{Internal}

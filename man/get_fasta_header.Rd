@@ -7,9 +7,9 @@
 get_fasta_header(id, db_path)
 }
 \arguments{
-\item{id}{SubjectID from BLAST results}
+\item{id}{SubjectID from BLAST results or any NCBI Nucleotide identifier.}
 
-\item{db_path}{Path to BLAST DB}
+\item{db_path}{Complete path do formatted BLAST databases.}
 }
 \description{
 Retrieve FASTA names from BLAST DB based on subjectIDs

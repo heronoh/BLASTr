@@ -6,7 +6,9 @@
 #' @param cmd Name of the tool to check.
 #'
 #' @return Path to tool executable, if available.
-#' @internal
+#'
+#' @export
+
 check_bin <- function(cmd) {
   cmd_bin <- Sys.which(cmd)
   if (isTRUE(cmd_bin == "")) {

@@ -4,22 +4,34 @@
 \alias{run_blast}
 \title{Run BLAST}
 \usage{
-run_blast(asv, db_path, num_alignments = 3, num_thread, perc_ID, perc_qcov_hsp)
+run_blast(asv, db_path, num_alignments, num_thread, perc_ID, perc_qcov_hsp)
 }
 \arguments{
-\item{asv}{Sequence to be BLASTed}
+\item{db_path}{Complete path do formatted BLAST databases.}
 
-\item{db_path}{Path to BLAST database}
+\item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
 
-\item{num_alignments}{Number of alignments to be returned.
-Default: the 3 best alignments.}
+\item{num_thread}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
 
-\item{num_thread}{Number of threads to be used}
+\item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
 
-\item{perc_ID}{Percent identity to be used}
+\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
 
-\item{perc_qcov_hsp}{Percent query coverage to be used}
+\item{asvs}{Vector of sequences to be BLASTed.}
+}
+\value{
+Unformatted BLAST results. For results formatted as tibble, please use \emph{BLASTr::get_blast_results()}
 }
 \description{
-Run BLAST for a single sequence
+Run BLAST for a single sequence and return raw results. For formated results, use the function \emph{BLASTr::getblastn_results()}
+}
+\examples{
+blast_res1 <- BLASTr::run_blast(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+                                db_path = "/data/databases/nt/nt",
+                                perc_ID = 80,
+                                num_thread = 1,
+                                perc_qcov_hsp = 80,
+                                num_alignments = 2,
+                                blast_type = "blastn")
+
 }

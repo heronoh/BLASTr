@@ -2,7 +2,7 @@
 % Please edit documentation in R/parallel_blast.R
 \name{parallel_blast}
 \alias{parallel_blast}
-\title{Run Parallel BLAST}
+\title{Run BLAST on parallel}
 \usage{
 parallel_blast(
   asvs,
@@ -12,23 +12,33 @@ parallel_blast(
   num_thread,
   total_cores,
   perc_ID,
-  perc_qcov_hsp
+  perc_qcov_hsp,
+  num_alignments
 )
 }
 \arguments{
-\item{asvs}{Vector of sequences to be BLASTed}
+\item{asvs}{Vector of sequences to be BLASTed.}
 
-\item{db_path}{Path to BLAST database}
+\item{db_path}{Complete path do formatted BLAST databases.}
 
-\item{out_file}{Path to output file}
+\item{out_file}{Complete path to output file}
 
-\item{out_RDS}{Path to output RDS file}
+\item{out_RDS}{Complete path to output RDS file.}
 
-\item{num_thread}{Number of threads to be used}
+\item{num_thread}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
 
-\item{perc_ID}{Percent identity to be used}
+\item{total_cores}{Total available cores to parallelize BLAST. Chech your max with \emph{future::availableCores()}}
 
-\item{perc_qcov_hsp}{Percent query coverage to be used}
+\item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
+
+\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
+
+\item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
+
+\item{blast_type}{BLAST+ executable to be used on search.}
+}
+\value{
+A tibble with the BLAST tabular output
 }
 \description{
 Run parallel BLAST for set of sequences

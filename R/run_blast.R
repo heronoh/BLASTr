@@ -1,8 +1,9 @@
 # 1b - run_blast ----
 ###                  function to run blast for each ASV/OTU                  ###
+
 #' Run BLAST
 #'
-#' Run BLAST for a single sequence
+#' Run BLAST for a single sequence and return raw results. For formated results, use the function *BLASTr::getblastn_results()*
 #'
 #' @param asvs Vector of sequences to be BLASTed.
 #' @param db_path Complete path do formatted BLAST databases.
@@ -11,9 +12,20 @@
 #' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ _-qcov_hsp_perc_.
 #' @param num_alignments Number of alignments to retrieve from BLAST. Max = 6.
 #'
-#' @export
-<<<<<<< HEAD
+#' @return Unformatted BLAST results. For results formatted as tibble, please use *BLASTr::get_blast_results()*
 #'
+#' @examples
+#' blast_res1 <- BLASTr::run_blast(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+#'                                 db_path = "/data/databases/nt/nt",
+#'                                 perc_ID = 80,
+#'                                 num_thread = 1,
+#'                                 perc_qcov_hsp = 80,
+#'                                 num_alignments = 2,
+#'                                 blast_type = "blastn")
+#'
+#' @export
+#'
+
 run_blast <- function(
   asv,
   db_path,
@@ -23,14 +35,6 @@ run_blast <- function(
   perc_ID,
   perc_qcov_hsp
   ) {
-=======
-run_blast <- function(asv,
-                      db_path,
-                      num_alignments = 3,
-                      num_thread,
-                      perc_ID,
-                      perc_qcov_hsp) {
->>>>>>> be0da30911512133435167e5332b24284500284e
   #   if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",
@@ -49,9 +53,9 @@ run_blast <- function(asv,
     )
   }
 
-  # blast_type <- "blastn"
+  blast_bin <- check_bin("blastn")
 
-  blastn_bin <- check_bin("blastn")
+  # blast_type <- "blastn"
   # blast_bin <- check_bin(blast_type)
 
   blast_cmd <- "{blast_bin} -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity {perc_ID} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"

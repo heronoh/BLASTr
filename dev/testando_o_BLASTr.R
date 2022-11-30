@@ -13,7 +13,7 @@ ASVs_test <- c("CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTT
 
 
 future::availableCores()
-
+library(BLASTr)
 
 # options(BLASTr.dbapth = "/data/databases/nt/nt")
 
@@ -31,14 +31,15 @@ blast_res <- BLASTr::parallel_blast(asvs = ASVs_test[1],
                # blast_type = "blastn"
                )
 
-
 blast_res1 <- BLASTr::run_blast(asv = ASVs_test[3],
                db_path = "/data/databases/nt/nt",
                perc_ID = 80,
                num_thread = 1,
                perc_qcov_hsp = 80,
-               num_alignments = 2,
-               blast_type = "blastn")
+               num_alignments = 2
+               # ,
+               # blast_type = "blastn"
+               )
 
 
 

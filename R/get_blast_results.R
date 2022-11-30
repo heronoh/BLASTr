@@ -6,10 +6,19 @@
 #'
 #' @inheritParams run_blast
 #'
-#' @return A `tibble` with the results of BLASTn
+#' @return A `tibble` with the results of BLASTn.
+#'
+#' @examples
+#' blast_res1 <- BLASTr::get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+#'                                         db_path = "/data/databases/nt/nt",
+#'                                         perc_ID = 80,
+#'                                         num_thread = 1,
+#'                                         perc_qcov_hsp = 80,
+#'                                         num_alignments = 2,
+#'                                         blast_type = "blastn")
 #'
 #' @export
-<<<<<<< HEAD
+#'
 get_blast_results <- function(
   asv,
   num_thread,
@@ -19,15 +28,7 @@ get_blast_results <- function(
   perc_ID,
   perc_qcov_hsp,
   num_alignments
-) {
-=======
-get_blast_results <- function(asv,
-                              num_thread,
-                              total_cores,
-                              db_path,
-                              perc_ID,
-                              perc_qcov_hsp) {
->>>>>>> be0da30911512133435167e5332b24284500284e
+  ){
   #  if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",
