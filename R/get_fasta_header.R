@@ -1,8 +1,15 @@
-#'  Retrieve FASTA names from BLAST DB based on subjectIDs
+#' @title Get header from SubjectID
+#'
+#' @description Retrieve complete sequence header from BLAST DB based on SubjectIDs
 #'
 #' @inheritParams run_blast
 #'
 #' @param id SubjectID from BLAST results or any NCBI Nucleotide identifier.
+#'
+#' @return Complete identifier for the SubjectID as is on the database.
+#'
+#' @examples
+#' BLASTr::get_fasta_header(id = "AP011979.1", db_path = "/data/databases/nt/nt")
 #'
 #' @export
 

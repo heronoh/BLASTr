@@ -6,8 +6,7 @@
 \usage{
 get_blast_results(
   asv,
-  num_thread,
-  total_cores,
+  num_threads,
   db_path,
   perc_ID,
   perc_qcov_hsp,
@@ -15,9 +14,9 @@ get_blast_results(
 )
 }
 \arguments{
-\item{num_thread}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
+\item{num_threads}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
 
-\item{db_path}{Complete path do formatted BLAST databases.}
+\item{db_path}{Complete path do formatted BLAST database.}
 
 \item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
 
@@ -32,12 +31,11 @@ A \code{tibble} with the results of BLASTn.
 Retrieve BLAST results from a given ASV
 }
 \examples{
-blast_res1 <- BLASTr::get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+blast_res <- BLASTr::get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
                                         db_path = "/data/databases/nt/nt",
                                         perc_ID = 80,
                                         num_thread = 1,
                                         perc_qcov_hsp = 80,
-                                        num_alignments = 2,
-                                        blast_type = "blastn")
+                                        num_alignments = 2)
 
 }

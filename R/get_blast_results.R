@@ -1,5 +1,3 @@
-#          function to get fasta names from db based on subjectIDs         ###
-
 #' @title Run BLASTn
 #'
 #' @description Retrieve BLAST results from a given ASV
@@ -9,20 +7,18 @@
 #' @return A `tibble` with the results of BLASTn.
 #'
 #' @examples
-#' blast_res1 <- BLASTr::get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+#' blast_res <- BLASTr::get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
 #'                                         db_path = "/data/databases/nt/nt",
 #'                                         perc_ID = 80,
 #'                                         num_thread = 1,
 #'                                         perc_qcov_hsp = 80,
-#'                                         num_alignments = 2,
-#'                                         blast_type = "blastn")
+#'                                         num_alignments = 2)
 #'
 #' @export
-#'
+
 get_blast_results <- function(
   asv,
-  num_thread,
-  total_cores,
+  num_threads,
   db_path,
   # blast_type,
   perc_ID,
@@ -40,9 +36,9 @@ get_blast_results <- function(
   #     message = "No BLAST database provided."
   #   )
   # }
-  if (is.null(num_thread)) {
-    num_thread <- getOption(
-      "BLASTr.num_thread",
+  if (is.null(num_threads)) {
+    num_threads <- getOption(
+      "BLASTr.num_threads",
       default = 1
     )
   }
@@ -50,7 +46,7 @@ get_blast_results <- function(
   blast_res <- run_blast(
     asv = asv,
     # blast_type = blast_type,
-    num_thread = num_thread,
+    num_threads = num_threads,
     db_path = db_path,
     perc_ID = perc_ID,
     perc_qcov_hsp = perc_qcov_hsp,
@@ -114,11 +110,6 @@ get_blast_results <- function(
     ),
     names_glue = "{res}_{.value}"
   )
-  # TODO: @heron limpar colunas redundantes. Não está ativado pois estava dando pau
-  # |>
-  #     select(-c("1_res",
-  #               "2_res",
-  #               "3_res"))
 
   blast_table <- blast_table |>
     dplyr::mutate(`OTU` = asv) |>

@@ -1,12 +1,6 @@
-# 2 - Running BLASTr function with supplied ASVs ----
-# 2a - Set parallelization ----
-
-
-
-#' Run BLAST on parallel
+#' @title Run BLAST on parallel
 #'
-#' @description
-#' Run parallel BLAST for set of sequences
+#' @description Run parallel BLAST for set of sequences
 #'
 #' @inheritParams run_blast
 #'
@@ -15,7 +9,18 @@
 #' @param total_cores Total available cores to parallelize BLAST. Chech your max with *future::availableCores()*
 #' @param blast_type BLAST+ executable to be used on search.
 #'
-#' @return A tibble with the BLAST tabular output
+#' @return A tibble with the BLAST tabular output.
+#'
+#' @examples
+#' blast_res <- BLASTr::parallel_blast(asvs = ASVs_test[1],
+#'                                  db_path = "/data/databases/nt/nt",
+#'                                  out_file = "~/blast_out.csv",
+#'                                  out_RDS = "~/blast_out.RDS",
+#'                                  total_cores = 77,
+#'                                  perc_ID = 80,
+#'                                  num_thread = 1,
+#'                                  perc_qcov_hsp = 80,
+#'                                  num_alignments = 4)
 #'
 #' @export
 
@@ -24,7 +29,7 @@ parallel_blast <- function(
   db_path,
   out_file,
   out_RDS,
-  num_thread,
+  num_threads,
   # blast_type,
   total_cores,
   perc_ID,
@@ -59,7 +64,7 @@ parallel_blast <- function(
     blast_res <- furrr::future_map_dfr(.x = asvs,
                                        .f = get_blast_results,
                                        .options = furrr::furrr_options(seed = NULL),
-                                       num_thread = 1,
+                                       num_threads = 1,
                                        # blast_type = blast_type,
                                        num_alignments = num_alignments,
                                        db_path = db_path,
@@ -69,7 +74,7 @@ parallel_blast <- function(
     } else {
       blast_res <- purrr::map_dfr(.x = asvs,
                                   .f = get_blast_results,
-                                  num_thread = 1,
+                                  num_threads = 1,
                                   # blast_type = blast_type,
                                   num_alignments = num_alignments,
                                   db_path = db_path,

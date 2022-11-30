@@ -9,7 +9,7 @@ parallel_blast(
   db_path,
   out_file,
   out_RDS,
-  num_thread,
+  num_threads,
   total_cores,
   perc_ID,
   perc_qcov_hsp,
@@ -19,13 +19,13 @@ parallel_blast(
 \arguments{
 \item{asvs}{Vector of sequences to be BLASTed.}
 
-\item{db_path}{Complete path do formatted BLAST databases.}
+\item{db_path}{Complete path do formatted BLAST database.}
 
 \item{out_file}{Complete path to output file}
 
 \item{out_RDS}{Complete path to output RDS file.}
 
-\item{num_thread}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
+\item{num_threads}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
 
 \item{total_cores}{Total available cores to parallelize BLAST. Chech your max with \emph{future::availableCores()}}
 
@@ -38,8 +38,20 @@ parallel_blast(
 \item{blast_type}{BLAST+ executable to be used on search.}
 }
 \value{
-A tibble with the BLAST tabular output
+A tibble with the BLAST tabular output.
 }
 \description{
 Run parallel BLAST for set of sequences
+}
+\examples{
+blast_res <- BLASTr::parallel_blast(asvs = ASVs_test[1],
+                                 db_path = "/data/databases/nt/nt",
+                                 out_file = "~/blast_out.csv",
+                                 out_RDS = "~/blast_out.RDS",
+                                 total_cores = 77,
+                                 perc_ID = 80,
+                                 num_thread = 1,
+                                 perc_qcov_hsp = 80,
+                                 num_alignments = 4)
+
 }

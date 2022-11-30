@@ -4,14 +4,14 @@
 \alias{run_blast}
 \title{Run BLAST}
 \usage{
-run_blast(asv, db_path, num_alignments, num_thread, perc_ID, perc_qcov_hsp)
+run_blast(asv, db_path, num_alignments, num_threads, perc_ID, perc_qcov_hsp)
 }
 \arguments{
-\item{db_path}{Complete path do formatted BLAST databases.}
+\item{db_path}{Complete path do formatted BLAST database.}
 
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
 
-\item{num_thread}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
+\item{num_threads}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
 
 \item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
 
@@ -26,12 +26,11 @@ Unformatted BLAST results. For results formatted as tibble, please use \emph{BLA
 Run BLAST for a single sequence and return raw results. For formated results, use the function \emph{BLASTr::getblastn_results()}
 }
 \examples{
-blast_res1 <- BLASTr::run_blast(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+blast_res <- BLASTr::run_blast(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
                                 db_path = "/data/databases/nt/nt",
                                 perc_ID = 80,
                                 num_thread = 1,
                                 perc_qcov_hsp = 80,
-                                num_alignments = 2,
-                                blast_type = "blastn")
+                                num_alignments = 2)
 
 }

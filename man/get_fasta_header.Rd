@@ -2,15 +2,22 @@
 % Please edit documentation in R/get_fasta_header.R
 \name{get_fasta_header}
 \alias{get_fasta_header}
-\title{Retrieve FASTA names from BLAST DB based on subjectIDs}
+\title{Get header from SubjectID}
 \usage{
 get_fasta_header(id, db_path)
 }
 \arguments{
 \item{id}{SubjectID from BLAST results or any NCBI Nucleotide identifier.}
 
-\item{db_path}{Complete path do formatted BLAST databases.}
+\item{db_path}{Complete path do formatted BLAST database.}
+}
+\value{
+Complete identifier for the SubjectID as is on the database.
 }
 \description{
-Retrieve FASTA names from BLAST DB based on subjectIDs
+Retrieve complete sequence header from BLAST DB based on SubjectIDs
+}
+\examples{
+BLASTr::get_fasta_header(id = "AP011979.1", db_path = "/data/databases/nt/nt")
+
 }

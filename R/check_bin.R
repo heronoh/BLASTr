@@ -1,7 +1,7 @@
-#' Check CLI Tool
+#' @title Check CLI Tool
 #'
-#' Helper function to check if a CLI tool is available.
-#'   This function fails if tool is not available on PATH.
+#' @description Helper function to check if a CLI tool is available.
+#'              This function fails if tool is not available on PATH.
 #'
 #' @param cmd Name of the tool to check.
 #'
