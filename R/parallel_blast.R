@@ -2,27 +2,33 @@
 #2a - Set parallelization ----
 
 
-#' Run Parallel BLAST
+#' Run BLAST on parallel
 #'
 #' Run parallel BLAST for set of sequences
 #'
-#' @param asvs Vector of sequences to be BLASTed
-#' @param out_file Path to output file
-#' @param out_RDS Path to output RDS file
+#' @param out_file Complete path to output file.
+#' @param out_RDS Complete path to output RDS file.
+#' @param total_cores Total available cores to parallelize BLAST. Chech your max with _future::availableCores()_
+#' @param blast_type BLAST+ executable to be used on search
 #'
 #' @inheritParams run_blast
 #'
+#' @return A tibble with the BLAST tabular output.
+#'
 #' @export
+#'
 parallel_blast <- function(
   asvs,
   db_path,
   out_file,
   out_RDS,
   num_thread,
+  # blast_type,
   total_cores,
   perc_ID,
-  perc_qcov_hsp
-){
+  perc_qcov_hsp,
+  num_alignments
+  ){
   # TODO: Convert ASVs to vector, if needed
 
 
@@ -44,12 +50,15 @@ parallel_blast <- function(
   #   )
   # }
   if (total_cores > 1) {
-    future::plan(future::multisession(), workers = total_cores)
+    future::plan(future::multisession(),
+                 workers = total_cores)
+
     blast_res <- furrr::future_map_dfr(.x = asvs,
                                        .f = get_blast_results,
                                        .options = furrr::furrr_options(seed = NULL),
                                        num_thread = 1,
-                                       # .progress = TRUE,
+                                       # blast_type = blast_type,
+                                       num_alignments = num_alignments,
                                        db_path = db_path,
                                        perc_ID = perc_ID,
                                        perc_qcov_hsp = perc_qcov_hsp
@@ -58,6 +67,8 @@ parallel_blast <- function(
       blast_res <- purrr::map_dfr(.x = asvs,
                                   .f = get_blast_results,
                                   num_thread = 1,
+                                  # blast_type = blast_type,
+                                  num_alignments = num_alignments,
                                   db_path = db_path,
                                   perc_ID = perc_ID,
                                   perc_qcov_hsp = perc_qcov_hsp

@@ -12,12 +12,12 @@ ASVs_test <- c("CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTT
 # blaste_res_1ASV <- get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",num_thread = 10)
 
 
-
+future::availableCores()
 
 
 # options(BLASTr.dbapth = "/data/databases/nt/nt")
 
-blast_res <- BLASTr::parallel_blast(asvs = ASVs_test,
+blast_res <- BLASTr::parallel_blast(asvs = ASVs_test[1],
                db_path = "/data/databases/nt/nt",
                out_file = "/home/heron/prjcts/omics/BLASTr_run/blast_out.csv",
                out_RDS = "/home/heron/prjcts/omics/BLASTr_run/blast_out.RDS",
@@ -25,7 +25,20 @@ blast_res <- BLASTr::parallel_blast(asvs = ASVs_test,
                total_cores = 77,
                perc_ID = 80,
                num_thread = 1,
-               perc_qcov_hsp = 80)
+               perc_qcov_hsp = 80,
+               num_alignments = 4
+               # ,
+               # blast_type = "blastn"
+               )
+
+
+blast_res1 <- BLASTr::run_blast(asv = ASVs_test[3],
+               db_path = "/data/databases/nt/nt",
+               perc_ID = 80,
+               num_thread = 1,
+               perc_qcov_hsp = 80,
+               num_alignments = 2,
+               blast_type = "blastn")
 
 
 

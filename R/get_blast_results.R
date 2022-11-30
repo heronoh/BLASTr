@@ -14,8 +14,10 @@ get_blast_results <- function(
   num_thread,
   total_cores,
   db_path,
+  # blast_type,
   perc_ID,
-  perc_qcov_hsp
+  perc_qcov_hsp,
+  num_alignments
 ) {
   #  if (is.null(db_path)) {
   #   db_path <- getOption(
@@ -34,12 +36,15 @@ get_blast_results <- function(
       default = 1
     )
   }
+
   blast_res <- run_blast(
     asv = asv,
+    # blast_type = blast_type,
     num_thread = num_thread,
     db_path = db_path,
     perc_ID = perc_ID,
-    perc_qcov_hsp = perc_qcov_hsp
+    perc_qcov_hsp = perc_qcov_hsp,
+    num_alignments = num_alignments
   )
 # test blast_res content ----
   if (blast_res$status != 0) {
@@ -65,8 +70,7 @@ get_blast_results <- function(
         "length",
         "mismatches",
         "gaps",
-        "query
-        start",
+        "query start",
         "query end",
         "subject start",
         "subject end",
@@ -106,15 +110,14 @@ get_blast_results <- function(
 
   blast_table <- blast_table |>
     dplyr::mutate(`OTU` = asv) |>
+    dplyr::relocate(tidyr::starts_with("6_")) |>
+    dplyr::relocate(tidyr::starts_with("5_")) |>
+    dplyr::relocate(tidyr::starts_with("4_")) |>
     dplyr::relocate(tidyr::starts_with("3_")) |>
     dplyr::relocate(tidyr::starts_with("2_")) |>
     dplyr::relocate(tidyr::starts_with("1_")) |>
-    dplyr::relocate(`OTU`)
-  # TODO: @heron limpar colunas redundantes. Não está ativado pois estava dando pau
-  # |>
-  #   dplyr::select(-c("1_res","1_query",
-  #                    "2_res","2_query",
-  #                    "3_res","3_query"))
+    dplyr::relocate(`OTU`) |>
+    dplyr::select(-tidyr::ends_with(c("_res","_query")))
 
   return(blast_table)
 }

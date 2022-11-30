@@ -4,23 +4,24 @@
 #'
 #' Run BLAST for a single sequence
 #'
-#' @param asv Sequence to be BLASTed
-#' @param db_path Path to BLAST database
-#' @param num_alignments Number of alignments to be returned.
-#'   Default: the 3 best alignments.
-#' @param num_thread Number of threads to be used
-#' @param perc_ID Percent identity to be used
-#' @param perc_qcov_hsp Percent query coverage to be used
+#' @param asvs Vector of sequences to be BLASTed.
+#' @param db_path Complete path do formatted BLAST databases.
+#' @param num_thread Number of threads to run BLAST on. Passed on to BLAST+ argument _-num_threads_.
+#' @param perc_ID Lowest identity percentage cutoff. Passed on to BLAST+ _-perc_identity_.
+#' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ _-qcov_hsp_perc_.
+#' @param num_alignments Number of alignments to retrieve from BLAST. Max = 6.
 #'
 #' @export
+#'
 run_blast <- function(
   asv,
   db_path,
-  num_alignments = 3,
+  num_alignments,
   num_thread,
+  # blast_type,
   perc_ID,
   perc_qcov_hsp
-) {
+  ) {
   #   if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",
@@ -39,9 +40,12 @@ run_blast <- function(
     )
   }
 
-  blastn_bin <- check_bin("blastn")
+  # blast_type <- "blastn"
 
-  blast_cmd <- "{blastn_bin} -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity {perc_ID} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
+  blastn_bin <- check_bin("blastn")
+  # blast_bin <- check_bin(blast_type)
+
+  blast_cmd <- "{blast_bin} -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity {perc_ID} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
 
   blast_cmd_in <- paste0("echo -e '>seq1\n{asv}' | ", blast_cmd)
 
