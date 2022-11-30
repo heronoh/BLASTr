@@ -46,6 +46,7 @@
 <span>  <span class="va">asv</span>,</span>
 <span>  <span class="va">num_threads</span>,</span>
 <span>  <span class="va">db_path</span>,</span>
+<span>  <span class="va">blast_type</span>,</span>
 <span>  <span class="va">perc_ID</span>,</span>
 <span>  <span class="va">perc_qcov_hsp</span>,</span>
 <span>  <span class="va">num_alignments</span></span>
@@ -60,6 +61,10 @@
 
 <dt>db_path</dt>
 <dd><p>Complete path do formatted BLAST database.</p></dd>
+
+
+<dt>blast_type</dt>
+<dd><p>One of the available BLAST+ search engines: "blastn", "blastp", "blastx", "tblastn", "tblastx".</p></dd>
 
 
 <dt>perc_ID</dt>
@@ -89,8 +94,7 @@
 <span class="r-in"><span>                                        num_thread <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>                                        perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,</span></span>
 <span class="r-in"><span>                                        num_alignments <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_bin("blastn"):</span> <span style="color: #BB0000;">✖</span> <span style="color: #0000BB;">blastn</span> is not available on PATH.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please install it and try again.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in run_blast(asv = asv, blast_type = blast_type, num_threads = num_threads,     db_path = db_path, perc_ID = perc_ID, perc_qcov_hsp = perc_qcov_hsp,     num_alignments = num_alignments):</span> argument "blast_type" is missing, with no default</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

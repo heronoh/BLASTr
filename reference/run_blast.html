@@ -42,7 +42,15 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_blast</span><span class="op">(</span><span class="va">asv</span>, <span class="va">db_path</span>, <span class="va">num_alignments</span>, <span class="va">num_threads</span>, <span class="va">perc_ID</span>, <span class="va">perc_qcov_hsp</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_blast</span><span class="op">(</span></span>
+<span>  <span class="va">asv</span>,</span>
+<span>  <span class="va">db_path</span>,</span>
+<span>  <span class="va">num_alignments</span>,</span>
+<span>  <span class="va">num_threads</span>,</span>
+<span>  <span class="va">blast_type</span>,</span>
+<span>  <span class="va">perc_ID</span>,</span>
+<span>  <span class="va">perc_qcov_hsp</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -57,6 +65,10 @@
 
 <dt>num_threads</dt>
 <dd><p>Number of threads to run BLAST on. Passed on to BLAST+ argument <em>-num_threads</em>.</p></dd>
+
+
+<dt>blast_type</dt>
+<dd><p>One of the available BLAST+ search engines: "blastn", "blastp", "blastx", "tblastn", "tblastx".</p></dd>
 
 
 <dt>perc_ID</dt>
@@ -88,8 +100,7 @@
 <span class="r-in"><span>                                num_thread <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>                                perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,</span></span>
 <span class="r-in"><span>                                num_alignments <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_bin("blastn"):</span> <span style="color: #BB0000;">✖</span> <span style="color: #0000BB;">blastn</span> is not available on PATH.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please install it and try again.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_bin(blast_type):</span> argument "blast_type" is missing, with no default</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -48,6 +48,7 @@
 <span>  <span class="va">out_file</span>,</span>
 <span>  <span class="va">out_RDS</span>,</span>
 <span>  <span class="va">num_threads</span>,</span>
+<span>  <span class="va">blast_type</span>,</span>
 <span>  <span class="va">total_cores</span>,</span>
 <span>  <span class="va">perc_ID</span>,</span>
 <span>  <span class="va">perc_qcov_hsp</span>,</span>
@@ -77,6 +78,10 @@
 <dd><p>Number of threads to run BLAST on. Passed on to BLAST+ argument <em>-num_threads</em>.</p></dd>
 
 
+<dt>blast_type</dt>
+<dd><p>BLAST+ executable to be used on search.</p></dd>
+
+
 <dt>total_cores</dt>
 <dd><p>Total available cores to parallelize BLAST. Chech your max with <em>future::availableCores()</em></p></dd>
 
@@ -91,10 +96,6 @@
 
 <dt>num_alignments</dt>
 <dd><p>Number of alignments to retrieve from BLAST. Max = 6.</p></dd>
-
-
-<dt>blast_type</dt>
-<dd><p>BLAST+ executable to be used on search.</p></dd>
 
 </dl></div>
     <div class="section level2">

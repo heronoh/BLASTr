@@ -2,7 +2,7 @@ pandoc: 2.19.2
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-11-30T20:15Z
+last_built: 2022-11-30T20:24Z
 urls:
   reference: https://villabioinfo.github.io/BLASTr/reference
   article: https://villabioinfo.github.io/BLASTr/articles
