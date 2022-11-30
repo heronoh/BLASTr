@@ -8,9 +8,10 @@ parallel_blast(
   asvs,
   db_path,
   out_file,
-  out_rds,
+  out_RDS,
   num_thread,
-  perc_id,
+  total_cores,
+  perc_ID,
   perc_qcov_hsp
 )
 }
@@ -21,11 +22,11 @@ parallel_blast(
 
 \item{out_file}{Path to output file}
 
-\item{out_rds}{Path to output RDS file}
+\item{out_RDS}{Path to output RDS file}
 
 \item{num_thread}{Number of threads to be used}
 
-\item{perc_id}{Percent identity to be used}
+\item{perc_ID}{Percent identity to be used}
 
 \item{perc_qcov_hsp}{Percent query coverage to be used}
 }

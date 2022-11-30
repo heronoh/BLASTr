@@ -4,7 +4,14 @@
 \alias{get_blast_results}
 \title{Run BLASTn}
 \usage{
-get_blast_results(asv, num_thread, db_path, perc_id, perc_qcov_hsp)
+get_blast_results(
+  asv,
+  num_thread,
+  total_cores,
+  db_path,
+  perc_ID,
+  perc_qcov_hsp
+)
 }
 \arguments{
 \item{asv}{Sequence to be BLASTed}
@@ -13,7 +20,7 @@ get_blast_results(asv, num_thread, db_path, perc_id, perc_qcov_hsp)
 
 \item{db_path}{Path to BLAST database}
 
-\item{perc_id}{Percent identity to be used}
+\item{perc_ID}{Percent identity to be used}
 
 \item{perc_qcov_hsp}{Percent query coverage to be used}
 }

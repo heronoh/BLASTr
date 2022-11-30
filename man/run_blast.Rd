@@ -4,7 +4,7 @@
 \alias{run_blast}
 \title{Run BLAST}
 \usage{
-run_blast(asv, db_path, num_alignments = 3, num_thread, perc_id, perc_qcov_hsp)
+run_blast(asv, db_path, num_alignments = 3, num_thread, perc_ID, perc_qcov_hsp)
 }
 \arguments{
 \item{asv}{Sequence to be BLASTed}
@@ -16,7 +16,7 @@ Default: the 3 best alignments.}
 
 \item{num_thread}{Number of threads to be used}
 
-\item{perc_id}{Percent identity to be used}
+\item{perc_ID}{Percent identity to be used}
 
 \item{perc_qcov_hsp}{Percent query coverage to be used}
 }

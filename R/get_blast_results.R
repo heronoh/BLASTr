@@ -9,6 +9,7 @@
 #' @return A `tibble` with the results of BLASTn
 #'
 #' @export
+<<<<<<< HEAD
 get_blast_results <- function(
   asv,
   num_thread,
@@ -19,6 +20,14 @@ get_blast_results <- function(
   perc_qcov_hsp,
   num_alignments
 ) {
+=======
+get_blast_results <- function(asv,
+                              num_thread,
+                              total_cores,
+                              db_path,
+                              perc_ID,
+                              perc_qcov_hsp) {
+>>>>>>> be0da30911512133435167e5332b24284500284e
   #  if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",
@@ -46,7 +55,7 @@ get_blast_results <- function(
     perc_qcov_hsp = perc_qcov_hsp,
     num_alignments = num_alignments
   )
-# test blast_res content ----
+  # test blast_res content ----
   if (blast_res$status != 0) {
     cli::cli_abort(
       message = "{.pkg BLASTr} has not run correctly."
@@ -82,9 +91,10 @@ get_blast_results <- function(
       comment = "#"
     )
 
-  blast_table$`subject header` <- purrr::map_chr(.x = blast_table$subject,
-                                                 .f = get_fasta_header,
-                                                 db_path = db_path
+  blast_table$`subject header` <- purrr::map_chr(
+    .x = blast_table$subject,
+    .f = get_fasta_header,
+    db_path = db_path
   )
   blast_table <- dplyr::relocate(
     blast_table,
@@ -101,7 +111,8 @@ get_blast_results <- function(
     values_from = base::seq_len(
       base::ncol(blast_table)
     ),
-    names_glue = "{res}_{.value}")
+    names_glue = "{res}_{.value}"
+  )
   # TODO: @heron limpar colunas redundantes. Não está ativado pois estava dando pau
   # |>
   #     select(-c("1_res",

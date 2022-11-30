@@ -1,4 +1,4 @@
-#1b - run_blast ----
+# 1b - run_blast ----
 ###                  function to run blast for each ASV/OTU                  ###
 #' Run BLAST
 #'
@@ -12,6 +12,7 @@
 #' @param num_alignments Number of alignments to retrieve from BLAST. Max = 6.
 #'
 #' @export
+<<<<<<< HEAD
 #'
 run_blast <- function(
   asv,
@@ -22,6 +23,14 @@ run_blast <- function(
   perc_ID,
   perc_qcov_hsp
   ) {
+=======
+run_blast <- function(asv,
+                      db_path,
+                      num_alignments = 3,
+                      num_thread,
+                      perc_ID,
+                      perc_qcov_hsp) {
+>>>>>>> be0da30911512133435167e5332b24284500284e
   #   if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",
@@ -51,7 +60,7 @@ run_blast <- function(
 
   # print(blast_cmd_in)
 
-  #previous version of completeBLAST command inside the function
+  # previous version of completeBLAST command inside the function
   # blast_cmd_original <- "echo -e '>seq1\n{asv}' | blastn -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity 80 -qcov_hsp_perc 80 -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
 
   blast_res <- shell_exec(
