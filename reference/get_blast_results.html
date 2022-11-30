@@ -48,39 +48,53 @@
 <span>  <span class="va">total_cores</span>,</span>
 <span>  <span class="va">db_path</span>,</span>
 <span>  <span class="va">perc_ID</span>,</span>
-<span>  <span class="va">perc_qcov_hsp</span></span>
+<span>  <span class="va">perc_qcov_hsp</span>,</span>
+<span>  <span class="va">num_alignments</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>asv</dt>
-<dd><p>Sequence to be BLASTed</p></dd>
-
-
-<dt>num_thread</dt>
-<dd><p>Number of threads to be used</p></dd>
+    <dl><dt>num_thread</dt>
+<dd><p>Number of threads to run BLAST on. Passed on to BLAST+ argument <em>-num_threads</em>.</p></dd>
 
 
 <dt>db_path</dt>
-<dd><p>Path to BLAST database</p></dd>
+<dd><p>Complete path do formatted BLAST databases.</p></dd>
 
 
 <dt>perc_ID</dt>
-<dd><p>Percent identity to be used</p></dd>
+<dd><p>Lowest identity percentage cutoff. Passed on to BLAST+ <em>-perc_identity</em>.</p></dd>
 
 
 <dt>perc_qcov_hsp</dt>
-<dd><p>Percent query coverage to be used</p></dd>
+<dd><p>Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ <em>-qcov_hsp_perc</em>.</p></dd>
+
+
+<dt>num_alignments</dt>
+<dd><p>Number of alignments to retrieve from BLAST. Max = 6.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A <code>tibble</code> with the results of BLASTn</p>
+<p>A <code>tibble</code> with the results of BLASTn.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">blast_res1</span> <span class="op">&lt;-</span> <span class="fu">BLASTr</span><span class="fu">::</span><span class="fu">get_blast_results</span><span class="op">(</span>asv <span class="op">=</span> <span class="st">"CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"</span>,</span></span>
+<span class="r-in"><span>                                        db_path <span class="op">=</span> <span class="st">"/data/databases/nt/nt"</span>,</span></span>
+<span class="r-in"><span>                                        perc_ID <span class="op">=</span> <span class="fl">80</span>,</span></span>
+<span class="r-in"><span>                                        num_thread <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                                        perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,</span></span>
+<span class="r-in"><span>                                        num_alignments <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>                                        blast_type <span class="op">=</span> <span class="st">"blastn"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in BLASTr::get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",     db_path = "/data/databases/nt/nt", perc_ID = 80, num_thread = 1,     perc_qcov_hsp = 80, num_alignments = 2, blast_type = "blastn"):</span> unused argument (blast_type = "blastn")</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
