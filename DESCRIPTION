@@ -7,7 +7,7 @@ Authors@R:
         family = "Lucio Rezende",
         given = "Queiroz",
         email = "luciorqueiroz@gmail.com",
-        role = c("aut", "cre"),
+        role = c("aut"),
         comment = c(ORCID = "0000-0002-6090-1834")
       ),
       person(
