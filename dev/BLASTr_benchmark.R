@@ -275,14 +275,15 @@ tictoc::toc()
 
 
 
-base::save.image("~/prjcts/omics/BLASTr_benchmark/BLASTr_benchmark.RData")
+base::save.image("~/prjcts/omics/BLASTr/dev/BLASTr_benchmark.RData")
 
 
 
 
 
 
-
+ASVs_test %>%  nchar() %>% table()
+ASVs_test[1:6] %>%  nchar() %>% mean()
 
 
 
