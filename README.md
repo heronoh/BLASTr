@@ -12,7 +12,7 @@ You can install the development version of BLASTr from [GitHub](https://github.c
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("villabioinfo/BLASTr")
+remotes::install_github("heronoh/BLASTr")
 ```
 
 ## Example
@@ -27,4 +27,3 @@ options(BLASTr.db_path = fs::path())
 run_blast()
 
 ```
-

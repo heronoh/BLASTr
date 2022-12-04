@@ -14,7 +14,7 @@ Authors@R:
         family = "Hilario",
         given = "Heron",
         email = "heronoh@gmail.com",
-        role = c("aut"),
+        role = c("aut", "cre"),
         comment = c(ORCID = "0000-0002-2548-1053")
       )
     )
@@ -42,4 +42,4 @@ Imports:
     readr,
     tibble,
     tidyr
-URL: https://villabioinfo.github.io/BLASTr/
+URL: https://heronoh.github.io/BLASTr/
