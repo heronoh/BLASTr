@@ -12,7 +12,7 @@ parallel_blast(
   num_threads,
   blast_type,
   total_cores,
-  perc_ID,
+  perc_id,
   perc_qcov_hsp,
   num_alignments
 )
@@ -26,15 +26,18 @@ parallel_blast(
 
 \item{out_RDS}{Complete path to output RDS file.}
 
-\item{num_threads}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
+\item{num_threads}{Number of threads to run BLAST on.
+Passed on to BLAST+ argument \emph{-num_threads}.}
 
 \item{blast_type}{BLAST+ executable to be used on search.}
 
 \item{total_cores}{Total available cores to parallelize BLAST. Chech your max with \emph{future::availableCores()}}
 
-\item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
+\item{perc_id}{Lowest identity percentage cutoff.
+Passed on to BLAST+ \emph{-perc_identity}.}
 
-\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
+\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.
+Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
 
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
 }
@@ -45,14 +48,16 @@ A tibble with the BLAST tabular output.
 Run parallel BLAST for set of sequences
 }
 \examples{
-blast_res <- BLASTr::parallel_blast(asvs = ASVs_test[1],
-                                 db_path = "/data/databases/nt/nt",
-                                 out_file = "~/blast_out.csv",
-                                 out_RDS = "~/blast_out.RDS",
-                                 total_cores = 77,
-                                 perc_ID = 80,
-                                 num_thread = 1,
-                                 perc_qcov_hsp = 80,
-                                 num_alignments = 4)
+blast_res <- BLASTr::parallel_blast(
+  asvs = ASVs_test[1],
+  db_path = "/data/databases/nt/nt",
+  out_file = "~/blast_out.csv",
+  out_RDS = "~/blast_out.RDS",
+  total_cores = 77,
+  perc_id = 80,
+  num_thread = 1,
+  perc_qcov_hsp = 80,
+  num_alignments = 4
+)
 
 }

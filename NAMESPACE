@@ -3,5 +3,6 @@
 export(check_bin)
 export(get_blast_results)
 export(get_fasta_header)
+export(install_blast_conda)
 export(parallel_blast)
 export(run_blast)

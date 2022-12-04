@@ -31,6 +31,7 @@ Suggests:
     processx,
     reticulate,
     testthat (>= 3.0.0),
+    tictoc,
     withr
 Config/testthat/edition: 3
 Imports:

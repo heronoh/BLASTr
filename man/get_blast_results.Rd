@@ -6,24 +6,28 @@
 \usage{
 get_blast_results(
   asv,
-  num_threads,
   db_path,
-  blast_type,
-  perc_ID,
-  perc_qcov_hsp,
-  num_alignments
+  num_threads,
+  blast_type = "blastn",
+  perc_id = 80,
+  perc_qcov_hsp = 80,
+  num_alignments = 4
 )
 }
 \arguments{
-\item{num_threads}{Number of threads to run BLAST on. Passed on to BLAST+ argument \emph{-num_threads}.}
-
 \item{db_path}{Complete path do formatted BLAST database.}
 
-\item{blast_type}{One of the available BLAST+ search engines: "blastn", "blastp", "blastx", "tblastn", "tblastx".}
+\item{num_threads}{Number of threads to run BLAST on.
+Passed on to BLAST+ argument \emph{-num_threads}.}
 
-\item{perc_ID}{Lowest identity percentage cutoff. Passed on to BLAST+ \emph{-perc_identity}.}
+\item{blast_type}{One of the available BLAST+ search engines,
+one of: "blastn", "blastp", "blastx", "tblastn", "tblastx".}
 
-\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff. Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
+\item{perc_id}{Lowest identity percentage cutoff.
+Passed on to BLAST+ \emph{-perc_identity}.}
+
+\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.
+Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
 
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
 }
@@ -34,11 +38,14 @@ A \code{tibble} with the results of BLASTn.
 Retrieve BLAST results from a given ASV
 }
 \examples{
-blast_res <- BLASTr::get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-                                        db_path = "/data/databases/nt/nt",
-                                        perc_ID = 80,
-                                        num_thread = 1,
-                                        perc_qcov_hsp = 80,
-                                        num_alignments = 2)
+blast_res <- BLASTr::get_blast_results(
+  asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTA
+  CTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  db_path = "/data/databases/nt/nt",
+  perc_id = 80,
+  num_thread = 1,
+  perc_qcov_hsp = 80,
+  num_alignments = 2
+)
 
 }
