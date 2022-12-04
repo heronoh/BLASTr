@@ -1,6 +1,6 @@
 Package: BLASTr
 Title: Run BLAST from R
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R:
     c(
       person(
@@ -29,7 +29,9 @@ Suggests:
     furrr,
     future,
     processx,
+    reticulate,
     testthat (>= 3.0.0),
+    tictoc,
     withr
 Config/testthat/edition: 3
 Imports:

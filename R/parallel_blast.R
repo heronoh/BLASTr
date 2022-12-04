@@ -12,31 +12,30 @@
 #' @return A tibble with the BLAST tabular output.
 #'
 #' @examples
-#' blast_res <- BLASTr::parallel_blast(asvs = ASVs_test[1],
-#'                                  db_path = "/data/databases/nt/nt",
-#'                                  out_file = "~/blast_out.csv",
-#'                                  out_RDS = "~/blast_out.RDS",
-#'                                  total_cores = 77,
-#'                                  perc_ID = 80,
-#'                                  num_thread = 1,
-#'                                  perc_qcov_hsp = 80,
-#'                                  num_alignments = 4)
+#' blast_res <- BLASTr::parallel_blast(
+#'   asvs = ASVs_test[1],
+#'   db_path = "/data/databases/nt/nt",
+#'   out_file = "~/blast_out.csv",
+#'   out_RDS = "~/blast_out.RDS",
+#'   total_cores = 77,
+#'   perc_id = 80,
+#'   num_thread = 1,
+#'   perc_qcov_hsp = 80,
+#'   num_alignments = 4
+#' )
 #'
 #' @export
 
-parallel_blast <- function(
-  asvs,
-  db_path,
-  out_file,
-  out_RDS,
-  num_threads,
-  blast_type,
-  total_cores,
-  perc_ID,
-  perc_qcov_hsp,
-  num_alignments
-  ){
-
+parallel_blast <- function(asvs,
+                           db_path,
+                           out_file,
+                           out_RDS,
+                           num_threads,
+                           blast_type,
+                           total_cores,
+                           perc_id,
+                           perc_qcov_hsp,
+                           num_alignments) {
   # TODO: Convert ASVs to vector, if needed
 
 
@@ -59,29 +58,31 @@ parallel_blast <- function(
   # }
   if (total_cores > 1) {
     future::plan(future::multisession(),
-                 workers = total_cores)
+      workers = total_cores
+    )
 
-    blast_res <- furrr::future_map_dfr(.x = asvs,
-                                       .f = get_blast_results,
-                                       .options = furrr::furrr_options(seed = NULL),
-                                       num_threads = 1,
-                                       blast_type = blast_type,
-                                       num_alignments = num_alignments,
-                                       db_path = db_path,
-                                       perc_ID = perc_ID,
-                                       perc_qcov_hsp = perc_qcov_hsp
-                                       )
-    } else {
-      blast_res <- purrr::map_dfr(.x = asvs,
-                                  .f = get_blast_results,
-                                  num_threads = 1,
-                                  blast_type = blast_type,
-                                  num_alignments = num_alignments,
-                                  db_path = db_path,
-                                  perc_ID = perc_ID,
-                                  perc_qcov_hsp = perc_qcov_hsp
-                                )
-
+    blast_res <- furrr::future_map_dfr(
+      .x = asvs,
+      .f = get_blast_results,
+      .options = furrr::furrr_options(seed = NULL),
+      num_threads = 1,
+      blast_type = blast_type,
+      num_alignments = num_alignments,
+      db_path = db_path,
+      perc_id = perc_id,
+      perc_qcov_hsp = perc_qcov_hsp
+    )
+  } else {
+    blast_res <- purrr::map_dfr(
+      .x = asvs,
+      .f = get_blast_results,
+      num_threads = 1,
+      blast_type = blast_type,
+      num_alignments = num_alignments,
+      db_path = db_path,
+      perc_id = perc_id,
+      perc_qcov_hsp = perc_qcov_hsp
+    )
   }
   if (!is.na(out_file)) {
     readr::write_csv(
