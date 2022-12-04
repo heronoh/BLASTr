@@ -20,6 +20,7 @@ processx
 purrr
 Queiroz
 readr
+reticulate
 Rezende
 Roxygen
 RoxygenNote
