@@ -23,7 +23,7 @@ library(BLASTr)
 # options(BLASTr.dbapth = "/data/databases/nt/nt")
 
 blast_res <- BLASTr::parallel_blast(
-  asvs = ASVs_test,
+  asvs = ASVs_test[1],
   db_path = "/data/databases/nt/nt",
   out_file = "/home/heron/prjcts/omics/BLASTr_run/blast_out.csv",
   out_RDS = "/home/heron/prjcts/omics/BLASTr_run/blast_out.RDS",
