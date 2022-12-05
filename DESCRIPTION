@@ -42,4 +42,5 @@ Imports:
     readr,
     tibble,
     tidyr
-URL: https://heronoh.github.io/BLASTr/
+URL: https://heronoh.github.io/BLASTr,
+    https://heronoh.github.io/BLASTr/
