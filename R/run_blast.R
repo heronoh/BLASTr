@@ -55,7 +55,7 @@ run_blast <- function(asv,
     )
   }
   blast_bin <- BLASTr:::check_bin(blast_type)
-  rlang::inform(blast_bin)
+  # rlang::inform(blast_bin)
   blast_cmd <- "{blast_bin} -db {db_path} -outfmt '6 std qcovhsp staxid' -max_hsps 1 -perc_identity {perc_id} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_threads)} -num_alignments {as.character(num_alignments)}"
   blast_cmd_in <- paste0("echo -e '>seq1\n{asv}' | ", blast_cmd)
   blast_res <- BLASTr:::shell_exec(
