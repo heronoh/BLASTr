@@ -5,13 +5,21 @@
 <!-- badges: end -->
 
 The BLASTr package is a powerful tool for performing BLAST operations from within the R environment.
-Despite being initially developed for metagenomic applications, the BLASTr package is flexible.
+Despite being initially developed for metagenomic applications, the BLASTr package is flexible for other applications.
 It can be used with any installed NCBI BLAST+ search strategy, configuration, and any database on UNIX and Windows platforms through Windows Subsystem for Linux.
 This makes it a versatile tool that can be used in various applications and contexts requiring sequence identification on tabular outputs.
 Additionally, the package includes documentation and functions for parsing and analyzing the results of BLAST searches, making it easier for users to extract useful information from their BLAST results.
 Overall, the BLASTr package is a valuable tool for bioinformaticians and researchers who need to perform BLAST operations from within R.
 
 ## Installation
+
+### Requirements
+
+``` bash
+
+sudo apt install ncbi-blast+
+
+```
 
 ### R-Universe
 
