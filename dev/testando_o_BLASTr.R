@@ -1,5 +1,8 @@
+
 library(devtools)
+
 library(BLASTr)
+
 load_all(path = "/home/heron/prjcts/omics/metaseqs/BLASTr")
 
 ASVs_test <- c(
