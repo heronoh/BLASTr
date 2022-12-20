@@ -1,8 +1,8 @@
 pandoc: 2.19.2
-pkgdown: 2.0.6
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-12-07T13:57Z
+last_built: 2022-12-20T00:05Z
 urls:
   reference: https://heronoh.github.io/BLASTr/reference
   article: https://heronoh.github.io/BLASTr/articles
