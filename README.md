@@ -2,6 +2,7 @@
 # BLASTr
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The BLASTr package is a powerful tool for performing BLAST operations from within the R environment.
@@ -13,7 +14,8 @@ Overall, the BLASTr package is a valuable tool for bioinformaticians and researc
 
 ## Requirements
 
-The BLASTr package requires the NCBI-BLAST+ to be installed. The easiest way to perfor its installation is on the UNIX comand line.
+The BLASTr package requires the NCBI BLAST+ to be installed.
+The easiest way to perform its installation is on the UNIX command line.
 
 ``` bash
 #install NCBI-BLAST+
@@ -102,25 +104,24 @@ blast_res
 Identifications can be performed using NCBI complete databases, such as NT, which are readily available to download and update using the *BLAST+* _script_.
 ``` bash
 #set a folder to download the desired database (for example, the nt database)
-BLAST_DB_PATH=/data/database/blast/nt
+BLAST_DB_PATH="/data/database/blast/nt"
 
 #create dir
-mkdir -p  $BLAST_DB_PATH
+mkdir -p  "${BLAST_DB_PATH}"
 
 #enter dir
-cd $BLAST_DB_PATH
+cd "${BLAST_DB_PATH}"
 
 #optional: use screen or tmux to emulate a terminal. The downloads usually takes long.
 #          tmux: https://tmuxcheatsheet.com/
 #          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
 
 #user BLAST+ executable to download/update db files
-update_blastdb --passive --decompress nr 
+update_blastdb --passive --decompress nr
 
 #set permissions to enable usage by all users
-chown root $BLAST_DB_PATH/*
-chmod 755 $BLAST_DB_PATH/*
-
+chown root "${BLAST_DB_PATH}"/*
+chmod 755 "${BLAST_DB_PATH}"/*
 ```
 
 ### Formating a custom database
@@ -129,12 +130,11 @@ In case you prefer, any fasta file can be formated as a BLAST+ database, using t
 
 ``` bash
 #set the path to your fasta file (replace the example below)
-DB_FILE=/data/database/my_db.fasta
+DB_FILE="/data/database/my_db.fasta"
 
 #check parameters and usage
 makeblastdb
 
 #format your db
-makeblastdb -in $DB_FILE -dbtype "nucl" -parse_seqids -hash_index
-
+makeblastdb -in "${DB_FILE}" -dbtype "nucl" -parse_seqids -hash_index
 ```

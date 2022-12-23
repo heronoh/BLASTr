@@ -11,7 +11,8 @@ Description: Run BLAST from R, with nice standards for ASV search.  This
     package contains nice set of functions for identifying sequences from
     high throughput metagenomic experiments.
 License: MIT + file LICENSE
-URL: https://heronoh.github.io/BLASTr, https://heronoh.github.io/BLASTr/
+URL: https://github.com/heronoh/BLASTr, https://heronoh.github.io/BLASTr/
+BugReports: https://github.com/heronoh/BLASTr/issues
 Imports:
     cli,
     dplyr,
@@ -31,4 +32,4 @@ Suggests:
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
