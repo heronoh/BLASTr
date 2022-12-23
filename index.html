@@ -47,7 +47,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/heronoh/BLASTr/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -58,12 +65,12 @@
 <div class="page-header"><h1 id="blastr">BLASTr<a class="anchor" aria-label="anchor" href="#blastr"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
+
 <p>The BLASTr package is a powerful tool for performing BLAST operations from within the R environment. Despite being initially developed for metagenomic applications, the BLASTr package is flexible for other applications. It can be used with any installed NCBI BLAST+ search strategy, configuration, and any database on UNIX and Windows platforms through Windows Subsystem for Linux. This makes it a versatile tool that can be used in various applications and contexts requiring sequence identification on tabular outputs. Additionally, the package includes documentation and functions for parsing and analyzing the results of BLAST searches, making it easier for users to extract useful information from their BLAST results. Overall, the BLASTr package is a valuable tool for bioinformaticians and researchers who need to perform BLAST operations from within R.</p>
 <div class="section level2">
 <h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
 </h2>
-<p>The BLASTr package requires the NCBI-BLAST+ to be installed. The easiest way to perfor its installation is on the UNIX comand line.</p>
+<p>The BLASTr package requires the NCBI BLAST+ to be installed. The easiest way to perform its installation is on the UNIX command line.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install NCBI-BLAST+</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install ncbi-blast+</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -147,41 +154,49 @@
 </h3>
 <p>Identifications can be performed using NCBI complete databases, such as NT, which are readily available to download and update using the <em>BLAST+</em> <em>script</em>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#set a folder to download the desired database (for example, the nt database)</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="va">BLAST_DB_PATH</span><span class="op">=</span>/data/database/blast/nt</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="va">BLAST_DB_PATH</span><span class="op">=</span><span class="st">"/data/database/blast/nt"</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#create dir</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span>  <span class="va">$BLAST_DB_PATH</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span>  <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#enter dir</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">$BLAST_DB_PATH</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#optional: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#user BLAST+ executable to download/update db files</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ex">update_blastdb</span> <span class="at">--passive</span> <span class="at">--decompress</span> nr </span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ex">update_blastdb</span> <span class="at">--passive</span> <span class="at">--decompress</span> nr</span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#set permissions to enable usage by all users</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">chown</span> root <span class="va">$BLAST_DB_PATH</span>/<span class="pp">*</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 755 <span class="va">$BLAST_DB_PATH</span>/<span class="pp">*</span></span></code></pre></div>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">chown</span> root <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span>/<span class="pp">*</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 755 <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span>/<span class="pp">*</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="formating-a-custom-database">Formating a custom database<a class="anchor" aria-label="anchor" href="#formating-a-custom-database"></a>
 </h3>
 <p>In case you prefer, any fasta file can be formated as a BLAST+ database, using the <em>BLAST+</em> <em>script</em> <em><em>makeblastdb</em></em>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#set the path to your fasta file (replace the example below)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="va">DB_FILE</span><span class="op">=</span>/data/database/my_db.fasta</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="va">DB_FILE</span><span class="op">=</span><span class="st">"/data/database/my_db.fasta"</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#check parameters and usage</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">makeblastdb</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#format your db</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">makeblastdb</span> <span class="at">-in</span> <span class="va">$DB_FILE</span> <span class="at">-dbtype</span> <span class="st">"nucl"</span> <span class="at">-parse_seqids</span> <span class="at">-hash_index</span></span></code></pre></div>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">makeblastdb</span> <span class="at">-in</span> <span class="st">"</span><span class="va">${DB_FILE}</span><span class="st">"</span> <span class="at">-dbtype</span> <span class="st">"nucl"</span> <span class="at">-parse_seqids</span> <span class="at">-hash_index</span></span></code></pre></div>
 </div>
 </div>
 </div>
-  </main><aside class="col-md-3"><div class="license">
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/heronoh/BLASTr/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/heronoh/BLASTr/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
@@ -205,7 +220,12 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
