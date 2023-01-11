@@ -18,7 +18,6 @@
 #' )
 #'
 #' @export
-
 get_blast_results <- function(asv,
                               db_path,
                               num_threads,
