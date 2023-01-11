@@ -4,7 +4,7 @@
 #'
 #' @inheritParams run_blast
 #'
-#' @return A `tibble` with the results of BLASTn.
+#' @return A `tibble` with the results of BLASTn for each sequence.
 #'
 #' @examples
 #' blast_res <- BLASTr::get_blast_results(
@@ -111,14 +111,14 @@ get_blast_results <- function(asv,
   )
 
   blast_table <- blast_table |>
-    dplyr::mutate(`OTU` = asv) |>
+    dplyr::mutate(`Sequence` = asv) |>
     dplyr::relocate(tidyr::starts_with("6_")) |>
     dplyr::relocate(tidyr::starts_with("5_")) |>
     dplyr::relocate(tidyr::starts_with("4_")) |>
     dplyr::relocate(tidyr::starts_with("3_")) |>
     dplyr::relocate(tidyr::starts_with("2_")) |>
     dplyr::relocate(tidyr::starts_with("1_")) |>
-    dplyr::relocate("OTU") |>
+    dplyr::relocate("Sequence") |>
     dplyr::select(-tidyr::ends_with(c("_res", "_query")))
 
   return(blast_table)

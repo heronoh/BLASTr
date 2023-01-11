@@ -1,10 +1,12 @@
-#' Extract Sequences From FASTA file
+#' @title Parsing fasta file to sequences only
 #'
-#' Extract nucleotide or aminoacid sequences from FASTA file.
+#' @description Extract sequences From FASTA file
 #'
 #' @param file_path Path to FASTA file.
 #'
 #' @return vector containing the sequences.
+#'
+#' @export
 parse_fasta <- function(file_path) {
   fasta_file <- readr::read_lines(file_path)
   if (!fs::file_exists(file_path)) {
