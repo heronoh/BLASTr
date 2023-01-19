@@ -19,6 +19,8 @@ The easiest way to perform its installation is on the UNIX command line.
 
 ``` bash
 #install NCBI-BLAST+
+
+sudo apt update
 sudo apt install ncbi-blast+
 
 #chech installation using one of its applicaitons
@@ -52,50 +54,7 @@ remotes::install_github("heronoh/BLASTr")
 
 The main place to look for help and documentation is <heronoh.github.io/BLASTr/>
 
-## Testing
 
-The package comes with a mock BLAST formatted database to test the package installation. For the testing, execute the following commands on your R console.
-
-``` r
-
-library(BLASTr)
-
-#set the number of availble threads to be used (exemplified by the total number of available threads - 2)
-options(BLASTr.num_threads = length(future::availableWorkers()) - 2)
-
-#set the database path (exemplified by the mock blast DB used to be searched with the test ASVs below)
-options(BLASTr.db_path = paste0(fs::path_wd(),"/dev/minimal_db/shortest_minimal_db_BLASTr.fasta"))
-BLASTr.db_path <- paste0(fs::path_wd(),"/dev/minimal_db/shortest_minimal_db_BLASTr.fasta"))
-
-#here are 8 ASVs to be tested with the mock blast DB
-
-ASVs_test <- c(
-  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-  "GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC",
-  "AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT",
-  "ACTATACCTATTATTCGGCGCATGAGCTGGAGTCCTAGGCACAGCTCTAAGCCTCCTTATTCGAGCCGAGCTGGGCCAGCCAGGCAACCTTCTAGGTAACGACCACATCTACAACGTTATCGTCACAGCCCATGCATTTGTAATAATCTTCTTCATAGTAATACCCATCATAATCGGAGGCTTTGGCAACTGACTAGTTCCCCTAATAATCGGTGCCCCCGATATG",
-  "TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"
-)
-
-
-blast_res <- BLASTr::parallel_blast(
-  asvs = ASVs_test[1],
-  # db_path = "/data/databases/nt/nt",
-  out_file = NULL,
-  out_RDS = NULL,
-  perc_id = 80,
-  num_threads = 1,
-  perc_qcov_hsp = 80,
-  num_alignments = 3,
-  blast_type = "blastn"
-)
-
-# check identificaitons results
-
-blast_res
-
-```
 
 ## Database configuration
 
@@ -138,3 +97,63 @@ makeblastdb
 #format your db
 makeblastdb -in "${DB_FILE}" -dbtype "nucl" -parse_seqids -hash_index
 ```
+
+
+## Testing
+
+The package installation can be with a mock BLAST formatted database provided in this [link](https://drive.google.com/file/d/1Qy4w4KIGSTiGjx-J4BrcyN6Y5wtRYBHl/view?usp=sharing). Alternatively, you can download the unformated mock database (a fasta file) and format it using the ncbi-blast+ functionalities, as you would do for any other custom database. You can obtain the fasta [here](https://drive.google.com/file/d/1WKIwq7RySleuSotWjZ4OJUXqbXELaE7q/view?usp=sharing).
+
+
+``` bash
+#set the path to your fasta file (replace the example below)
+DB_FILE="/data/database/shortest_minimal_db_BLASTr.fasta"
+
+#check parameters and usage
+makeblastdb
+
+#format your db
+makeblastdb -in "${DB_FILE}" -dbtype "nucl" -parse_seqids -hash_index
+
+```
+
+For the testing, execute the following commands on your R console.
+
+``` r
+library(BLASTr)
+
+
+#here are 8 ASVs to be tested with the mock blast DB
+
+ASVs_test <- c(
+  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  "GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC",
+  "AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT",
+  "ACTATACCTATTATTCGGCGCATGAGCTGGAGTCCTAGGCACAGCTCTAAGCCTCCTTATTCGAGCCGAGCTGGGCCAGCCAGGCAACCTTCTAGGTAACGACCACATCTACAACGTTATCGTCACAGCCCATGCATTTGTAATAATCTTCTTCATAGTAATACCCATCATAATCGGAGGCTTTGGCAACTGACTAGTTCCCCTAATAATCGGTGCCCCCGATATG",
+  "TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"
+)
+
+
+blast_res <- BLASTr::parallel_blast(
+  asvs = ASVs_test,                                                 #vector of sequences to be searched  
+  db_path = "/data/database/shortest_minimal_db_BLASTr.fasta",      #path to a formated blast database
+  out_file = NULL,                                                  #path to a .csv file to be created with results (on an existing folder)
+  out_RDS = NULL,                                                   #path to a .RDS file to be created with results (on an existing folder)
+  perc_id = 80,                                                     #minimum identity percentual cutoff
+  perc_qcov_hsp = 80,                                               #minimum percentual coverage of query sequence by subject sequence cutoff
+  num_threads = 1,                                                  #number of threads/cores to run each blast on
+  total_cores = 8,                                                  #number of tota threads/cores to alocate all blast searches
+  num_alignments = 3,                                               #maximum number of alignments/matches to retrieve results for each query sequence
+  blast_type = "blastn"                                             #blast search engine to use  
+)
+
+# check identificaitons results
+
+blast_res
+
+#or
+
+View(blast_res)
+
+```
+

@@ -23,14 +23,13 @@ ASVs_test <- c(
 
 
 future::availableCores()
-library(BLASTr)
 
 # options(BLASTr.dbapth = "/data/databases/nt/nt")
 
 blast_res <- BLASTr::parallel_blast(
-  asvs = ASVs_test[1],
-  # db_path = "/data/databases/nt/nt",
-  db_path = BLASTr.db_path,
+  asvs = ASVs_test,
+  db_path = "/data/databases/nt/nt",
+  # db_path = BLASTr.db_path,
   out_file = NA,
   out_RDS = NA,
   # blast_cmd = "blastn -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity 80 -qcov_hsp_perc 80 -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}",
@@ -42,16 +41,16 @@ blast_res <- BLASTr::parallel_blast(
   blast_type = "blastn"
 )
 
-blast_res1 <- BLASTr::run_blast(
-  asv = ASVs_test[3],
-  db_path = "/data/databases/nt/nt",
-  perc_id = 80,
-  num_thread = 1,
-  perc_qcov_hsp = 80,
-  num_alignments = 2
-  # ,
-  # blast_type = "blastn"
-)
+# blast_res1 <- BLASTr::run_blast(
+#   asv = ASVs_test[3],
+#   db_path = "/data/databases/nt/nt",
+#   perc_id = 80,
+#   num_thread = 1,
+#   perc_qcov_hsp = 80,
+#   num_alignments = 2
+#   # ,
+#   # blast_type = "blastn"
+# )
 
 
 

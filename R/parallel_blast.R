@@ -13,16 +13,17 @@
 #'
 #' @examples
 #' blast_res <- BLASTr::parallel_blast(
-#'   asvs = ASVs_test[1],
-#'   db_path = "/data/databases/nt/nt",
-#'   out_file = "~/blast_out.csv",
-#'   out_RDS = "~/blast_out.RDS",
-#'   total_cores = 77,
-#'   perc_id = 80,
-#'   num_thread = 1,
-#'   perc_qcov_hsp = 80,
-#'   num_alignments = 4
-#' )
+#'   asvs = ASVs_test,                       #vector of sequences to be searched
+#'   db_path = "/data/databases/nt/nt",      #path to a formated blast database
+#'   out_file = NULL,                        #path to a .csv file to be created with results (on an existing folder)
+#'   out_RDS = NULL,                         #path to a .RDS file to be created with results (on an existing folder)
+#'   perc_id = 80,                           #minimum identity percentual cutoff
+#'   perc_qcov_hsp = 80,                     #minimum percentual coverage of query sequence by subject sequence cutoff
+#'   num_threads = 1,                        #number of threads/cores to run each blast on
+#'   total_cores = 8,                        #number of tota threads/cores to alocate all blast searches
+#'   num_alignments = 3,                     #maximum number of alignments/matches to retrieve results for each query sequence
+#'   blast_type = "blastn"                   #blast search engine to use
+#'   )
 #'
 #' @export
 
