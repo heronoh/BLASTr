@@ -3,3 +3,4 @@ docs
 *.Rproj
 *.RData
 *.Rhistory
+*.gz

@@ -4,8 +4,8 @@
 #'
 #' @inheritParams run_blast
 #'
-#' @param out_file Complete path to output file
-#' @param out_RDS Complete path to output RDS file.
+#' @param out_file Complete path to output .csv file on an existing folder.
+#' @param out_RDS Complete path to output RDS file on an existing folder.
 #' @param total_cores Total available cores to parallelize BLAST. Chech your max with *future::availableCores()*
 #' @param blast_type BLAST+ executable to be used on search.
 #'
