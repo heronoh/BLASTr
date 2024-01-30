@@ -80,7 +80,8 @@ get_blast_results <- function(asv,
         "e-value",
         "bitscore",
         "qcovhsp",
-        "staxid"
+        "staxid",
+        show_col_types = FALSE
       ),
       trim_ws = TRUE,
       comment = "#"
