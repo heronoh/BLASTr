@@ -85,7 +85,7 @@ get_blast_results <- function(asv,
       trim_ws = TRUE,
       comment = "#"
     ) %>%
-    mutate(dplyr::across(.cols = dplyr::ends_with("taxid"), # adicionado para testes
+    dplyr::mutate(dplyr::across(.cols = dplyr::ends_with("taxid"), # adicionado para testes
                          ~ as.character(.)
     ))
 
