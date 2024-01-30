@@ -86,6 +86,7 @@ get_blast_results <- function(asv,
       comment = "#"
       ) |>
     dplyr::mutate("staxid" = as.character(staxid)) # adicionado para testes
+
     # dplyr::mutate(dplyr::across(.cols = dplyr::ends_with("taxid"), # adicionado para testes
                          # ~ as.character(.)))
 
