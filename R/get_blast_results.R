@@ -84,10 +84,10 @@ get_blast_results <- function(asv,
       ),
       trim_ws = TRUE,
       comment = "#"
-    ) %>%
-    dplyr::mutate(dplyr::across(.cols = dplyr::ends_with("taxid"), # adicionado para testes
-                         ~ as.character(.)
-    ))
+      ) |>
+    dplyr::mutate("staxid" = as.character(staxid)) # adicionado para testes
+    # dplyr::mutate(dplyr::across(.cols = dplyr::ends_with("taxid"), # adicionado para testes
+                         # ~ as.character(.)))
 
   blast_table$`subject header` <- purrr::map_chr(
     .x = blast_table$subject,
