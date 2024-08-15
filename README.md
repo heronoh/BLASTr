@@ -60,7 +60,9 @@ The main place to look for help and documentation is <heronoh.github.io/BLASTr/>
 
 ### Obtaining NCBI complete databases
 
-Identifications can be performed using NCBI complete databases, such as NT, which are readily available to download and update using the *BLAST+* _script_.
+Identifications can be performed using NCBI complete databases, such as NT, which are readily available to download and update.
+This can be performed using the *BLAST+* _script_ [update_blastdb.pl](https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/lxr/source/src/app/blast/update_blastdb.pl).
+
 ``` bash
 #set a folder to download the desired database (for example, the nt database)
 BLAST_DB_PATH="/data/database/blast/nt"
@@ -71,16 +73,38 @@ mkdir -p  "${BLAST_DB_PATH}"
 #enter dir
 cd "${BLAST_DB_PATH}"
 
-#optional: use screen or tmux to emulate a terminal. The downloads usually takes long.
+#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.
 #          tmux: https://tmuxcheatsheet.com/
 #          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
 
 #user BLAST+ executable to download/update db files
-update_blastdb --passive --decompress nr
+update_blastdb --passive --decompress nt
 
 #set permissions to enable usage by all users
 chown root "${BLAST_DB_PATH}"/*
 chmod 755 "${BLAST_DB_PATH}"/*
+```
+
+Another option is to download it directly fom the [NCBI ftp site](https://ftp.ncbi.nlm.nih.gov/blast/db/). It can be parallelized and is the best choice when you want to download only the new files.
+
+``` bash
+#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.
+#          tmux: https://tmuxcheatsheet.com/
+#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
+
+# download volumes and md5 check files 
+seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz -t 0 --show-progress
+seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 -t 0 --show-progress
+     # where 000 is the first volume and 150, the last (up to now).
+     
+ls *5 | parallel md5sum -c {} >> check.txt
+sort check.txt > check_sort.txt
+
+ls *tar.gz | parallel tar -xvzf {} 
+
+#
+
+
 ```
 
 ### Formating a custom database
