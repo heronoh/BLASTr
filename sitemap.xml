@@ -1,48 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/404.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/index.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/BLASTr-package.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/check_bin.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/get_blast_results.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/get_fasta_header.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/install_blast_conda.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/parallel_blast.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/parse_fasta.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/run_blast.html</loc>
-  </url>
-  <url>
-    <loc>https://heronoh.github.io/BLASTr/reference/shell_exec.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://heronoh.github.io/BLASTr/404.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/LICENSE-text.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/LICENSE.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/authors.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/index.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/BLASTr-package.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/check_bin.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/get_blast_results.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/get_fasta_header.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/index.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/install_blast_conda.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/parallel_blast.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/parse_fasta.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/run_blast.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/shell_exec.html</loc></url>
 </urlset>
+
