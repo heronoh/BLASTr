@@ -32,10 +32,21 @@
 #'
 #'
 
+get_tax_by_taxID <- function(organisms_taxIDs,
+                             parse_result = TRUE, # default value for parse_result
+                             total_cores = 1) {
+  `%>%` <- dplyr::`%>%`
+
+  # Set up parallel plan
+  future::plan(multisession, workers = total_cores)
+
+
+
+
 # Helper function to process one organism_taxID
-get_tax_by_taxID <- function(organism_taxID,
-                             parse_result = TRUE,
-                             total_cores=1) {
+get_single_tax_by_taxID <- function(organism_taxID,
+                                    parse_result = TRUE,
+                                    total_cores=1) {
   `%>%` <- dplyr::`%>%`
 
 
@@ -52,17 +63,28 @@ get_tax_by_taxID <- function(organism_taxID,
   print(entrez_cmd)
 
   organism_xml <- BLASTr:::shell_exec(cmd = entrez_cmd)
-
   # organism_xml <- system2(command = "efetch",args = c("-db", "taxonomy", "-id", organism_taxID, "-format", "xml", "-json"))
 
   if (length(organism_xml$stdout) == 0) {
 
     message(paste0("------------------------> unable to retrieve taxonomy for: ",organism_taxID))
 
-    return(tibble::tibble())
-    }else{
+    return(tibble::tibble("Sci_name" = NA,
+                          "query_taxID" = NA,
+                          "Superkingdom (NCBI)" = NA,
+                          "Kingdom (NCBI)" = NA,
+                          "Phylum (NCBI)" = NA,
+                          "Subphylum (NCBI)" = NA,
+                          "Class (NCBI)" = NA,
+                          "Subclass (NCBI)" = NA,
+                          "Order (NCBI)" = NA,
+                          "Suborder (NCBI)" = NA,
+                          "Family (NCBI)" = NA,
+                          "Subfamily (NCBI)" = NA,
+                          "Genus (NCBI)" = NA))
+  }else{
 
-    if (jsonlite::validate(organism_xml$stdout)){
+    if (jsonlite::validate(organism_xml$stdout)) {
       organism_df <- organism_xml$stdout %>%
         jsonlite::fromJSON()
 
@@ -140,6 +162,15 @@ get_tax_by_taxID <- function(organism_taxID,
 
 
 
+}
+# Apply the function in parallel using future_map_dfr
+results <- furrr::future_map_dfr(organisms_taxIDs,
+                                 get_single_tax_by_taxID,
+
+                                 .progress = TRUE,
+                                 .options = furrr::furrr_options(seed = NULL))
+
+return(results)
 }
 
 
