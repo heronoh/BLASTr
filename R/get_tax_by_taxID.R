@@ -5,17 +5,10 @@
 #' @param taxIDs Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
 #' @param parse_result Should the taxonomy be returned as the _efetch_ returns it or should it be parsed into a tibble.
 #' @param total_cores Number of threads to use. Defaults to 1.
+#' @param show_command Should the efetch command on command line be printed for debugging. Defaults to TRUE.
+
 #'
-#' @param perc_id Lowest identity percentage cutoff.
-#'   Passed on to BLAST+ _-perc_identity_.
-#' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff.
-#' Passed on to BLAST+ _-qcov_hsp_perc_.
-#' @param num_alignments Number of alignments to retrieve from BLAST. Max = 6.
-#' @param blast_type One of the available BLAST+ search engines,
-#'   one of: "blastn", "blastp", "blastx", "tblastn", "tblastx".
-#'
-#' @return Unformatted BLAST results.
-#'   For results formatted as tibble, please use `BLASTr::get_blast_results()`
+#' @return A tibble with all the taxonomic ranks for the corresponding taxID.
 #'
 #' @examples
 #' blast_res <- BLASTr::run_blast(
@@ -29,13 +22,10 @@
 #' )
 #'
 #' @export
-#'
-#'
-
-# Helper function to process one organism_taxID
 get_tax_by_taxID <- function(organism_taxID,
                              parse_result = TRUE,
-                             total_cores=1) {
+                             total_cores=1,
+                             show_command=TRUE) {
   `%>%` <- dplyr::`%>%`
 
 
@@ -49,8 +39,16 @@ get_tax_by_taxID <- function(organism_taxID,
   #Generate entrez _efetch_ command
   entrez_cmd <- paste0("efetch -db taxonomy -id ${organism_taxID_parsed} -format xml -json")
 
-  print(entrez_cmd)
+  if (base::isTRUE(show_command)) {
 
+    base::print(glue::glue(
+      base::gsub(x = entrez_cmd,
+                 pattern = "\\$",
+                 replacement = "")))
+
+  }
+
+  # run entrez command
   organism_xml <- BLASTr:::shell_exec(cmd = entrez_cmd)
 
   # organism_xml <- system2(command = "efetch",args = c("-db", "taxonomy", "-id", organism_taxID, "-format", "xml", "-json"))

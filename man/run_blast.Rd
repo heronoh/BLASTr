@@ -15,6 +15,8 @@ run_blast(
 )
 }
 \arguments{
+\item{asv}{Vector of sequences to be BLASTed.}
+
 \item{db_path}{Complete path do formatted BLAST database.}
 
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
@@ -30,8 +32,6 @@ Passed on to BLAST+ \emph{-perc_identity}.}
 
 \item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.
 Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
-
-\item{asvs}{Vector of sequences to be BLASTed.}
 }
 \value{
 Unformatted BLAST results.

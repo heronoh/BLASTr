@@ -3,7 +3,7 @@
 #' @description Run BLAST for a single sequence and return raw results.
 #'   For formated results, use the function *BLASTr::getblastn_results()*
 #'
-#' @param asvs Vector of sequences to be BLASTed.
+#' @param asv Vector of sequences to be BLASTed.
 #' @param db_path Complete path do formatted BLAST database.
 #' @param num_threads Number of threads to run BLAST on.
 #'   Passed on to BLAST+ argument _-num_threads_.

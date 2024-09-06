@@ -15,6 +15,8 @@ get_blast_results(
 )
 }
 \arguments{
+\item{asv}{Vector of sequences to be BLASTed.}
+
 \item{db_path}{Complete path do formatted BLAST database.}
 
 \item{num_threads}{Number of threads to run BLAST on.
@@ -32,7 +34,7 @@ Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
 }
 \value{
-A \code{tibble} with the results of BLASTn.
+A \code{tibble} with the results of BLASTn for each sequence.
 }
 \description{
 Retrieve BLAST results from a given ASV

@@ -1,7 +1,6 @@
-#' @title Get taxonomy ranks using _NCBI Taxonomy Tax ID_
+#' @title Get taxonomy ranks for a list of _NCBI Taxonomy Tax ID_
 #'
-#' @description Recover complete taxonomy for a given _NCBI Taxonomy Tax ID_
-#'
+#' @description Get taxonomy ranks for a list of _NCBI Taxonomy Tax ID_ in parallel.
 #' @param taxIDs Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
 #' @param parse_result Should the taxonomy be returned as the _efetch_ returns it or should it be parsed into a tibble.
 #' @param total_cores Number of threads to use. Defaults to 1.
@@ -32,7 +31,7 @@
 #'
 #'
 
-get_tax_by_taxID <- function(organisms_taxIDs,
+parallel_get_tax <- function(organisms_taxIDs,
                              parse_result = TRUE, # default value for parse_result
                              total_cores = 1) {
   `%>%` <- dplyr::`%>%`

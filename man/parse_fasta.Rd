@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse_fasta.R
 \name{parse_fasta}
 \alias{parse_fasta}
-\title{Extract Sequences From FASTA file}
+\title{Parsing fasta file to sequences only}
 \usage{
 parse_fasta(file_path)
 }
@@ -13,5 +13,5 @@ parse_fasta(file_path)
 vector containing the sequences.
 }
 \description{
-Extract nucleotide or aminoacid sequences from FASTA file.
+Extract sequences From FASTA file
 }
