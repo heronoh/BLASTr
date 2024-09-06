@@ -56,20 +56,16 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-asvs">asvs<a class="anchor" aria-label="anchor" href="#arg-asvs"></a></dt>
-<dd><p>Vector of sequences to be BLASTed.</p></dd>
-
-
-<dt id="arg-db-path">db_path<a class="anchor" aria-label="anchor" href="#arg-db-path"></a></dt>
+<dl><dt id="arg-db-path">db_path<a class="anchor" aria-label="anchor" href="#arg-db-path"></a></dt>
 <dd><p>Complete path do formatted BLAST database.</p></dd>
 
 
 <dt id="arg-out-file">out_file<a class="anchor" aria-label="anchor" href="#arg-out-file"></a></dt>
-<dd><p>Complete path to output file</p></dd>
+<dd><p>Complete path to output .csv file on an existing folder.</p></dd>
 
 
 <dt id="arg-out-rds">out_RDS<a class="anchor" aria-label="anchor" href="#arg-out-rds"></a></dt>
-<dd><p>Complete path to output RDS file.</p></dd>
+<dd><p>Complete path to output RDS file on an existing folder.</p></dd>
 
 
 <dt id="arg-num-threads">num_threads<a class="anchor" aria-label="anchor" href="#arg-num-threads"></a></dt>
@@ -107,17 +103,19 @@ Passed on to BLAST+ <em>-qcov_hsp_perc</em>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">blast_res</span> <span class="op">&lt;-</span> <span class="fu">BLASTr</span><span class="fu">::</span><span class="fu">parallel_blast</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  asvs <span class="op">=</span> <span class="va">ASVs_test</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  db_path <span class="op">=</span> <span class="st">"/data/databases/nt/nt"</span>,</span></span>
-<span class="r-in"><span>  out_file <span class="op">=</span> <span class="st">"~/blast_out.csv"</span>,</span></span>
-<span class="r-in"><span>  out_RDS <span class="op">=</span> <span class="st">"~/blast_out.RDS"</span>,</span></span>
-<span class="r-in"><span>  total_cores <span class="op">=</span> <span class="fl">77</span>,</span></span>
-<span class="r-in"><span>  perc_id <span class="op">=</span> <span class="fl">80</span>,</span></span>
-<span class="r-in"><span>  num_thread <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,</span></span>
-<span class="r-in"><span>  num_alignments <span class="op">=</span> <span class="fl">4</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in checkNumberOfLocalWorkers(workers):</span> Attempting to set up 77 localhost parallel workers with only 4 CPU cores available for this R process (per ‘system’), which could result in a 1925% load. The hard limit is set to 300%. Overusing the CPUs has negative impact on the current R process, but also on all other processes of yours and others running on the same machine. See help("parallelly.options", package = "parallelly") for how to override the soft and hard limits</span>
+<span class="r-in"><span>  asvs <span class="op">=</span> <span class="va">ASVs_test</span>,                       <span class="co">#vector of sequences to be searched</span></span></span>
+<span class="r-in"><span>  db_path <span class="op">=</span> <span class="st">"/data/databases/nt/nt"</span>,      <span class="co">#path to a formated blast database</span></span></span>
+<span class="r-in"><span>  out_file <span class="op">=</span> <span class="cn">NULL</span>,                        <span class="co">#path to a .csv file to be created with results (on an existing folder)</span></span></span>
+<span class="r-in"><span>  out_RDS <span class="op">=</span> <span class="cn">NULL</span>,                         <span class="co">#path to a .RDS file to be created with results (on an existing folder)</span></span></span>
+<span class="r-in"><span>  perc_id <span class="op">=</span> <span class="fl">80</span>,                           <span class="co">#minimum identity percentual cutoff</span></span></span>
+<span class="r-in"><span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,                     <span class="co">#minimum percentual coverage of query sequence by subject sequence cutoff</span></span></span>
+<span class="r-in"><span>  num_threads <span class="op">=</span> <span class="fl">1</span>,                        <span class="co">#number of threads/cores to run each blast on</span></span></span>
+<span class="r-in"><span>  total_cores <span class="op">=</span> <span class="fl">8</span>,                        <span class="co">#number of tota threads/cores to alocate all blast searches</span></span></span>
+<span class="r-in"><span>  num_alignments <span class="op">=</span> <span class="fl">3</span>,                     <span class="co">#maximum number of alignments/matches to retrieve results for each query sequence</span></span></span>
+<span class="r-in"><span>  blast_type <span class="op">=</span> <span class="st">"blastn"</span>                   <span class="co">#blast search engine to use</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Careful, you are setting up 8 localhost parallel workers with only 4 CPU cores available for this R process (per ‘system’), which could result in a 200% load. The soft limit is set to 100%. Overusing the CPUs has negative impact on the current R process, but also on all other processes of yours and others running on the same machine. See help("parallelly.options", package = "parallelly") for how to override the soft and hard limits</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'ASVs_test' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

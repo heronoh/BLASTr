@@ -53,7 +53,11 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-db-path">db_path<a class="anchor" aria-label="anchor" href="#arg-db-path"></a></dt>
+<dl><dt id="arg-asv">asv<a class="anchor" aria-label="anchor" href="#arg-asv"></a></dt>
+<dd><p>Vector of sequences to be BLASTed.</p></dd>
+
+
+<dt id="arg-db-path">db_path<a class="anchor" aria-label="anchor" href="#arg-db-path"></a></dt>
 <dd><p>Complete path do formatted BLAST database.</p></dd>
 
 
@@ -83,7 +87,7 @@ Passed on to BLAST+ <em>-qcov_hsp_perc</em>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>tibble</code> with the results of BLASTn.</p>
+    <p>A <code>tibble</code> with the results of BLASTn for each sequence.</p>
     </div>
 
     <div class="section level2">
