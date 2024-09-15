@@ -61,7 +61,7 @@ get_single_tax_by_taxID <- function(organism_taxID,
 
   print(entrez_cmd)
 
-  organism_xml <- BLASTr:::shell_exec(cmd = entrez_cmd)
+  organism_xml <- shell_exec(cmd = entrez_cmd)
   # organism_xml <- system2(command = "efetch",args = c("-db", "taxonomy", "-id", organism_taxID, "-format", "xml", "-json"))
 
   if (length(organism_xml$stdout) == 0) {
