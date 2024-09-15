@@ -1,6 +1,6 @@
 Package: BLASTr
 Title: Parallel taxonomic classification of metabarcoding sequences
-Version: 0.0.1
+Version: 0.1.0
 Authors@R: c(
     person("Queiroz", "Lucio Rezende", , "luciorqueiroz@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-6090-1834")),
@@ -20,17 +20,17 @@ Imports:
     cli,
     dplyr,
     fs,
+    furrr,
+    future,
     glue,
     jsonlite,
+    processx,
     purrr,
     readr,
     rlang,
     tibble,
     tidyr
 Suggests:
-    furrr,
-    future,
-    processx,
     testthat (>= 3.0.0),
     tictoc,
     withr
