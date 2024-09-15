@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLASTr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,59 +45,23 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-parse-result">parse_result<a class="anchor" aria-label="anchor" href="#arg-parse-result"></a></dt>
+<dl><dt id="arg-organisms-taxids">organisms_taxIDs<a class="anchor" aria-label="anchor" href="#arg-organisms-taxids"></a></dt>
+<dd><p>Vector of <em>NCBI Taxonomy Tax ID</em> to retrieve taxonomy for.</p></dd>
+
+
+<dt id="arg-parse-result">parse_result<a class="anchor" aria-label="anchor" href="#arg-parse-result"></a></dt>
 <dd><p>Should the taxonomy be returned as the <em>efetch</em> returns it or should it be parsed into a tibble.</p></dd>
 
 
 <dt id="arg-total-cores">total_cores<a class="anchor" aria-label="anchor" href="#arg-total-cores"></a></dt>
 <dd><p>Number of threads to use. Defaults to 1.</p></dd>
 
-
-<dt id="arg-taxids">taxIDs<a class="anchor" aria-label="anchor" href="#arg-taxids"></a></dt>
-<dd><p>Vector of <em>NCBI Taxonomy Tax ID</em> to retrieve taxonomy for.</p></dd>
-
-
-<dt id="arg-perc-id">perc_id<a class="anchor" aria-label="anchor" href="#arg-perc-id"></a></dt>
-<dd><p>Lowest identity percentage cutoff.
-Passed on to BLAST+ <em>-perc_identity</em>.</p></dd>
-
-
-<dt id="arg-perc-qcov-hsp">perc_qcov_hsp<a class="anchor" aria-label="anchor" href="#arg-perc-qcov-hsp"></a></dt>
-<dd><p>Lowest query coverage per HSP percentage cutoff.
-Passed on to BLAST+ <em>-qcov_hsp_perc</em>.</p></dd>
-
-
-<dt id="arg-num-alignments">num_alignments<a class="anchor" aria-label="anchor" href="#arg-num-alignments"></a></dt>
-<dd><p>Number of alignments to retrieve from BLAST. Max = 6.</p></dd>
-
-
-<dt id="arg-blast-type">blast_type<a class="anchor" aria-label="anchor" href="#arg-blast-type"></a></dt>
-<dd><p>One of the available BLAST+ search engines,
-one of: "blastn", "blastp", "blastx", "tblastn", "tblastx".</p></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Unformatted BLAST results.
-For results formatted as tibble, please use <code><a href="get_blast_results.html">BLASTr::get_blast_results()</a></code></p>
+    <p>Vector of Tax Ids.</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">blast_res</span> <span class="op">&lt;-</span> <span class="fu">BLASTr</span><span class="fu">::</span><span class="fu"><a href="run_blast.html">run_blast</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  asv <span class="op">=</span> <span class="st">"CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG</span></span></span>
-<span class="r-in"><span><span class="st">    AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"</span>,</span></span>
-<span class="r-in"><span>  db_path <span class="op">=</span> <span class="st">"/data/databases/nt/nt"</span>,</span></span>
-<span class="r-in"><span>  perc_id <span class="op">=</span> <span class="fl">80</span>,</span></span>
-<span class="r-in"><span>  num_thread <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,</span></span>
-<span class="r-in"><span>  num_alignments <span class="op">=</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in BLASTr:::check_bin(blast_type):</span> <span style="color: #BB0000;">✖</span> <span style="color: #0000BB;">blastn</span> is not available on PATH.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please install it and try again.</span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
