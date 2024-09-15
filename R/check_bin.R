@@ -11,12 +11,13 @@
 
 check_bin <- function(cmd) {
   cmd_bin <- Sys.which(cmd)
-  if (isTRUE(cmd_bin == "")) {
+  if (isFALSE(nzchar(cmd_bin))) {
     cli::cli_abort(
       message = c(
         "x" = "{.pkg {cmd}} is not available on PATH.",
         "i" = "Please install it and try again."
-      )
+      ),
+      class = "blastr_bin_not_found"
     )
   }
   return(cmd_bin)

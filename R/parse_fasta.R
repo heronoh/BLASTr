@@ -8,14 +8,17 @@
 #'
 #' @export
 parse_fasta <- function(file_path) {
-  fasta_file <- readr::read_lines(file_path)
-  if (!fs::file_exists(file_path)) {
+  # TODO: @luciorq Add check for file read access
+  # + e.g.: `fs::file_access(file_path, mode = "read")`
+  if (isFALSE(fs::file_exists(file_path))) {
     cli::cli_abort(
       c(
-        "{.file file_path} do not exist."
-      )
+        x = "{.file file_path} do not exist."
+      ),
+      class = "blastr_fasta_file_not_readable"
     )
   }
+  fasta_file <- readr::read_lines(file_path)
   seqs <- vector()
   for (line in fasta_file) {
     if (startsWith(line, "#")) {

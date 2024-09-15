@@ -23,7 +23,8 @@ get_fasta_header <- function(id,
   }
   if (is.null(db_path)) {
     cli::cli_abort(
-      message = "No BLAST database provided."
+      message = "No BLAST database provided.",
+      class = "blastr_missing_blast_db"
     )
   }
   blastdbcmd_bin <- check_bin("blastdbcmd")

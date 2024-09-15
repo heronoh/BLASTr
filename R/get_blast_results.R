@@ -53,9 +53,10 @@ get_blast_results <- function(asv,
     num_alignments = num_alignments
   )
   # test blast_res content ----
-  if (blast_res$status != 0) {
+  if (isTRUE(blast_res$status != 0)) {
     cli::cli_abort(
-      message = "{.pkg BLASTr} has not run correctly."
+      message = "{.pkg BLASTr} has not run correctly.",
+      class = "blastr_run_blast_error"
     )
   }
   if (blast_res$stdout == "") {
