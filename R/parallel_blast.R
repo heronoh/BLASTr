@@ -23,12 +23,12 @@
 #'   perc_qcov_hsp = 80, # minimum percentage coverage of query sequence by subject sequence cutoff
 #'   num_threads = 1, # number of threads/cores to run each blast on
 #'   total_cores = 8, # number of total threads/cores to allocate all blast searches
-#'   num_alignments = 3, # maximum number of alignments/matches to retrieve results for each query sequence
+#'   # maximum number of alignments/matches to retrieve results for each query sequence
+#'   num_alignments = 3,
 #'   blast_type = "blastn" # blast search engine to use
 #' )
 #' }
 #' @export
-
 parallel_blast <- function(asvs,
                            db_path,
                            out_file,
