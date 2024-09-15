@@ -1,8 +1,11 @@
 
 # BLASTr
 
+
+An R package for parallel taxonomic classification of metabarcoding sequences.
+
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)
+<!--[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)-->
 <!-- badges: end -->
 
 The BLASTr package is a powerful tool for performing BLAST operations from within the R environment.
@@ -54,8 +57,6 @@ remotes::install_github("heronoh/BLASTr")
 
 The main place to look for help and documentation is <heronoh.github.io/BLASTr/>
 
-
-
 ## Database configuration
 
 ### Obtaining NCBI complete databases
@@ -101,15 +102,11 @@ ls *5 | parallel md5sum -c {} >> check.txt
 sort check.txt > check_sort.txt
 
 ls *tar.gz | parallel tar -xvzf {} 
-
-#
-
-
 ```
 
 ### Formating a custom database
 
-In case you prefer, any fasta file can be formated as a BLAST+ database, using the *BLAST+* _script_ *_makeblastdb_*.
+In case you prefer, any FASTA file can be formated as a BLAST+ database, using the *BLAST+* _script_ *_makeblastdb_*.
 
 ``` bash
 #set the path to your fasta file (replace the example below)

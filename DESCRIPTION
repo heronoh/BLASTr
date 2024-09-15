@@ -1,5 +1,5 @@
 Package: BLASTr
-Title: Run BLAST from R
+Title: Parallel taxonomic classification of metabarcoding sequences
 Version: 0.0.0.9003
 Authors@R: c(
     person("Queiroz", "Lucio Rezende", , "luciorqueiroz@gmail.com", role = "aut",
@@ -7,9 +7,12 @@ Authors@R: c(
     person("Heron", "Hilario", , "heronoh@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2548-1053"))
   )
-Description: Run BLAST from R, with nice standards for ASV search.  This
-    package contains nice set of functions for identifying sequences from
-    high throughput metagenomic experiments.
+Description: Seamlessly run BLAST searches within R, tailored
+    for ASV (Amplicon Sequence Variant) analysis.
+    This package offers a robust set of functions designed to
+    efficiently identify and process sequences from high-throughput
+    metagenomicmetagenomic experiments,
+    following best practices for sequence data analysis.
 License: MIT + file LICENSE
 URL: https://github.com/heronoh/BLASTr, https://heronoh.github.io/BLASTr/
 BugReports: https://github.com/heronoh/BLASTr/issues
@@ -32,4 +35,4 @@ Suggests:
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
