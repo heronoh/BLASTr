@@ -7,6 +7,7 @@
 #' @return A `tibble` with the results of BLASTn for each sequence.
 #'
 #' @examples
+#' \dontrun{
 #' blast_res <- BLASTr::get_blast_results(
 #'   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTA
 #'   CTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
@@ -16,7 +17,7 @@
 #'   perc_qcov_hsp = 80,
 #'   num_alignments = 2
 #' )
-#'
+#' }
 #' @export
 get_blast_results <- function(asv,
                               db_path,
@@ -36,6 +37,9 @@ get_blast_results <- function(asv,
   #     message = "No BLAST database provided."
   #   )
   # }
+
+  .data <- rlang::.data
+
   if (is.null(num_threads)) {
     num_threads <- getOption(
       "BLASTr.num_threads",
@@ -53,9 +57,10 @@ get_blast_results <- function(asv,
     num_alignments = num_alignments
   )
   # test blast_res content ----
-  if (blast_res$status != 0) {
+  if (isTRUE(blast_res$status != 0)) {
     cli::cli_abort(
-      message = "{.pkg BLASTr} has not run correctly."
+      message = "{.pkg BLASTr} has not run correctly.",
+      class = "blastr_run_blast_error"
     )
   }
   if (blast_res$stdout == "") {
@@ -80,16 +85,16 @@ get_blast_results <- function(asv,
         "e-value",
         "bitscore",
         "qcovhsp",
-        "staxid",
-        show_col_types = FALSE
+        "staxid"
       ),
+      show_col_types = FALSE,
       trim_ws = TRUE,
       comment = "#"
-      ) |>
-    dplyr::mutate("staxid" = as.character(staxid)) # adicionado para testes
+    ) |>
+    dplyr::mutate("staxid" = as.character(.data$staxid)) # adicionado para testes
 
-    # dplyr::mutate(dplyr::across(.cols = dplyr::ends_with("taxid"), # adicionado para testes
-                         # ~ as.character(.)))
+  # dplyr::mutate(dplyr::across(.cols = dplyr::ends_with("taxid"), # adicionado para testes
+  # ~ as.character(.)))
 
   blast_table$`subject header` <- purrr::map_chr(
     .x = blast_table$subject,

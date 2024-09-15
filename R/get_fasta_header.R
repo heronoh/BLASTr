@@ -9,10 +9,10 @@
 #' @return Complete identifier for the SubjectID as is on the database.
 #'
 #' @examples
+#' \dontrun{
 #' BLASTr::get_fasta_header(id = "AP011979.1", db_path = "/data/databases/nt/nt")
-#'
+#' }
 #' @export
-
 get_fasta_header <- function(id,
                              db_path) {
   if (is.null(db_path)) {
@@ -23,7 +23,8 @@ get_fasta_header <- function(id,
   }
   if (is.null(db_path)) {
     cli::cli_abort(
-      message = "No BLAST database provided."
+      message = "No BLAST database provided.",
+      class = "blastr_missing_blast_db"
     )
   }
   blastdbcmd_bin <- check_bin("blastdbcmd")

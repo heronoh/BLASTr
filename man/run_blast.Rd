@@ -42,6 +42,7 @@ Run BLAST for a single sequence and return raw results.
 For formated results, use the function \emph{BLASTr::getblastn_results()}
 }
 \examples{
+\dontrun{
 blast_res <- BLASTr::run_blast(
   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
     AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
@@ -51,5 +52,6 @@ blast_res <- BLASTr::run_blast(
   perc_qcov_hsp = 80,
   num_alignments = 2
 )
+}
 
 }

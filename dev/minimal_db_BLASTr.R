@@ -68,7 +68,7 @@ BLASTr_tbl <- teste20 %>%
       `1_subject start` > `1_subject end`, `1_subject start`, `1_subject end`
     )
   ) %>%
-  filter(!is.na(`1_subject header`)) %>%
+  filter(!is.na(`1_subject header`)) |>
   unique()
 
 
@@ -103,7 +103,7 @@ for (seq in 1:nrow(BLASTr_tbl)) {
   )
 }
 
-dna_BLASTr %>% seqlengths()
+dna_BLASTr |> seqlengths()
 # save shortest DB into fasta
 
 Biostrings::writeXStringSet(

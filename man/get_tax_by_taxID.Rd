@@ -12,29 +12,17 @@ get_tax_by_taxID(
 )
 }
 \arguments{
+\item{organism_taxID}{Vector of \emph{NCBI Taxonomy Tax ID} to retrieve taxonomy for.}
+
 \item{parse_result}{Should the taxonomy be returned as the \emph{efetch} returns it or should it be parsed into a tibble.}
 
 \item{total_cores}{Number of threads to use. Defaults to 1.}
 
 \item{show_command}{Should the efetch command on command line be printed for debugging. Defaults to TRUE.}
-
-\item{taxIDs}{Vector of \emph{NCBI Taxonomy Tax ID} to retrieve taxonomy for.}
 }
 \value{
 A tibble with all the taxonomic ranks for the corresponding taxID.
 }
 \description{
 Recover complete taxonomy for a given \emph{NCBI Taxonomy Tax ID}
-}
-\examples{
-blast_res <- BLASTr::run_blast(
-  asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
-    AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-  db_path = "/data/databases/nt/nt",
-  perc_id = 80,
-  num_thread = 1,
-  perc_qcov_hsp = 80,
-  num_alignments = 2
-)
-
 }

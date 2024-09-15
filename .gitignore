@@ -4,3 +4,4 @@ docs
 *.RData
 *.Rhistory
 *.gz
+inst/extdata/*.fasta.n*

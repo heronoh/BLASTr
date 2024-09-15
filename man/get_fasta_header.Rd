@@ -18,6 +18,7 @@ Complete identifier for the SubjectID as is on the database.
 Retrieve complete sequence header from BLAST DB based on SubjectIDs
 }
 \examples{
+\dontrun{
 BLASTr::get_fasta_header(id = "AP011979.1", db_path = "/data/databases/nt/nt")
-
+}
 }

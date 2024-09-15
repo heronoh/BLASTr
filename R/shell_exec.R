@@ -3,7 +3,8 @@
 shell_exec <- function(cmd, .envir = parent.frame()) {
   if (!requireNamespace("processx", quietly = TRUE)) {
     cli::cli_abort(
-      message = "Package {.pkg processx} package is not installed."
+      message = "Package {.pkg processx} package is not installed.",
+      class = "blastr_processx_not_installed"
     )
   }
   bash_bin <- check_bin("bash")

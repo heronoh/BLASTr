@@ -7,3 +7,4 @@
 ^dev$
 ^docs$
 ^pkgdown$
+^inst/extdata/.*\.fasta\.n..$

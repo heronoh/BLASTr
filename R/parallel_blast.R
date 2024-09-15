@@ -4,29 +4,31 @@
 #'
 #' @inheritParams run_blast
 #'
+#' @param asvs Character vector with sequences
 #' @param out_file Complete path to output .csv file on an existing folder.
 #' @param out_RDS Complete path to output RDS file on an existing folder.
-#' @param total_cores Total available cores to parallelize BLAST. Chech your max with *future::availableCores()*
+#' @param total_cores Total available cores to run BLAST in parallel. Check your max with *future::availableCores()*
 #' @param blast_type BLAST+ executable to be used on search.
 #'
 #' @return A tibble with the BLAST tabular output.
 #'
 #' @examples
+#' \dontrun{
 #' blast_res <- BLASTr::parallel_blast(
-#'   asvs = ASVs_test,                       #vector of sequences to be searched
-#'   db_path = "/data/databases/nt/nt",      #path to a formated blast database
-#'   out_file = NULL,                        #path to a .csv file to be created with results (on an existing folder)
-#'   out_RDS = NULL,                         #path to a .RDS file to be created with results (on an existing folder)
-#'   perc_id = 80,                           #minimum identity percentual cutoff
-#'   perc_qcov_hsp = 80,                     #minimum percentual coverage of query sequence by subject sequence cutoff
-#'   num_threads = 1,                        #number of threads/cores to run each blast on
-#'   total_cores = 8,                        #number of tota threads/cores to alocate all blast searches
-#'   num_alignments = 3,                     #maximum number of alignments/matches to retrieve results for each query sequence
-#'   blast_type = "blastn"                   #blast search engine to use
-#'   )
-#'
+#'   asvs = ASVs_test, # vector of sequences to be searched
+#'   db_path = "/data/databases/nt/nt", # path to a formatted blast database
+#'   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
+#'   out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)
+#'   perc_id = 80, # minimum identity percentage cutoff
+#'   perc_qcov_hsp = 80, # minimum percentage coverage of query sequence by subject sequence cutoff
+#'   num_threads = 1, # number of threads/cores to run each blast on
+#'   total_cores = 8, # number of total threads/cores to allocate all blast searches
+#'   # maximum number of alignments/matches to retrieve results for each query sequence
+#'   num_alignments = 3,
+#'   blast_type = "blastn" # blast search engine to use
+#' )
+#' }
 #' @export
-
 parallel_blast <- function(asvs,
                            db_path,
                            out_file,
