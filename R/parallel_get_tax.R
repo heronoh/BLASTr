@@ -1,20 +1,11 @@
 #' @title Get taxonomy ranks for a list of _NCBI Taxonomy Tax ID_
 #'
 #' @description Get taxonomy ranks for a list of _NCBI Taxonomy Tax ID_ in parallel.
-#' @param taxIDs Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
+#' @param organisms_taxIDs Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
 #' @param parse_result Should the taxonomy be returned as the _efetch_ returns it or should it be parsed into a tibble.
 #' @param total_cores Number of threads to use. Defaults to 1.
 #'
-#' @param perc_id Lowest identity percentage cutoff.
-#'   Passed on to BLAST+ _-perc_identity_.
-#' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff.
-#' Passed on to BLAST+ _-qcov_hsp_perc_.
-#' @param num_alignments Number of alignments to retrieve from BLAST. Max = 6.
-#' @param blast_type One of the available BLAST+ search engines,
-#'   one of: "blastn", "blastp", "blastx", "tblastn", "tblastx".
-#'
-#' @return Unformatted BLAST results.
-#'   For results formatted as tibble, please use `BLASTr::get_blast_results()`
+#' @return Vector of Tax Ids.
 #'
 #' @export
 parallel_get_tax <- function(organisms_taxIDs,
@@ -34,9 +25,6 @@ parallel_get_tax <- function(organisms_taxIDs,
                                       total_cores = 1) {
     `%>%` <- dplyr::`%>%`
     .data <- rlang::.data
-
-
-
 
     # This space ensures the taxID won't have it first digit chopped of
     organism_taxID_parsed <- paste0(" ", organism_taxID)

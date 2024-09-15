@@ -2,7 +2,7 @@
 #'
 #' @description Recover complete taxonomy for a given _NCBI Taxonomy Tax ID_
 #'
-#' @param taxIDs Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
+#' @param organism_taxID Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
 #' @param parse_result Should the taxonomy be returned as the _efetch_ returns it or should it be parsed into a tibble.
 #' @param total_cores Number of threads to use. Defaults to 1.
 #' @param show_command Should the efetch command on command line be printed for debugging. Defaults to TRUE.
