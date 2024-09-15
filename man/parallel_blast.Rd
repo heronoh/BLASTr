@@ -46,6 +46,7 @@ A tibble with the BLAST tabular output.
 Run parallel BLAST for set of sequences
 }
 \examples{
+\dontrun{
 blast_res <- BLASTr::parallel_blast(
   asvs = ASVs_test, # vector of sequences to be searched
   db_path = "/data/databases/nt/nt", # path to a formated blast database
@@ -58,5 +59,5 @@ blast_res <- BLASTr::parallel_blast(
   num_alignments = 3, # maximum number of alignments/matches to retrieve results for each query sequence
   blast_type = "blastn" # blast search engine to use
 )
-
+}
 }

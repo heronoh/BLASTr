@@ -26,15 +26,3 @@ A tibble with all the taxonomic ranks for the corresponding taxID.
 \description{
 Recover complete taxonomy for a given \emph{NCBI Taxonomy Tax ID}
 }
-\examples{
-blast_res <- BLASTr::run_blast(
-  asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
-    AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-  db_path = "/data/databases/nt/nt",
-  perc_id = 80,
-  num_thread = 1,
-  perc_qcov_hsp = 80,
-  num_alignments = 2
-)
-
-}

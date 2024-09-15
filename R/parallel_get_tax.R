@@ -16,21 +16,7 @@
 #' @return Unformatted BLAST results.
 #'   For results formatted as tibble, please use `BLASTr::get_blast_results()`
 #'
-#' @examples
-#' blast_res <- BLASTr::run_blast(
-#'   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
-#'     AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-#'   db_path = "/data/databases/nt/nt",
-#'   perc_id = 80,
-#'   num_thread = 1,
-#'   perc_qcov_hsp = 80,
-#'   num_alignments = 2
-#' )
-#'
 #' @export
-#'
-#'
-
 parallel_get_tax <- function(organisms_taxIDs,
                              parse_result = TRUE, # default value for parse_result
                              total_cores = 1) {
@@ -47,6 +33,7 @@ parallel_get_tax <- function(organisms_taxIDs,
                                       parse_result = TRUE,
                                       total_cores = 1) {
     `%>%` <- dplyr::`%>%`
+    .data <- rlang::.data
 
 
 
@@ -114,11 +101,11 @@ parallel_get_tax <- function(organisms_taxIDs,
           )
 
           organism_tbl_parsed <- organism_tbl %>%
-            dplyr::filter(!Rank %in% c("no rank", "clade")) %>%
+            dplyr::filter(!(.data$Rank %in% c("no rank", "clade"))) %>%
             dplyr::select(-c("TaxId")) %>%
             unique() %>%
-            # dplyr::filter(Rank %in% c("kingdom","phylum","class","order","family")) %>%
-            dplyr::filter(Rank %in% c(
+            # dplyr::filter(.data$Rank %in% c("kingdom","phylum","class","order","family")) %>%
+            dplyr::filter(.data$Rank %in% c(
               "superkingdom", "kingdom",
               "phylum", "subphylum", "class",
               "subclass", "order", "suborder",

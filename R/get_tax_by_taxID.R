@@ -10,24 +10,13 @@
 #'
 #' @return A tibble with all the taxonomic ranks for the corresponding taxID.
 #'
-#' @examples
-#' blast_res <- BLASTr::run_blast(
-#'   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
-#'     AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-#'   db_path = "/data/databases/nt/nt",
-#'   perc_id = 80,
-#'   num_thread = 1,
-#'   perc_qcov_hsp = 80,
-#'   num_alignments = 2
-#' )
-#'
 #' @export
 get_tax_by_taxID <- function(organism_taxID,
                              parse_result = TRUE,
                              total_cores = 1,
                              show_command = TRUE) {
   `%>%` <- dplyr::`%>%`
-
+  .data <- rlang::.data
 
 
 
@@ -90,11 +79,11 @@ get_tax_by_taxID <- function(organism_taxID,
         )
 
         organism_tbl_parsed <- organism_tbl %>%
-          dplyr::filter(!Rank %in% c("no rank", "clade")) %>%
+          dplyr::filter(!(.data$Rank %in% c("no rank", "clade"))) %>%
           dplyr::select(-c("TaxId")) %>%
           unique() %>%
           # dplyr::filter(Rank %in% c("kingdom","phylum","class","order","family")) %>%
-          dplyr::filter(Rank %in% c(
+          dplyr::filter(.data$Rank %in% c(
             "superkingdom", "kingdom",
             "phylum", "subphylum", "class",
             "subclass", "order", "suborder",

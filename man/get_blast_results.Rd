@@ -40,6 +40,7 @@ A \code{tibble} with the results of BLASTn for each sequence.
 Retrieve BLAST results from a given ASV
 }
 \examples{
+\dontrun{
 blast_res <- BLASTr::get_blast_results(
   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTA
   CTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
@@ -49,5 +50,5 @@ blast_res <- BLASTr::get_blast_results(
   perc_qcov_hsp = 80,
   num_alignments = 2
 )
-
+}
 }

@@ -9,10 +9,10 @@
 #' @return Complete identifier for the SubjectID as is on the database.
 #'
 #' @examples
+#' \dontrun{
 #' BLASTr::get_fasta_header(id = "AP011979.1", db_path = "/data/databases/nt/nt")
-#'
+#' }
 #' @export
-
 get_fasta_header <- function(id,
                              db_path) {
   if (is.null(db_path)) {

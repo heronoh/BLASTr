@@ -19,6 +19,7 @@
 #'   For results formatted as tibble, please use `BLASTr::get_blast_results()`
 #'
 #' @examples
+#' \dontrun{
 #' blast_res <- BLASTr::run_blast(
 #'   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
 #'     AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
@@ -28,6 +29,7 @@
 #'   perc_qcov_hsp = 80,
 #'   num_alignments = 2
 #' )
+#' }
 #'
 #' @export
 run_blast <- function(asv,
