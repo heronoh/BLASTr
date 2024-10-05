@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLASTr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +42,8 @@
 <span>  <span class="va">organism_taxID</span>,</span>
 <span>  parse_result <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  total_cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  show_command <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  env_name <span class="op">=</span> <span class="st">"entrez-env"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -55,7 +56,7 @@
 
 
 <dt id="arg-parse-result">parse_result<a class="anchor" aria-label="anchor" href="#arg-parse-result"></a></dt>
-<dd><p>Should the taxonomy be returned as the <em>efetch</em> returns it or should it be parsed into a tibble.</p></dd>
+<dd><p>Should the taxonomy be returned as the <code>efetch</code> returns it or should it be parsed into a tibble.</p></dd>
 
 
 <dt id="arg-total-cores">total_cores<a class="anchor" aria-label="anchor" href="#arg-total-cores"></a></dt>
@@ -63,7 +64,7 @@
 
 
 <dt id="arg-show-command">show_command<a class="anchor" aria-label="anchor" href="#arg-show-command"></a></dt>
-<dd><p>Should the efetch command on command line be printed for debugging. Defaults to TRUE.</p></dd>
+<dd><p>Should the <code>efetch</code> command on command line be printed for debugging. Defaults to TRUE.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -80,7 +81,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>
