@@ -14,7 +14,9 @@ parallel_blast(
   total_cores,
   perc_id,
   perc_qcov_hsp,
-  num_alignments
+  num_alignments,
+  verbose = FALSE,
+  env_name = "blast-env"
 )
 }
 \arguments{
