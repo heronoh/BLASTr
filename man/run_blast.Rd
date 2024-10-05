@@ -11,7 +11,9 @@ run_blast(
   num_threads = 1,
   blast_type = "blastn",
   perc_id = 80,
-  perc_qcov_hsp = 80
+  perc_qcov_hsp = 80,
+  verbose = FALSE,
+  env_name = "blast-env"
 )
 }
 \arguments{

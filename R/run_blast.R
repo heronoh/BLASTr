@@ -38,7 +38,9 @@ run_blast <- function(asv,
                       num_threads = 1,
                       blast_type = "blastn",
                       perc_id = 80,
-                      perc_qcov_hsp = 80) {
+                      perc_qcov_hsp = 80,
+                      verbose = FALSE,
+                      env_name = "blast-env") {
   #   if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",
@@ -50,18 +52,37 @@ run_blast <- function(asv,
   #     message = "No BLAST database provided."
   #   )
   # }
-  if (is.null(num_threads)) {
-    num_threads <- getOption(
-      "BLASTr.num_threads",
-      default = 1
-    )
-  }
-  blast_bin <- check_bin(blast_type)
+  # if (is.null(num_threads)) {
+  #   num_threads <- getOption(
+  #     "BLASTr.num_threads",
+  #     default = 1
+  #   )
+  # }
+
+  query_path <- fs::file_temp("blast_input_", ext = "fasta")
+  base::cat(asv, file = query_path)
+
+  # blast_bin <- check_bin(blast_type)
   # rlang::inform(blast_bin)
-  blast_cmd <- "{blast_bin} -db {db_path} -outfmt '6 std qcovhsp staxid' -max_hsps 1 -perc_identity {perc_id} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_threads)} -num_alignments {as.character(num_alignments)}"
-  blast_cmd_in <- paste0("echo -e '>seq1\n{asv}' | ", blast_cmd)
-  blast_res <- shell_exec(
-    cmd = blast_cmd_in
+  blast_res <- condathis::run(
+    blast_type,
+    "-db", db_path,
+    "-query", query_path,
+    "-outfmt", "6 std qcovhsp staxid",
+    "-max_hsps", 1,
+    "-perc_identity", perc_id,
+    "-qcov_hsp_perc", perc_qcov_hsp,
+    "-num_threads", as.character(num_threads),
+    "-num_alignments", as.character(num_alignments),
+    env_name = env_name,
+    verbose = verbose
   )
+
+  # blast_cmd <- "{blast_bin} -db {db_path} -outfmt '6 std qcovhsp staxid' -max_hsps 1 -perc_identity {perc_id} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_threads)} -num_alignments {as.character(num_alignments)}"
+
+  # blast_cmd_in <- paste0("echo -e '>seq1\n{asv}' | ", blast_cmd)
+  # blast_res <- shell_exec(
+  #   cmd = blast_cmd_in
+  # )
   return(blast_res)
 }

@@ -7,9 +7,9 @@ shell_exec <- function(cmd, .envir = parent.frame()) {
       class = "blastr_processx_not_installed"
     )
   }
-  bash_bin <- check_bin("bash")
+  # bash_bin <- check_bin("bash")
   cmd_res <- processx::run(
-    command = bash_bin,
+    command = "bash",
     args = c(
       "-c",
       glue::glue(cmd, .envir = .envir)

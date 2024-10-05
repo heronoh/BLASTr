@@ -25,7 +25,9 @@ get_blast_results <- function(asv,
                               blast_type = "blastn",
                               perc_id = 80,
                               perc_qcov_hsp = 80,
-                              num_alignments = 4) {
+                              num_alignments = 4,
+                              verbose = FALSE,
+                              env_name = "blast-env") {
   #  if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",
@@ -54,7 +56,9 @@ get_blast_results <- function(asv,
     db_path = db_path,
     perc_id = perc_id,
     perc_qcov_hsp = perc_qcov_hsp,
-    num_alignments = num_alignments
+    num_alignments = num_alignments,
+    verbose = verbose,
+    env_name = env_name
   )
   # test blast_res content ----
   if (isTRUE(blast_res$status != 0)) {

@@ -3,9 +3,9 @@
 #' @description Recover complete taxonomy for a given _NCBI Taxonomy Tax ID_
 #'
 #' @param organism_taxID Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
-#' @param parse_result Should the taxonomy be returned as the _efetch_ returns it or should it be parsed into a tibble.
+#' @param parse_result Should the taxonomy be returned as the `efetch` returns it or should it be parsed into a tibble.
 #' @param total_cores Number of threads to use. Defaults to 1.
-#' @param show_command Should the efetch command on command line be printed for debugging. Defaults to TRUE.
+#' @param show_command Should the `efetch` command on command line be printed for debugging. Defaults to TRUE.
 
 #'
 #' @return A tibble with all the taxonomic ranks for the corresponding taxID.
@@ -14,50 +14,51 @@
 get_tax_by_taxID <- function(organism_taxID,
                              parse_result = TRUE,
                              total_cores = 1,
-                             show_command = TRUE) {
+                             verbose = FALSE,
+                             env_name = "entrez-env") {
   `%>%` <- dplyr::`%>%`
   .data <- rlang::.data
 
-
-
   # This space ensures the taxID won't have it first digit chopped of
-  organism_taxID_parsed <- paste0(" ", organism_taxID)
-
-  # print(class(organism_taxID_parsed))
-
-  # Generate entrez _efetch_ command
-  entrez_cmd <- paste0("efetch -db taxonomy -id ${organism_taxID_parsed} -format xml -json")
-
-  if (base::isTRUE(show_command)) {
-    base::print(glue::glue(
-      base::gsub(
-        x = entrez_cmd,
-        pattern = "\\$",
-        replacement = ""
-      )
-    ))
-  }
+  # organism_taxID_parsed <- paste0(" ", organism_taxID)
 
   # run entrez command
-  organism_xml <- shell_exec(cmd = entrez_cmd)
+  organism_xml <- condathis::run(
+    "efetch",
+    "-db", "taxonomy",
+    "-id", organism_taxID,
+    "-format", "xml",
+    env_name = env_name,
+    verbose = verbose
+  )
 
-  # organism_xml <- system2(command = "efetch",args = c("-db", "taxonomy", "-id", organism_taxID, "-format", "xml", "-json"))
+  # entrez_json <- organism_xml$stdout
+  entrez_xml <- organism_xml$stdout |>
+    xml2::read_xml()
+
 
   if (length(organism_xml$stdout) == 0) {
     message(paste0("------------------------> unable to retrieve taxonomy for: ", organism_taxID))
 
     return(tibble::tibble())
   } else {
-    if (jsonlite::validate(organism_xml$stdout)) {
-      organism_df <- organism_xml$stdout %>%
-        jsonlite::fromJSON()
+    if (isTRUE(xml2::xml_length(entrez_xml) == 1)) {
+      organism_list <- entrez_xml |>
+        xml2::as_list()
 
       message(paste0("taxonomy succesfully retrieved for: ", organism_taxID))
 
-      organism_tbl <- organism_df$TaxaSet$Taxon$LineageEx$Taxon %>%
-        dplyr::as_tibble() %>%
-        dplyr::mutate("query_taxID" = organism_taxID) %>%
-        dplyr::mutate("Sci_name" = organism_df$TaxaSet$Taxon$ScientificName)
+      organism_tbl <- organism_list$TaxaSet$Taxon$LineageEx |>
+        unname() |>
+        purrr::map(function(x) {
+          tibble::tibble(
+            Rank = x$Rank[[1]],
+            ScientificName = x$ScientificName[[1]]
+          )
+        }) |>
+        purrr::list_rbind() |>
+        dplyr::mutate("query_taxID" = organism_taxID) |>
+        dplyr::mutate("Sci_name" = unlist(organism_df$TaxaSet$Taxon$ScientificName))
 
       if (isFALSE(parse_result)) {
         return(organism_tbl)
@@ -80,8 +81,8 @@ get_tax_by_taxID <- function(organism_taxID,
 
         organism_tbl_parsed <- organism_tbl %>%
           dplyr::filter(!(.data$Rank %in% c("no rank", "clade"))) %>%
-          dplyr::select(-c("TaxId")) %>%
-          unique() %>%
+          # dplyr::select(-c("taxID")) %>%
+          dplyr::distinct() %>%
           # dplyr::filter(Rank %in% c("kingdom","phylum","class","order","family")) %>%
           dplyr::filter(.data$Rank %in% c(
             "superkingdom", "kingdom",

@@ -11,7 +11,9 @@ get_blast_results(
   blast_type = "blastn",
   perc_id = 80,
   perc_qcov_hsp = 80,
-  num_alignments = 4
+  num_alignments = 4,
+  verbose = FALSE,
+  env_name = "blast-env"
 )
 }
 \arguments{

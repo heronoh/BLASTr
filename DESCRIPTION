@@ -1,6 +1,6 @@
 Package: BLASTr
 Title: Parallel taxonomic classification of metabarcoding sequences
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Queiroz", "Lucio Rezende", , "luciorqueiroz@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-6090-1834")),
@@ -23,13 +23,14 @@ Imports:
     furrr,
     future,
     glue,
-    jsonlite,
+    xml2,
     processx,
     purrr,
     readr,
     rlang,
     tibble,
-    tidyr
+    tidyr,
+    condathis
 Suggests:
     testthat (>= 3.0.0),
     tictoc,
@@ -38,3 +39,5 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Remotes:
+    github::luciorq/condathis

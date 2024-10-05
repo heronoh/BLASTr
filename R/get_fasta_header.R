@@ -14,7 +14,8 @@
 #' }
 #' @export
 get_fasta_header <- function(id,
-                             db_path) {
+                             db_path,
+                             env_name = "blast-env") {
   if (is.null(db_path)) {
     db_path <- getOption(
       "BLASTr.db_path",
@@ -27,10 +28,14 @@ get_fasta_header <- function(id,
       class = "blastr_missing_blast_db"
     )
   }
-  blastdbcmd_bin <- check_bin("blastdbcmd")
-  command <- "{blastdbcmd_bin} -db {db_path} -entry {id} -outfmt %t"
-  result <- shell_exec(
-    cmd = command
+
+  blastdbcmd_res <- condathis::run(
+    "blastdbcmd",
+    "-db", db_path,
+    "-entry", id,
+    "-outfmt", "%t",
+    env_name = env_name
   )
-  return(result$stdout)
+
+  return(blastdbcmd_res$stdout)
 }
