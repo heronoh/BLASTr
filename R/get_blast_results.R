@@ -48,7 +48,6 @@ get_blast_results <- function(asv,
       default = 1
     )
   }
-
   blast_res <- run_blast(
     asv = asv,
     blast_type = blast_type,
@@ -103,7 +102,8 @@ get_blast_results <- function(asv,
   blast_table$`subject header` <- purrr::map_chr(
     .x = blast_table$subject,
     .f = get_fasta_header,
-    db_path = db_path
+    db_path = db_path,
+    verbose = verbose
   )
   blast_table <- dplyr::relocate(
     blast_table,

@@ -70,23 +70,27 @@ parallel_blast <- function(asvs,
       .x = asvs,
       .f = get_blast_results,
       .options = furrr::furrr_options(seed = NULL),
+      .progress = TRUE,
       num_threads = 1,
       blast_type = blast_type,
       num_alignments = num_alignments,
       db_path = db_path,
       perc_id = perc_id,
-      perc_qcov_hsp = perc_qcov_hsp
+      perc_qcov_hsp = perc_qcov_hsp,
+      verbose = verbose
     )
   } else {
     blast_res <- purrr::map_dfr(
       .x = asvs,
       .f = get_blast_results,
+      .progress = TRUE,
       num_threads = 1,
       blast_type = blast_type,
       num_alignments = num_alignments,
       db_path = db_path,
       perc_id = perc_id,
-      perc_qcov_hsp = perc_qcov_hsp
+      perc_qcov_hsp = perc_qcov_hsp,
+      verbose = verbose
     )
   }
   if (!is.na(out_file)) {
