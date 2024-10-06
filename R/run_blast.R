@@ -62,6 +62,8 @@ run_blast <- function(asv,
   query_path <- fs::file_temp("blast_input_", ext = "fasta")
   base::cat(asv, file = query_path)
 
+  check_cmd(blast_type, env_name = env_name)
+
   # blast_bin <- check_bin(blast_type)
   # rlang::inform(blast_bin)
   blast_res <- condathis::run(
