@@ -4,7 +4,7 @@
 \alias{get_fasta_header}
 \title{Get header from SubjectID}
 \usage{
-get_fasta_header(id, db_path, env_name = "blast-env")
+get_fasta_header(id, db_path, env_name = "blast-env", verbose = FALSE)
 }
 \arguments{
 \item{id}{SubjectID from BLAST results or any NCBI Nucleotide identifier.}

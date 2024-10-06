@@ -24,16 +24,16 @@ run_blast(
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
 
 \item{num_threads}{Number of threads to run BLAST on.
-Passed on to BLAST+ argument \emph{-num_threads}.}
+Passed on to BLAST+ argument \code{-num_threads}.}
 
 \item{blast_type}{One of the available BLAST+ search engines,
-one of: "blastn", "blastp", "blastx", "tblastn", "tblastx".}
+one of: \code{c("blastn", "blastp", "blastx", "tblastn", "tblastx")}.}
 
 \item{perc_id}{Lowest identity percentage cutoff.
-Passed on to BLAST+ \emph{-perc_identity}.}
+Passed on to BLAST+ \code{-perc_identity}.}
 
 \item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.
-Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
+Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 }
 \value{
 Unformatted BLAST results.
@@ -41,7 +41,7 @@ For results formatted as tibble, please use \code{BLASTr::get_blast_results()}
 }
 \description{
 Run BLAST for a single sequence and return raw results.
-For formated results, use the function \emph{BLASTr::getblastn_results()}
+For formatted results, use the function \emph{\code{BLASTr::get_blastn_results()}}
 }
 \examples{
 \dontrun{
