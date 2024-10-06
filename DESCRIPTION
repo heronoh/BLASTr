@@ -1,5 +1,5 @@
 Package: BLASTr
-Title: Parallel taxonomic classification of metabarcoding sequences
+Title: Parallel Taxonomic Classification of Metabarcoding Sequences
 Version: 0.1.2
 Authors@R: c(
     person("Lucio", "Queiroz", , "luciorqueiroz@gmail.com", role = "aut",
