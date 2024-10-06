@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Parallel taxonomic classification of metabarcoding sequences • BLASTr</title>
+<title>Parallel Taxonomic Classification of Metabarcoding Sequences • BLASTr</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Parallel taxonomic classification of metabarcoding sequences">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Parallel Taxonomic Classification of Metabarcoding Sequences">
 <meta name="description" content="Seamlessly run BLAST searches within R, tailored for ASV (Amplicon Sequence Variant) analysis. This package offers a robust set of functions designed to efficiently identify and process sequences from high-throughput metagenomicmetagenomic experiments, following best practices for sequence data analysis.">
 <meta property="og:description" content="Seamlessly run BLAST searches within R, tailored for ASV (Amplicon Sequence Variant) analysis. This package offers a robust set of functions designed to efficiently identify and process sequences from high-throughput metagenomicmetagenomic experiments, following best practices for sequence data analysis.">
 </head>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">BLASTr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,7 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -65,24 +66,26 @@
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#chech installation using one of its applicaitons</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="ex">blastn</span> <span class="at">-help</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#identify the executable complete path</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># identify the executable complete path</span></span>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">which</span> blastn</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="section level3">
-<h3 id="r-universe">R-Universe<a class="anchor" aria-label="anchor" href="#r-universe"></a>
-</h3>
-<p>The main way to install <code>BLASTr</code> is through:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'BLASTr'</span>, repos <span class="op">=</span> <span class="st">"https://heronoh.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
-</div>
+<!--
+### R-Universe
+
+The main way to install `BLASTr` is through:
+
+``` r
+install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
+```
+-->
 <div class="section level3">
 <h3 id="development-version">Development version<a class="anchor" aria-label="anchor" href="#development-version"></a>
 </h3>
 <p>You can install the development version of BLASTr from <a href="https://github.com/heronoh/BLASTr" class="external-link">GitHub</a> with:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"heronoh/BLASTr"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -99,68 +102,68 @@
 <h3 id="obtaining-ncbi-complete-databases">Obtaining NCBI complete databases<a class="anchor" aria-label="anchor" href="#obtaining-ncbi-complete-databases"></a>
 </h3>
 <p>Identifications can be performed using NCBI complete databases, such as NT, which are readily available to download and update. This can be performed using the <em>BLAST+</em> <em>script</em> <a href="https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/lxr/source/src/app/blast/update_blastdb.pl" class="external-link">update_blastdb.pl</a>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#set a folder to download the desired database (for example, the nt database)</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="va">BLAST_DB_PATH</span><span class="op">=</span><span class="st">"/data/database/blast/nt"</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#create dir</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span>  <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#enter dir</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#user BLAST+ executable to download/update db files</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="ex">update_blastdb</span> <span class="at">--passive</span> <span class="at">--decompress</span> nt</span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#set permissions to enable usage by all users</span></span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="fu">chown</span> root <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span>/<span class="pp">*</span></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="fu">chmod</span> 755 <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span>/<span class="pp">*</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#set a folder to download the desired database (for example, the nt database)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="va">BLAST_DB_PATH</span><span class="op">=</span><span class="st">"/data/database/blast/nt"</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#create dir</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span>  <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#enter dir</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#user BLAST+ executable to download/update db files</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="ex">update_blastdb</span> <span class="at">--passive</span> <span class="at">--decompress</span> nt</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#set permissions to enable usage by all users</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="fu">chown</span> root <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span>/<span class="pp">*</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="fu">chmod</span> 755 <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span>/<span class="pp">*</span></span></code></pre></div>
 <p>Another option is to download it directly fom the <a href="https://ftp.ncbi.nlm.nih.gov/blast/db/" class="external-link">NCBI ftp site</a>. It can be parallelized and is the best choice when you want to download only the new files.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># download volumes and md5 check files </span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz <span class="at">-t</span> 0 <span class="at">--show-progress</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 <span class="at">-t</span> 0 <span class="at">--show-progress</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>     <span class="co"># where 000 is the first volume and 150, the last (up to now).</span></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>     </span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>5 <span class="kw">|</span> <span class="ex">parallel</span> md5sum <span class="at">-c</span> {} <span class="op">&gt;&gt;</span> check.txt</span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="fu">sort</span> check.txt <span class="op">&gt;</span> check_sort.txt</span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>tar.gz <span class="kw">|</span> <span class="ex">parallel</span> tar <span class="at">-xvzf</span> {} </span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># download volumes and md5 check files </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz <span class="at">-t</span> 0 <span class="at">--show-progress</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 <span class="at">-t</span> 0 <span class="at">--show-progress</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>     <span class="co"># where 000 is the first volume and 150, the last (up to now).</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>     </span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>5 <span class="kw">|</span> <span class="ex">parallel</span> md5sum <span class="at">-c</span> {} <span class="op">&gt;&gt;</span> check.txt</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">sort</span> check.txt <span class="op">&gt;</span> check_sort.txt</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>tar.gz <span class="kw">|</span> <span class="ex">parallel</span> tar <span class="at">-xvzf</span> {} </span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="formating-a-custom-database">Formating a custom database<a class="anchor" aria-label="anchor" href="#formating-a-custom-database"></a>
 </h3>
 <p>In case you prefer, any FASTA file can be formated as a BLAST+ database, using the <em>BLAST+</em> <em>script</em> <em><em>makeblastdb</em></em>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#set the path to your fasta file (replace the example below)</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="va">DB_FILE</span><span class="op">=</span><span class="st">"/data/database/my_db.fasta"</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#check parameters and usage</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="ex">makeblastdb</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#format your db</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="ex">makeblastdb</span> <span class="at">-in</span> <span class="st">"</span><span class="va">${DB_FILE}</span><span class="st">"</span> <span class="at">-dbtype</span> <span class="st">"nucl"</span> <span class="at">-parse_seqids</span> <span class="at">-hash_index</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#set the path to your fasta file (replace the example below)</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="va">DB_FILE</span><span class="op">=</span><span class="st">"/data/database/my_db.fasta"</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#check parameters and usage</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="ex">makeblastdb</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#format your db</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="ex">makeblastdb</span> <span class="at">-in</span> <span class="st">"</span><span class="va">${DB_FILE}</span><span class="st">"</span> <span class="at">-dbtype</span> <span class="st">"nucl"</span> <span class="at">-parse_seqids</span> <span class="at">-hash_index</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a>
 </h2>
 <p>The package installation can be with a mock BLAST formatted database provided in this <a href="https://drive.google.com/file/d/1Qy4w4KIGSTiGjx-J4BrcyN6Y5wtRYBHl/view?usp=sharing" class="external-link">link</a>. Alternatively, you can download the unformated mock database (a fasta file) and format it using the ncbi-blast+ functionalities, as you would do for any other custom database. You can obtain the fasta <a href="https://drive.google.com/file/d/1WKIwq7RySleuSotWjZ4OJUXqbXELaE7q/view?usp=sharing" class="external-link">here</a>.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#set the path to your fasta file (replace the example below)</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="va">DB_FILE</span><span class="op">=</span><span class="st">"/data/database/shortest_minimal_db_BLASTr.fasta"</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#check parameters and usage</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="ex">makeblastdb</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#format your db</span></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="ex">makeblastdb</span> <span class="at">-in</span> <span class="st">"</span><span class="va">${DB_FILE}</span><span class="st">"</span> <span class="at">-dbtype</span> <span class="st">"nucl"</span> <span class="at">-parse_seqids</span> <span class="at">-hash_index</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#set the path to your fasta file (replace the example below)</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="va">DB_FILE</span><span class="op">=</span><span class="st">"/data/database/shortest_minimal_db_BLASTr.fasta"</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#check parameters and usage</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="ex">makeblastdb</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#format your db</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="ex">makeblastdb</span> <span class="at">-in</span> <span class="st">"</span><span class="va">${DB_FILE}</span><span class="st">"</span> <span class="at">-dbtype</span> <span class="st">"nucl"</span> <span class="at">-parse_seqids</span> <span class="at">-hash_index</span></span></code></pre></div>
 <p>For the testing, execute the following commands on your R console.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/heronoh/BLASTr" class="external-link">BLASTr</a></span><span class="op">)</span></span>
 <span></span>
 <span></span>
@@ -225,7 +228,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Queiroz Lucio Rezende <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-6090-1834" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Lucio Queiroz <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-6090-1834" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Heron Hilario <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-2548-1053" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
@@ -237,7 +240,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Queiroz Lucio Rezende, Heron Hilario.</p>
+  <p>Developed by Lucio Queiroz, Heron Hilario.</p>
 </div>
 
 <div class="pkgdown-footer-right">
