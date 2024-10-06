@@ -4,7 +4,7 @@
 \name{BLASTr-package}
 \alias{BLASTr}
 \alias{BLASTr-package}
-\title{BLASTr: Parallel taxonomic classification of metabarcoding sequences}
+\title{BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences}
 \description{
 Seamlessly run BLAST searches within R, tailored for ASV (Amplicon Sequence Variant) analysis. This package offers a robust set of functions designed to efficiently identify and process sequences from high-throughput metagenomicmetagenomic experiments, following best practices for sequence data analysis.
 }
@@ -22,7 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Queiroz Lucio Rezende \email{luciorqueiroz@gmail.com} (\href{https://orcid.org/0000-0002-6090-1834}{ORCID})
+  \item Lucio Queiroz \email{luciorqueiroz@gmail.com} (\href{https://orcid.org/0000-0002-6090-1834}{ORCID})
 }
 
 }

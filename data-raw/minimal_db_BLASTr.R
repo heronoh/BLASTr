@@ -12,8 +12,8 @@ library(stringr)
 
 # TODO: @heronoh How teste20 was obtained?
 
-teste20$`1_subject` %>%
-  unique() %>%
+teste20$`1_subject` |>
+  unique() |>
   paste0(collapse = ",")
 
 
@@ -40,7 +40,7 @@ dna_BLASTr <- SearchDB(
 )
 
 
-# trimm too long sequences ----
+# trim too long sequences ----
 dna_BLASTr[2] <- subseq(
   x = dna_BLASTr[2],
   start = 885700,
@@ -53,13 +53,13 @@ dna_BLASTr[2] <- subseq(
   end = 885900
 )
 
-dna_BLASTr %>% names()
+dna_BLASTr |> names()
 
 # update tbl with STARTs and ENDs larger than match ----
-BLASTr_tbl <- teste20 %>%
+BLASTr_tbl <- teste20 |>
   select(
     c("1_subject header", "1_subject", "1_subject start", "1_subject end")
-  ) %>%
+  ) |>
   mutate(
     START = if_else(
       `1_subject start` > `1_subject end`, `1_subject end`, `1_subject start`
@@ -67,7 +67,7 @@ BLASTr_tbl <- teste20 %>%
     END = if_else(
       `1_subject start` > `1_subject end`, `1_subject start`, `1_subject end`
     )
-  ) %>%
+  ) |>
   filter(!is.na(`1_subject header`)) |>
   unique()
 
@@ -135,7 +135,8 @@ teste_F2local_short <- furrr::future_map_dfr(
   num_thread = 2,
   .options = furrr::furrr_options(seed = NULL),
   # db_path = "/data/databases/nt/nt",
-  db_path = "/home/heron/prjcts/BLASTr/dev/minimal_db/shortest_minimal_db_BLASTr.fasta",
+  # db_path = "/home/heron/prjcts/BLASTr/dev/minimal_db/shortest_minimal_db_BLASTr.fasta",
+  db_path = fs::path_package("BLASTr", "inst", "ext", "minimal_db"),
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,

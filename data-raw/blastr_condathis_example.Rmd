@@ -1,0 +1,246 @@
+## Create envs
+
+> Supports MacOS and Linux
+
+### Blast Env
+
+```{r}
+condathis::create_env(
+  packages = "blast",
+  env_name = "blastr-blast-env",
+  method = "native"
+)
+
+condathis::run(
+  "blastn", "-version",
+  env_name = "blastr-blast-env"
+)
+```
+
+### Entrez Env
+
+```{r}
+condathis::create_env(
+  packages = "entrez-direct",
+  env_name = "blastr-entrez-env",
+  method = "native"
+)
+condathis::run(
+  "efetch", "-version",
+  env_name = "blastr-entrez-env"
+)
+```
+## Run workflow
+
+## Example files
+
+```{r}
+fs::dir_ls(fs::path_package("BLASTr", "extdata"))
+```
+
+### Format BLAST DB
+
+```{r}
+make_blast_db <- function(
+    input_path,
+    db_type = "nucl",
+    output_path = NULL
+) {
+  # fs::file_exists()
+  db_input_file <- fs::path_real(input_path)
+
+  if (is.null(output_path)) {
+    db_output_file <- db_input_file
+  } else {
+    db_output_file <- fs::path_expand(output_path)
+  }
+
+  condathis::run(
+    "makeblastdb",
+    "-in", db_input_file,
+    "-dbtype", db_type,
+    "-parse_seqids",
+    "-hash_index",
+    "-out", db_output_file,
+    env_name = "blastr-blast-env"
+  )
+}
+```
+
+
+```{r}
+db_file_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast.fasta")
+
+temp_output <- fs::file_temp("minimal_db_blast", ext = "fasta")
+
+make_blast_db(
+  input_path = db_file_path,
+  db_type = "nucl",
+  output_path = temp_output
+)
+```
+
+```{r}
+condathis::run(
+  "makeblastdb", "-help",
+  #"-in", fs::path_real(db_file_path),
+  #"-dbtype", db_type,
+  #"-parse_seqids",
+  #"-hash_index",
+  env_name = "blastr-blast-env"
+)
+```
+### Run BLAST
+
+```{r}
+run_blast_condathis <- function(
+    sequence,
+    db_path,
+    num_alignments = 4,
+    num_threads = 1,
+    blast_type = "blastn",
+    perc_id = 80,
+    perc_qcov_hsp = 80
+) {
+  if (is.null(num_threads)) {
+    num_threads <- getOption(
+      "BLASTr.num_threads",
+      default = 1
+    )
+  }
+  temp_input_path <- fs::file_temp("seq_input", ext = "fasta")
+  readr::write_lines(x = c(">seq1", sequence), file = temp_input_path)
+  blast_res <- condathis::run(
+    blast_type,
+    "-query", fs::path_expand(temp_input_path),
+    "-db", db_path,
+    "-outfmt", "6 std qcovhsp staxid",
+    "-max_hsps", "1",
+    "-perc_identity", perc_id,
+    "-qcov_hsp_perc", perc_qcov_hsp,
+    "-num_threads", as.character(num_threads),
+    "-num_alignments", as.character(num_alignments),
+    env_name = "blastr-blast-env"
+  )
+  return(blast_res)
+}
+
+
+seq_1 <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
+blast_res <- run_blast_condathis(
+  sequence = seq_1,
+  db_path = temp_output,
+  blast_type = "blastn"
+)
+```
+
+```{r}
+condathis::run(
+    "blastn", "-help",
+    env_name = "blastr-blast-env"
+  )
+```
+
+#### Single Sequence
+
+```{r}
+blast_res <- run_blast(
+  asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  db_path = db_file_path,
+  perc_id = 80,
+  num_threads = 1,
+  perc_qcov_hsp = 80,
+  num_alignments = 2,
+  blast_type = "blastn"
+)
+```
+
+#### Multiple sequences with parallel execution
+
+```{r}
+ASVs_test <- c(
+  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  "GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC",
+  "AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT",
+  "ACTATACCTATTATTCGGCGCATGAGCTGGAGTCCTAGGCACAGCTCTAAGCCTCCTTATTCGAGCCGAGCTGGGCCAGCCAGGCAACCTTCTAGGTAACGACCACATCTACAACGTTATCGTCACAGCCCATGCATTTGTAATAATCTTCTTCATAGTAATACCCATCATAATCGGAGGCTTTGGCAACTGACTAGTTCCCCTAATAATCGGTGCCCCCGATATG",
+  "TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"
+)
+
+blast_res <- parallel_blast(
+  asvs = ASVs_test,                                                 #vector of sequences to be searched  
+  db_path = db_file_path,      #path to a formated blast database
+  out_file = NULL,                                                  #path to a .csv file to be created with results (on an existing folder)
+  out_RDS = NULL,                                                   #path to a .RDS file to be created with results (on an existing folder)
+  perc_id = 80,                                                     #minimum identity percentual cutoff
+  perc_qcov_hsp = 80,                                               #minimum percentual coverage of query sequence by subject sequence cutoff
+  num_threads = 1,                                                  #number of threads/cores to run each blast on
+  total_cores = 8,                                                  #number of tota threads/cores to alocate all blast searches
+  num_alignments = 3,                                               #maximum number of alignments/matches to retrieve results for each query sequence
+  blast_type = "blastn"                                             #blast search engine to use  
+)
+
+# check identificaitons results
+
+blast_res
+
+#or
+
+View(blast_res)
+```
+
+
+## `get_fasta_header`
+
+```{r}
+get_fasta_header_condathis <- function(
+    id,
+    db_path
+) {
+  if (is.null(db_path)) {
+    db_path <- getOption(
+      "BLASTr.db_path",
+      default = NULL
+    )
+  }
+  if (is.null(db_path)) {
+    cli::cli_abort(
+      message = "No BLAST database provided.",
+      class = "blastr_missing_blast_db"
+    )
+  }
+  # blastdbcmd_bin <- check_bin("blastdbcmd")
+  # command <- "{blastdbcmd_bin} -db {db_path} -entry {id} -outfmt %t"
+  # result <- shell_exec(
+  #  cmd = command
+  #)
+  
+  result <- condathis::run(
+    "blastdbcmd",
+    "-db", db_path,
+    "-entry", id,
+    "-outfmt", "%t",
+    env_name = "blastr-blast-env"
+  )
+  return(result$stdout)
+}
+
+
+blast_table$`subject header` <- purrr::map_chr(
+    .x = blast_table$subject,
+    .f = get_fasta_header_condathis,
+    db_path = db_path
+  )
+
+```
+
+---
+
+## Testing single env
+
+```{r}
+condathis::create_env(
+  packages = c("blast", "entrez-direct"),
+  env_name = "blastr-test-single-env"
+)
+```
