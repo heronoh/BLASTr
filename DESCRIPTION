@@ -1,8 +1,8 @@
 Package: BLASTr
-Title: Parallel taxonomic classification of metabarcoding sequences
-Version: 0.1.1
+Title: Parallel Taxonomic Classification of Metabarcoding Sequences
+Version: 0.1.2
 Authors@R: c(
-    person("Queiroz", "Lucio Rezende", , "luciorqueiroz@gmail.com", role = "aut",
+    person("Lucio", "Queiroz", , "luciorqueiroz@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-6090-1834")),
     person("Heron", "Hilario", , "heronoh@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2548-1053"))
@@ -30,6 +30,7 @@ Imports:
     rlang,
     tibble,
     tidyr,
+    jsonlite,
     condathis
 Suggests:
     testthat (>= 3.0.0),

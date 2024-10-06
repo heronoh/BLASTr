@@ -29,13 +29,14 @@ sudo apt install ncbi-blast+
 #chech installation using one of its applicaitons
 blastn -help
 
-#identify the executable complete path
+# identify the executable complete path
 which blastn
 
 ```
 
 ## Installation
 
+<!--
 ### R-Universe
 
 The main way to install `BLASTr` is through:
@@ -43,6 +44,7 @@ The main way to install `BLASTr` is through:
 ``` r
 install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
 ```
+-->
 
 ### Development version
 

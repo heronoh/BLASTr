@@ -5,6 +5,8 @@
 ^\.pre-commit-config\.yaml$
 ^_pkgdown\.yml$
 ^dev$
+^data-raw$
+^justfile$
 ^docs$
 ^pkgdown$
 ^inst/extdata/.*\.fasta\.n..$
