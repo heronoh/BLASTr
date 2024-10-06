@@ -6,6 +6,8 @@
 #' @param parse_result Should the taxonomy be returned as the `efetch` returns it or should it be parsed into a tibble.
 #' @param total_cores Number of threads to use. Defaults to 1.
 #' @param show_command Should the `efetch` command on command line be printed for debugging. Defaults to TRUE.
+#' @param verbose Should the internal processx::run() show the internal command
+#' @param env_name The name of the conda environment used to run NCBI entrez (default entrez-env)
 
 #'
 #' @return A tibble with all the taxonomic ranks for the corresponding taxID.
