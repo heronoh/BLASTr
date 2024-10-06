@@ -29,7 +29,7 @@ sudo apt install ncbi-blast+
 #chech installation using one of its applicaitons
 blastn -help
 
-#identify the executable complete path
+# identify the executable complete path
 which blastn
 
 ```

@@ -30,6 +30,7 @@ Imports:
     rlang,
     tibble,
     tidyr,
+    jsonlite,
     condathis
 Suggests:
     testthat (>= 3.0.0),
