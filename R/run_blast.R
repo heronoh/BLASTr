@@ -1,19 +1,19 @@
 #' @title Run BLAST
 #'
 #' @description Run BLAST for a single sequence and return raw results.
-#'   For formated results, use the function *BLASTr::getblastn_results()*
+#'   For formatted results, use the function *`BLASTr::get_blastn_results()`*
 #'
 #' @param asv Vector of sequences to be BLASTed.
 #' @param db_path Complete path do formatted BLAST database.
 #' @param num_threads Number of threads to run BLAST on.
-#'   Passed on to BLAST+ argument _-num_threads_.
+#'   Passed on to BLAST+ argument `-num_threads`.
 #' @param perc_id Lowest identity percentage cutoff.
-#'   Passed on to BLAST+ _-perc_identity_.
+#'   Passed on to BLAST+ `-perc_identity`.
 #' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff.
-#' Passed on to BLAST+ _-qcov_hsp_perc_.
+#' Passed on to BLAST+ `-qcov_hsp_perc`.
 #' @param num_alignments Number of alignments to retrieve from BLAST. Max = 6.
 #' @param blast_type One of the available BLAST+ search engines,
-#'   one of: "blastn", "blastp", "blastx", "tblastn", "tblastx".
+#'   one of: `c("blastn", "blastp", "blastx", "tblastn", "tblastx")`.
 #'
 #' @return Unformatted BLAST results.
 #'   For results formatted as tibble, please use `BLASTr::get_blast_results()`
@@ -78,11 +78,5 @@ run_blast <- function(asv,
     verbose = verbose
   )
 
-  # blast_cmd <- "{blast_bin} -db {db_path} -outfmt '6 std qcovhsp staxid' -max_hsps 1 -perc_identity {perc_id} -qcov_hsp_perc {perc_qcov_hsp} -num_threads {as.character(num_threads)} -num_alignments {as.character(num_alignments)}"
-
-  # blast_cmd_in <- paste0("echo -e '>seq1\n{asv}' | ", blast_cmd)
-  # blast_res <- shell_exec(
-  #   cmd = blast_cmd_in
-  # )
   return(blast_res)
 }
