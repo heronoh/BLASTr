@@ -178,18 +178,17 @@ install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
 <span>  <span class="st">"TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span></span>
 <span><span class="va">blast_res</span> <span class="op">&lt;-</span> <span class="fu">BLASTr</span><span class="fu">::</span><span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span></span>
-<span>  asvs <span class="op">=</span> <span class="va">ASVs_test</span>,                                                 <span class="co">#vector of sequences to be searched  </span></span>
-<span>  db_path <span class="op">=</span> <span class="st">"/data/database/shortest_minimal_db_BLASTr.fasta"</span>,      <span class="co">#path to a formated blast database</span></span>
-<span>  out_file <span class="op">=</span> <span class="cn">NULL</span>,                                                  <span class="co">#path to a .csv file to be created with results (on an existing folder)</span></span>
-<span>  out_RDS <span class="op">=</span> <span class="cn">NULL</span>,                                                   <span class="co">#path to a .RDS file to be created with results (on an existing folder)</span></span>
-<span>  perc_id <span class="op">=</span> <span class="fl">80</span>,                                                     <span class="co">#minimum identity percentual cutoff</span></span>
-<span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,                                               <span class="co">#minimum percentual coverage of query sequence by subject sequence cutoff</span></span>
-<span>  num_threads <span class="op">=</span> <span class="fl">1</span>,                                                  <span class="co">#number of threads/cores to run each blast on</span></span>
-<span>  total_cores <span class="op">=</span> <span class="fl">8</span>,                                                  <span class="co">#number of tota threads/cores to alocate all blast searches</span></span>
-<span>  num_alignments <span class="op">=</span> <span class="fl">3</span>,                                               <span class="co">#maximum number of alignments/matches to retrieve results for each query sequence</span></span>
-<span>  blast_type <span class="op">=</span> <span class="st">"blastn"</span>                                             <span class="co">#blast search engine to use  </span></span>
+<span>  asvs <span class="op">=</span> <span class="va">ASVs_test</span>,                                                 <span class="co"># vector of sequences to be searched</span></span>
+<span>  db_path <span class="op">=</span> <span class="st">"/data/database/shortest_minimal_db_BLASTr.fasta"</span>,      <span class="co"># path to a formated blast database</span></span>
+<span>  out_file <span class="op">=</span> <span class="cn">NULL</span>,                                                  <span class="co"># path to a .csv file to be created with results (on an existing folder)</span></span>
+<span>  out_RDS <span class="op">=</span> <span class="cn">NULL</span>,                                                   <span class="co"># path to a .RDS file to be created with results (on an existing folder)</span></span>
+<span>  perc_id <span class="op">=</span> <span class="fl">80</span>,                                                     <span class="co"># minimum identity percentual cutoff</span></span>
+<span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,                                               <span class="co"># minimum percentual coverage of query sequence by subject sequence cutoff</span></span>
+<span>  num_threads <span class="op">=</span> <span class="fl">1</span>,                                                  <span class="co"># number of threads/cores to run each blast on</span></span>
+<span>  total_cores <span class="op">=</span> <span class="fl">8</span>,                                                  <span class="co"># number of tota threads/cores to alocate all blast searches</span></span>
+<span>  num_alignments <span class="op">=</span> <span class="fl">3</span>,                                               <span class="co"># maximum number of alignments/matches to retrieve results for each query sequence</span></span>
+<span>  blast_type <span class="op">=</span> <span class="st">"blastn"</span>                                             <span class="co"># blast search engine to use</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># check identificaitons results</span></span>

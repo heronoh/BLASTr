@@ -40,9 +40,8 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_tax_by_taxID</span><span class="op">(</span></span>
-<span>  <span class="va">organism_taxID</span>,</span>
+<span>  <span class="va">organisms_taxIDs</span>,</span>
 <span>  parse_result <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  total_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  env_name <span class="op">=</span> <span class="st">"entrez-env"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -52,20 +51,12 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-organism-taxid">organism_taxID<a class="anchor" aria-label="anchor" href="#arg-organism-taxid"></a></dt>
+<dl><dt id="arg-organisms-taxids">organisms_taxIDs<a class="anchor" aria-label="anchor" href="#arg-organisms-taxids"></a></dt>
 <dd><p>Vector of <em>NCBI Taxonomy Tax ID</em> to retrieve taxonomy for.</p></dd>
 
 
 <dt id="arg-parse-result">parse_result<a class="anchor" aria-label="anchor" href="#arg-parse-result"></a></dt>
 <dd><p>Should the taxonomy be returned as the <code>efetch</code> returns it or should it be parsed into a tibble.</p></dd>
-
-
-<dt id="arg-total-cores">total_cores<a class="anchor" aria-label="anchor" href="#arg-total-cores"></a></dt>
-<dd><p>Number of threads to use. Defaults to 1.</p></dd>
-
-
-<dt id="arg-show-command">show_command<a class="anchor" aria-label="anchor" href="#arg-show-command"></a></dt>
-<dd><p>Should the <code>efetch</code> command on command line be printed for debugging. Defaults to TRUE.</p></dd>
 
 </dl></div>
     <div class="section level2">
