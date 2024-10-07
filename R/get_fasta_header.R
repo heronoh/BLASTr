@@ -15,7 +15,8 @@
 #' @export
 get_fasta_header <- function(id,
                              db_path,
-                             env_name = "blast-env") {
+                             env_name = "blast-env",
+                             verbose = FALSE) {
   if (is.null(db_path)) {
     db_path <- getOption(
       "BLASTr.db_path",
@@ -34,7 +35,8 @@ get_fasta_header <- function(id,
     "-db", db_path,
     "-entry", id,
     "-outfmt", "%t",
-    env_name = env_name
+    env_name = env_name,
+    verbose = verbose
   )
 
   return(blastdbcmd_res$stdout)

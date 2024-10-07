@@ -5,21 +5,16 @@
 \title{Get taxonomy ranks using \emph{NCBI Taxonomy Tax ID}}
 \usage{
 get_tax_by_taxID(
-  organism_taxID,
+  organisms_taxIDs,
   parse_result = TRUE,
-  total_cores = 1,
   verbose = FALSE,
   env_name = "entrez-env"
 )
 }
 \arguments{
-\item{organism_taxID}{Vector of \emph{NCBI Taxonomy Tax ID} to retrieve taxonomy for.}
+\item{organisms_taxIDs}{Vector of \emph{NCBI Taxonomy Tax ID} to retrieve taxonomy for.}
 
 \item{parse_result}{Should the taxonomy be returned as the \code{efetch} returns it or should it be parsed into a tibble.}
-
-\item{total_cores}{Number of threads to use. Defaults to 1.}
-
-\item{show_command}{Should the \code{efetch} command on command line be printed for debugging. Defaults to TRUE.}
 }
 \value{
 A tibble with all the taxonomic ranks for the corresponding taxID.

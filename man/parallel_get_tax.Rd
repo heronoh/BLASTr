@@ -4,12 +4,19 @@
 \alias{parallel_get_tax}
 \title{Get taxonomy ranks for a list of \emph{NCBI Taxonomy Tax ID}}
 \usage{
-parallel_get_tax(organisms_taxIDs, parse_result = TRUE, total_cores = 1)
+parallel_get_tax(
+  organisms_taxIDs,
+  parse_result = TRUE,
+  total_cores = 1,
+  retry_times = 10,
+  verbose = FALSE,
+  env_name = "entrez-env"
+)
 }
 \arguments{
 \item{organisms_taxIDs}{Vector of \emph{NCBI Taxonomy Tax ID} to retrieve taxonomy for.}
 
-\item{parse_result}{Should the taxonomy be returned as the \emph{efetch} returns it or should it be parsed into a tibble.}
+\item{parse_result}{Should the taxonomy be returned as the \code{efetch} returns it or should it be parsed into a tibble.}
 
 \item{total_cores}{Number of threads to use. Defaults to 1.}
 }

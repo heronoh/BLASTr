@@ -4,146 +4,78 @@
 #' @param organisms_taxIDs Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
 #' @param parse_result Should the taxonomy be returned as the _efetch_ returns it or should it be parsed into a tibble.
 #' @param total_cores Number of threads to use. Defaults to 1.
+#' @param parse_result Should the taxonomy be returned as the `efetch` returns it or should it be parsed into a tibble.
 #'
 #' @return Vector of Tax Ids.
 #'
 #' @export
 parallel_get_tax <- function(organisms_taxIDs,
                              parse_result = TRUE, # default value for parse_result
-                             total_cores = 1) {
-  `%>%` <- dplyr::`%>%`
+                             total_cores = 1,
+                             retry_times = 10,
+                             verbose = FALSE,
+                             env_name = "entrez-env") {
+  organisms_taxIDs <- unique(organisms_taxIDs)
+  check_cmd("efetch", env_name = env_name)
 
   # Set up parallel plan
-  future::plan(future::multisession, workers = total_cores)
-
-
-
-
-  # Helper function to process one organism_taxID
-  get_single_tax_by_taxID <- function(organism_taxID,
-                                      parse_result = TRUE,
-                                      total_cores = 1) {
-    `%>%` <- dplyr::`%>%`
-    .data <- rlang::.data
-
-    # This space ensures the taxID won't have it first digit chopped of
-    organism_taxID_parsed <- paste0(" ", organism_taxID)
-
-    # print(class(organism_taxID_parsed))
-
-    # Generate entrez _efetch_ command
-    entrez_cmd <- paste0("efetch -db taxonomy -id ${organism_taxID_parsed} -format xml -json")
-
-    print(entrez_cmd)
-
-    organism_xml <- shell_exec(cmd = entrez_cmd)
-    # organism_xml <- system2(command = "efetch",args = c("-db", "taxonomy", "-id", organism_taxID, "-format", "xml", "-json"))
-
-    if (length(organism_xml$stdout) == 0) {
-      message(paste0("------------------------> unable to retrieve taxonomy for: ", organism_taxID))
-
-      return(tibble::tibble(
-        "Sci_name" = NA,
-        "query_taxID" = NA,
-        "Superkingdom (NCBI)" = NA,
-        "Kingdom (NCBI)" = NA,
-        "Phylum (NCBI)" = NA,
-        "Subphylum (NCBI)" = NA,
-        "Class (NCBI)" = NA,
-        "Subclass (NCBI)" = NA,
-        "Order (NCBI)" = NA,
-        "Suborder (NCBI)" = NA,
-        "Family (NCBI)" = NA,
-        "Subfamily (NCBI)" = NA,
-        "Genus (NCBI)" = NA
-      ))
-    } else {
-      if (jsonlite::validate(organism_xml$stdout)) {
-        organism_df <- organism_xml$stdout %>%
-          jsonlite::fromJSON()
-
-        message(paste0("taxonomy succesfully retrieved for: ", organism_taxID))
-
-        organism_tbl <- organism_df$TaxaSet$Taxon$LineageEx$Taxon %>%
-          dplyr::as_tibble() %>%
-          dplyr::mutate("query_taxID" = organism_taxID) %>%
-          dplyr::mutate("Sci_name" = organism_df$TaxaSet$Taxon$ScientificName)
-
-        if (isFALSE(parse_result)) {
-          return(organism_tbl)
-        } else {
-          organism_tbl_parsed_empty <- tibble::tibble(
-            "Sci_name" = NA,
-            "query_taxID" = NA,
-            "superkingdom" = NA,
-            "kingdom" = NA,
-            "phylum" = NA,
-            "subphylum" = NA,
-            "class" = NA,
-            "subclass" = NA,
-            "order" = NA,
-            "suborder" = NA,
-            "family" = NA,
-            "subfamily" = NA,
-            "genus" = NA
-          )
-
-          organism_tbl_parsed <- organism_tbl %>%
-            dplyr::filter(!(.data$Rank %in% c("no rank", "clade"))) %>%
-            dplyr::select(-c("TaxId")) %>%
-            unique() %>%
-            # dplyr::filter(.data$Rank %in% c("kingdom","phylum","class","order","family")) %>%
-            dplyr::filter(.data$Rank %in% c(
-              "superkingdom", "kingdom",
-              "phylum", "subphylum", "class",
-              "subclass", "order", "suborder",
-              "family", "subfamily", "genus"
-            )) %>%
-            tidyr::pivot_wider(
-              id_cols = c("query_taxID", "Sci_name"),
-              names_from = "Rank",
-              values_from = c("ScientificName")
-            )
-
-          organism_tbl_parsed <- dplyr::bind_rows(
-            organism_tbl_parsed_empty,
-            organism_tbl_parsed
-          ) %>%
-            dplyr::relocate(
-              "Sci_name", "query_taxID", "superkingdom", "kingdom",
-              "phylum", "subphylum", "class", "subclass", "order",
-              "suborder", "family", "subfamily", "genus"
-            ) %>%
-            dplyr::rename(
-              "Superkingdom (NCBI)" = "superkingdom",
-              "Kingdom (NCBI)" = "kingdom",
-              "Phylum (NCBI)" = "phylum",
-              "Subphylum (NCBI)" = "subphylum",
-              "Class (NCBI)" = "class",
-              "Subclass (NCBI)" = "subclass",
-              "Order (NCBI)" = "order",
-              "Suborder (NCBI)" = "suborder",
-              "Family (NCBI)" = "family",
-              "Subfamily (NCBI)" = "subfamily",
-              "Genus (NCBI)" = "genus"
-            ) %>%
-            dplyr::filter(dplyr::if_any(dplyr::everything(), ~ !base::is.na(.)))
-
-
-
-          return(organism_tbl_parsed)
-        }
-      } else {
-        return(tibble::tibble())
-      }
-    }
+  # future::plan(future::multisession, workers = total_cores)
+  if (total_cores > 1L) {
+    future::plan(future::multisession(),
+      workers = total_cores
+    )
   }
-  # Apply the function in parallel using future_map_dfr
-  results <- furrr::future_map_dfr(organisms_taxIDs,
-    get_single_tax_by_taxID,
-    .progress = TRUE,
-    .options = furrr::furrr_options(seed = NULL)
+
+  results <- tibble::tibble(
+    "Sci_name" = character(0L),
+    "query_taxID" = character(0L),
+    "Superkingdom (NCBI)" = character(0L),
+    "Kingdom (NCBI)" = character(0L),
+    "Phylum (NCBI)" = character(0L),
+    "Subphylum (NCBI)" = character(0L),
+    "Class (NCBI)" = character(0L),
+    "Subclass (NCBI)" = character(0L),
+    "Order (NCBI)" = character(0L),
+    "Suborder (NCBI)" = character(0L),
+    "Family (NCBI)" = character(0L),
+    "Subfamily (NCBI)" = character(0L),
+    "Genus (NCBI)" = character(0L)
   )
+  res_taxid <- character(0L)
+  retry_count <- 0L
+  while (isTRUE(retry_count < retry_times) && isFALSE(all(organisms_taxIDs %in% res_taxid))) {
+    # message(retry_count)
+    # message(organisms_taxIDs)
+    if (total_cores > 1L) {
+      results_temp <- furrr::future_map_dfr(
+        .x = organisms_taxIDs,
+        .f = get_tax_by_taxID,
+        parse_result = parse_result,
+        env_name = env_name,
+        verbose = verbose,
+        .options = furrr::furrr_options(seed = NULL),
+        .progress = TRUE
+      )
+    } else {
+      results_temp <- purrr::map_dfr(
+        .x = organisms_taxIDs,
+        .f = get_tax_by_taxID,
+        parse_result = parse_result,
+        env_name = env_name,
+        verbose = verbose,
+        .progress = TRUE
+      )
+    }
+    retry_count <- retry_count + 1L
+
+    results <- dplyr::bind_rows(results, results_temp) |>
+      dplyr::distinct()
+
+    # taxids that were found
+    res_taxid <- unique(results$query_taxID)
+    # missing taxids
+    organisms_taxIDs <- organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]
+  }
 
   return(results)
 }

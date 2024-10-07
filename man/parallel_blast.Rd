@@ -29,17 +29,17 @@ parallel_blast(
 \item{out_RDS}{Complete path to output RDS file on an existing folder.}
 
 \item{num_threads}{Number of threads to run BLAST on.
-Passed on to BLAST+ argument \emph{-num_threads}.}
+Passed on to BLAST+ argument \code{-num_threads}.}
 
 \item{blast_type}{BLAST+ executable to be used on search.}
 
 \item{total_cores}{Total available cores to run BLAST in parallel. Check your max with \emph{future::availableCores()}}
 
 \item{perc_id}{Lowest identity percentage cutoff.
-Passed on to BLAST+ \emph{-perc_identity}.}
+Passed on to BLAST+ \code{-perc_identity}.}
 
 \item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.
-Passed on to BLAST+ \emph{-qcov_hsp_perc}.}
+Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
 }
