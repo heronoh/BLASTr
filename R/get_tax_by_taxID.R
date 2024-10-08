@@ -19,6 +19,9 @@ get_tax_by_taxID <- function(organisms_taxIDs,
   `%>%` <- dplyr::`%>%`
   .data <- rlang::.data
 
+
+  organisms_taxIDs <- as.character(organisms_taxIDs)
+
   check_cmd("efetch", env_name = env_name)
 
   # run entrez command
