@@ -4,7 +4,7 @@
 #' @param organisms_taxIDs Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
 #' @param parse_result Should the taxonomy be returned as the _efetch_ returns it or should it be parsed into a tibble.
 #' @param total_cores Number of threads to use. Defaults to 1.
-#' @param parse_result Should the taxonomy be returned as the `efetch` returns it or should it be parsed into a tibble.
+#' @param retry_times Number of times to retry fetching taxonomy if it fails at first.
 #'
 #' @return Vector of Tax Ids.
 #'
@@ -26,6 +26,10 @@ parallel_get_tax <- function(organisms_taxIDs,
     )
   }
 
+
+
+  if (rlang::is_true(parse_result)) {
+
   results <- tibble::tibble(
     "Sci_name" = character(0L),
     "query_taxID" = character(0L),
@@ -40,11 +44,24 @@ parallel_get_tax <- function(organisms_taxIDs,
     "Family (NCBI)" = character(0L),
     "Subfamily (NCBI)" = character(0L),
     "Genus (NCBI)" = character(0L)
-  )
+  )}
+
+
+  if (rlang::is_false(parse_result)) {
+
+    # create empty tibble for binding
+    results <- tibble::tibble(
+      "Rank" = character(0L),
+      "ScientificName" = character(0L),
+      "query_taxID" = character(0L),
+      "Sci_name" = character(0L))
+  }
+
+
   res_taxid <- character(0L)
   retry_count <- 0L
   while (isTRUE(retry_count < retry_times) && isFALSE(all(organisms_taxIDs %in% res_taxid))) {
-    # message(retry_count)
+    message(paste0("retrying ",retry_count," of ",retry_times))
     # message(organisms_taxIDs)
     if (total_cores > 1L) {
       results_temp <- furrr::future_map_dfr(
