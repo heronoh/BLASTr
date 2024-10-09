@@ -12,9 +12,9 @@ check_cmd <- function(cmd = "blastn", env_name = "blast-env") {
   }
 
   if (!condathis::env_exists(env_name) && !nzchar(cmd_bin)) {
-    condathis::create_env(packages_to_install, env_name = env_name)
+    condathis::create_env(packages_to_install, env_name = env_name, verbose = FALSE)
   } else if (!condathis::env_exists(env_name) && nzchar(cmd_bin)) {
-    condathis::create_env(env_name = env_name)
+    condathis::create_env(env_name = env_name, verbose = FALSE)
   }
   invisible(TRUE)
 }
