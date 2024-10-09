@@ -25,7 +25,7 @@ get_blast_results(
 Passed on to BLAST+ argument \code{-num_threads}.}
 
 \item{blast_type}{One of the available BLAST+ search engines,
-one of: \code{c("blastn", "blastp", "blastx", "tblastn", "tblastx")}.}
+#'   one of: \code{c("blastn", "blastp", "blastx", "tblastn", "tblastx")}.}
 
 \item{perc_id}{Lowest identity percentage cutoff.
 Passed on to BLAST+ \code{-perc_identity}.}
@@ -34,6 +34,10 @@ Passed on to BLAST+ \code{-perc_identity}.}
 Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
+
+\item{verbose}{Should condathis::run() internal command be shown?}
+
+\item{env_name}{The name of the conda environment with the parameter (i.e. "blast-env")}
 }
 \value{
 A \code{tibble} with the results of BLASTn for each sequence.

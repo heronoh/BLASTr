@@ -8,15 +8,15 @@ library(BLASTr)
 install_dependencies()
 
 
-  # if (isFALSE(nzchar(cmd_bin))) {
-  #
-  #
-  #   cmd_bin <- Sys.which(cmd)
-  #   if (isFALSE(nzchar(cmd_bin))) {
-  #
-  #     if (!condathis::env_exists("blast-env")) {
-  #       condathis::create_env("bioconda::blast==2.16", env_name = "blast-env")
-  #     }
+# if (isFALSE(nzchar(cmd_bin))) {
+#
+#
+#   cmd_bin <- Sys.which(cmd)
+#   if (isFALSE(nzchar(cmd_bin))) {
+#
+#     if (!condathis::env_exists("blast-env")) {
+#       condathis::create_env("bioconda::blast==2.16", env_name = "blast-env")
+#     }
 # }
 
 # set the number of availble threads to be used (exemplified by the total number of available threads - 2)

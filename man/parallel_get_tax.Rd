@@ -16,9 +16,11 @@ parallel_get_tax(
 \arguments{
 \item{organisms_taxIDs}{Vector of \emph{NCBI Taxonomy Tax ID} to retrieve taxonomy for.}
 
-\item{parse_result}{Should the taxonomy be returned as the \code{efetch} returns it or should it be parsed into a tibble.}
+\item{parse_result}{Should the taxonomy be returned as the \emph{efetch} returns it or should it be parsed into a tibble.}
 
 \item{total_cores}{Number of threads to use. Defaults to 1.}
+
+\item{retry_times}{Number of times to retry fetching taxonomy if it fails at first.}
 }
 \value{
 Vector of Tax Ids.

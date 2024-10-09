@@ -27,13 +27,17 @@ run_blast(
 Passed on to BLAST+ argument \code{-num_threads}.}
 
 \item{blast_type}{One of the available BLAST+ search engines,
-one of: \code{c("blastn", "blastp", "blastx", "tblastn", "tblastx")}.}
+#'   one of: \code{c("blastn", "blastp", "blastx", "tblastn", "tblastx")}.}
 
 \item{perc_id}{Lowest identity percentage cutoff.
 Passed on to BLAST+ \code{-perc_identity}.}
 
 \item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.
 Passed on to BLAST+ \code{-qcov_hsp_perc}.}
+
+\item{verbose}{Should condathis::run() internal command be shown?}
+
+\item{env_name}{The name of the conda environment with the parameter (i.e. "blast-env")}
 }
 \value{
 Unformatted BLAST results.

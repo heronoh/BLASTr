@@ -42,6 +42,10 @@ Passed on to BLAST+ \code{-perc_identity}.}
 Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
+
+\item{verbose}{Should condathis::run() internal command be shown?}
+
+\item{env_name}{The name of the conda environment with the parameter (i.e. "blast-env")}
 }
 \value{
 A tibble with the BLAST tabular output.
