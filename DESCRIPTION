@@ -30,8 +30,8 @@ Imports:
     rlang,
     tibble,
     tidyr,
-    jsonlite,
-    condathis
+    condathis,
+    stringr
 Suggests:
     testthat (>= 3.0.0),
     tictoc,

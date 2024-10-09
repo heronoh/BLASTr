@@ -29,39 +29,39 @@ parallel_get_tax <- function(organisms_taxIDs,
 
 
   if (rlang::is_true(parse_result)) {
-
-  results <- tibble::tibble(
-    "Sci_name" = character(0L),
-    "query_taxID" = character(0L),
-    "Superkingdom (NCBI)" = character(0L),
-    "Kingdom (NCBI)" = character(0L),
-    "Phylum (NCBI)" = character(0L),
-    "Subphylum (NCBI)" = character(0L),
-    "Class (NCBI)" = character(0L),
-    "Subclass (NCBI)" = character(0L),
-    "Order (NCBI)" = character(0L),
-    "Suborder (NCBI)" = character(0L),
-    "Family (NCBI)" = character(0L),
-    "Subfamily (NCBI)" = character(0L),
-    "Genus (NCBI)" = character(0L)
-  )}
+    results <- tibble::tibble(
+      "Sci_name" = character(0L),
+      "query_taxID" = character(0L),
+      "Superkingdom (NCBI)" = character(0L),
+      "Kingdom (NCBI)" = character(0L),
+      "Phylum (NCBI)" = character(0L),
+      "Subphylum (NCBI)" = character(0L),
+      "Class (NCBI)" = character(0L),
+      "Subclass (NCBI)" = character(0L),
+      "Order (NCBI)" = character(0L),
+      "Suborder (NCBI)" = character(0L),
+      "Family (NCBI)" = character(0L),
+      "Subfamily (NCBI)" = character(0L),
+      "Genus (NCBI)" = character(0L)
+    )
+  }
 
 
   if (rlang::is_false(parse_result)) {
-
     # create empty tibble for binding
     results <- tibble::tibble(
       "Rank" = character(0L),
       "ScientificName" = character(0L),
       "query_taxID" = character(0L),
-      "Sci_name" = character(0L))
+      "Sci_name" = character(0L)
+    )
   }
 
 
   res_taxid <- character(0L)
   retry_count <- 0L
   while (isTRUE(retry_count < retry_times) && isFALSE(all(organisms_taxIDs %in% res_taxid))) {
-    message(paste0("retrying ",retry_count," of ",retry_times))
+    message(paste0("retrying ", retry_count, " of ", retry_times))
     # message(organisms_taxIDs)
     if (total_cores > 1L) {
       results_temp <- furrr::future_map_dfr(

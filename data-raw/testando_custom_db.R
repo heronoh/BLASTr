@@ -1,12 +1,12 @@
 library(BLASTr)
 
-#set the number of availble threads to be used (exemplified by the total number of available threads - 2)
+# set the number of availble threads to be used (exemplified by the total number of available threads - 2)
 # options(BLASTr.num_threads = length(future::availableWorkers()) - 2)
 
-#set the database path (exemplified by the mock blast DB used to be searched with the test ASVs below)
+# set the database path (exemplified by the mock blast DB used to be searched with the test ASVs below)
 # options(BLASTr.db_path = paste0(fs::path_wd(),"/dev/minimal_db/shortest_minimal_db_BLASTr.fasta"))
 # BLASTr.db_path <- paste0(fs::path_wd(),"/dev/minimal_db/shortest_minimal_db_BLASTr.fasta")
-#here are 8 ASVs to be tested with the mock blast DB
+# here are 8 ASVs to be tested with the mock blast DB
 
 ASVs_test <- c(
   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
@@ -51,5 +51,3 @@ blast_res <- BLASTr::parallel_blast(
 #   # ,
 #   # blast_type = "blastn"
 # )
-
-

@@ -10,6 +10,10 @@ get_fasta_header(id, db_path, env_name = "blast-env", verbose = FALSE)
 \item{id}{SubjectID from BLAST results or any NCBI Nucleotide identifier.}
 
 \item{db_path}{Complete path do formatted BLAST database.}
+
+\item{env_name}{The name of the conda environment with the parameter (i.e. "blast-env")}
+
+\item{verbose}{Should condathis::run() internal command be shown?}
 }
 \value{
 Complete identifier for the SubjectID as is on the database.
