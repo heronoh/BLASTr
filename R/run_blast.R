@@ -13,7 +13,9 @@
 #' Passed on to BLAST+ `-qcov_hsp_perc`.
 #' @param num_alignments Number of alignments to retrieve from BLAST. Max = 6.
 #' @param blast_type One of the available BLAST+ search engines,
-#'   one of: `c("blastn", "blastp", "blastx", "tblastn", "tblastx")`.
+#' #'   one of: `c("blastn", "blastp", "blastx", "tblastn", "tblastx")`.
+#' @param verbose Should condathis::run() internal command be shown?
+#' @param env_name The name of the conda environment with the parameter (i.e. "blast-env")
 #'
 #' @return Unformatted BLAST results.
 #'   For results formatted as tibble, please use `BLASTr::get_blast_results()`

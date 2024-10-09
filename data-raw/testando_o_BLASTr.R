@@ -17,7 +17,7 @@ install_dependencies()
   #     if (!condathis::env_exists("blast-env")) {
   #       condathis::create_env("bioconda::blast==2.16", env_name = "blast-env")
   #     }
-}
+# }
 
 # set the number of availble threads to be used (exemplified by the total number of available threads - 2)
 options(BLASTr.num_threads = length(future::availableWorkers()) - 2)
@@ -57,8 +57,10 @@ blast_res <- parallel_blast(
   num_threads = 1,
   perc_qcov_hsp = 80,
   num_alignments = 4,
-  blast_type = "blastn",
-  verbose = FALSE
+  blast_type = "blastn"
+
+  # ,
+  # verbose = FALSE
 )
 
 # blast_res1 <- BLASTr::run_blast(

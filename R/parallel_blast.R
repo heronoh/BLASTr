@@ -2,7 +2,7 @@
 #'
 #' @description Run parallel BLAST for set of sequences
 #'
-#' @inheritParams run_blast
+#' @inheritParams get_blast_results
 #'
 #' @param asvs Character vector with sequences
 #' @param out_file Complete path to output .csv file on an existing folder.
