@@ -30,7 +30,7 @@ Imports:
     rlang,
     tibble,
     tidyr,
-    condathis,
+    condathis (>= 0.0.4),
     stringr
 Suggests:
     testthat (>= 3.0.0),

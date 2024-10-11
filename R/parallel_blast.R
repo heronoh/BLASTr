@@ -31,16 +31,21 @@
 #' @export
 parallel_blast <- function(asvs,
                            db_path,
-                           out_file,
-                           out_RDS,
-                           num_threads,
-                           blast_type,
-                           total_cores,
-                           perc_id,
-                           perc_qcov_hsp,
-                           num_alignments,
+                           out_file = NULL,
+                           out_RDS = NULL,
+                           num_threads = 1L,
+                           blast_type = "blastn",
+                           total_cores = 1L,
+                           perc_id = 80L,
+                           perc_qcov_hsp = 80L,
+                           num_alignments = 4L,
                            verbose = FALSE,
                            env_name = "blast-env") {
+  rlang::check_required(asvs)
+  rlang::check_required(db_path)
+  # rlang::check_required(out_file)
+  # rlang::check_required(out_RDS)
+
   # TODO: Convert ASVs to vector, if needed
 
 
@@ -95,14 +100,16 @@ parallel_blast <- function(asvs,
       verbose = verbose
     )
   }
-  if (!is.na(out_file)) {
+
+  if (isTRUE(!is.na(out_file) && !is.null(out_file))) {
     readr::write_csv(
       x = blast_res,
       file = out_file,
       append = FALSE
     )
   }
-  if (!is.na(out_RDS)) {
+
+  if (isTRUE(!is.na(out_RDS) && !is.null(out_RDS))) {
     readr::write_rds(
       x = blast_res,
       file = out_RDS
