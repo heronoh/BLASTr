@@ -67,7 +67,7 @@ get_blast_results <- function(asv,
     )
   }
   if (blast_res$stdout == "") {
-    df_to_return <- tibble::tibble(`OTU` = asv)
+    df_to_return <- tibble::tibble(`Sequence` = asv)
     return(df_to_return)
   }
 
