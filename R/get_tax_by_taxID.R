@@ -31,13 +31,18 @@ get_tax_by_taxID <- function(organisms_taxIDs,
     "-id", organisms_taxIDs,
     "-format", "xml",
     env_name = env_name,
-    verbose = verbose
+    verbose = verbose,
+    error = "continue"  #necessary for the function not to break when a taxID is wrong!
   )
+
+
+
 
   # create empty tibble to return in case of error (required for parallel_get_tax() to work)
   organism_tbl_parsed_empty <- tibble::tibble(
     "Sci_name" = character(0L),
     "query_taxID" = character(0L),
+    # "Division (NCBI)" = character(0L),
     "Superkingdom (NCBI)" = character(0L),
     "Kingdom (NCBI)" = character(0L),
     "Phylum (NCBI)" = character(0L),
@@ -51,11 +56,27 @@ get_tax_by_taxID <- function(organisms_taxIDs,
     "Genus (NCBI)" = character(0L)
   )
 
+#testing if efetch returned a valid result
   if (isFALSE(stringr::str_detect(organism_xml$stdout, "TaxId"))) {
     message(paste0("------------------------> unable to retrieve taxonomy for: ", organisms_taxIDs, "\t"))
     return(organism_tbl_parsed_empty)
   }
 
+#testing integrity of xml output
+  xml_teste <- tryCatch({
+    xml_file <- xml2::read_xml(organism_xml$stdout)
+    message("XML file is valid!")
+  }, error = function(e) {
+    message(paste("Error in XML file:", e$message))
+  })
+
+
+  if (isTRUE(stringr::str_detect(xml_teste, "^Error"))) {
+    message(paste0("------------------------> unable to retrieve taxonomy for: ", organisms_taxIDs, "\t"))
+    return(organism_tbl_parsed_empty)
+  }
+
+#processing valid xml
   organism_list <- organism_xml$stdout |>
     xml2::read_xml() |>
     xml2::as_list()
@@ -80,6 +101,7 @@ get_tax_by_taxID <- function(organisms_taxIDs,
     temp_names_tbl <- tibble::tibble(
       "Sci_name" = character(0L),
       "query_taxID" = character(0L),
+      # "division" = character(0L),
       "superkingdom" = character(0L),
       "kingdom" = character(0L),
       "phylum" = character(0L),
@@ -99,6 +121,7 @@ get_tax_by_taxID <- function(organisms_taxIDs,
       dplyr::distinct() |>
       # dplyr::filter(Rank %in% c("kingdom","phylum","class","order","family")) %>%
       dplyr::filter(.data$Rank %in% c(
+        # "division",
         "superkingdom", "kingdom",
         "phylum", "subphylum", "class",
         "subclass", "order", "suborder",
@@ -115,11 +138,14 @@ get_tax_by_taxID <- function(organisms_taxIDs,
 
     organism_tbl_parsed <- organism_tbl_parsed |>
       dplyr::relocate(
-        "Sci_name", "query_taxID", "superkingdom", "kingdom",
+        "Sci_name", "query_taxID",
+        # "division",
+        "superkingdom", "kingdom",
         "phylum", "subphylum", "class", "subclass", "order",
         "suborder", "family", "subfamily", "genus"
       ) |>
       dplyr::rename(
+        # "Division (NCBI)" = "division",
         "Superkingdom (NCBI)" = "superkingdom",
         "Kingdom (NCBI)" = "kingdom",
         "Phylum (NCBI)" = "phylum",
