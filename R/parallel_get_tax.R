@@ -71,8 +71,9 @@ parallel_get_tax <- function(organisms_taxIDs,
         parse_result = parse_result,
         env_name = env_name,
         verbose = verbose,
-        .options = furrr::furrr_options(seed = NULL),
-        .progress = TRUE
+        .options = furrr::furrr_options(seed = NULL)
+        # ,
+        # .progress = TRUE
       )
     } else {
       results_temp <- purrr::map_dfr(
@@ -80,8 +81,9 @@ parallel_get_tax <- function(organisms_taxIDs,
         .f = get_tax_by_taxID,
         parse_result = parse_result,
         env_name = env_name,
-        verbose = verbose,
-        .progress = TRUE
+        verbose = verbose
+        # ,
+        # .progress = TRUE
       )
     }
     retry_count <- retry_count + 1L
