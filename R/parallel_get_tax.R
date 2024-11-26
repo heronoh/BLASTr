@@ -71,8 +71,9 @@ parallel_get_tax <- function(organisms_taxIDs,
         parse_result = parse_result,
         env_name = env_name,
         verbose = verbose,
-        .options = furrr::furrr_options(seed = NULL),
-        .progress = TRUE
+        .options = furrr::furrr_options(seed = NULL)
+        # ,
+        # .progress = TRUE
       )
     } else {
       results_temp <- purrr::map_dfr(
