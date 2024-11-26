@@ -31,8 +31,8 @@
 #' @export
 parallel_blast <- function(asvs,
                            db_path,
-                           out_file = NA,
-                           out_RDS = NA,
+                           out_file,
+                           out_RDS,
                            num_threads,
                            blast_type,
                            total_cores,
