@@ -10,7 +10,7 @@ check_cmd <- function(cmd = "blastn", env_name = "blast-env", verbose = "silent"
     packages_to_install <- "bioconda::entrez-direct==22.4"
   }
 
-  if(isTRUE(force)) {
+  if (isTRUE(force)) {
     condathis::create_env(packages_to_install, env_name = env_name, verbose = verbose, overwrite = force)
   }
 

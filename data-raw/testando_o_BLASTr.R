@@ -7,7 +7,7 @@ library(BLASTr)
 
 install_dependencies()
 
-
+packageVersion("BLASTr")
 # if (isFALSE(nzchar(cmd_bin))) {
 #
 #
