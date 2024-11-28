@@ -66,7 +66,7 @@ parallel_blast <- function(asvs,
   #     default = 1
   #   )
   # }
-  check_cmd(blast_type, env_name = env_name)
+  check_cmd(blast_type, env_name = env_name, verbose = verbose)
 
   if (total_cores > 1) {
     future::plan(future::multisession(),

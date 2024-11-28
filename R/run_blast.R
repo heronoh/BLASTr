@@ -63,17 +63,17 @@ run_blast <- function(asv,
 
   rlang::check_required(asv)
   rlang::check_required(db_path)
-  check_cmd(blast_type, env_name = env_name)
+  check_cmd(blast_type, env_name = env_name, verbose = verbose)
 
   query_path <- fs::file_temp("blast_input_", ext = "fasta")
   base::cat(asv, file = query_path)
 
-  blast_res <- condathis::run(
+  blast_res <- condathis::run_bin(
     blast_type,
     "-db", db_path,
     "-query", query_path,
     "-outfmt", "6 std qcovhsp staxid",
-    "-max_hsps", 1,
+    "-max_hsps", "1",
     "-perc_identity", perc_id,
     "-qcov_hsp_perc", perc_qcov_hsp,
     "-num_threads", as.character(num_threads),

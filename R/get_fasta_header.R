@@ -30,7 +30,7 @@ get_fasta_header <- function(id,
     )
   }
 
-  blastdbcmd_res <- condathis::run(
+  blastdbcmd_res <- condathis::run_bin(
     "blastdbcmd",
     "-db", db_path,
     "-entry", id,

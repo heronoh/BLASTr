@@ -96,13 +96,15 @@ parallel_get_tax <- function(organisms_taxIDs,
     # missing taxids
     organisms_taxIDs <- organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]
   }
-#message for problematic taxIDs
+  # message for problematic taxIDs
   if (length(organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]) != 0) {
-    message(paste0("The following taxIDs could not be retrieved even after ",
-                   retry_times,
-                   " attempts:\n",
-                   organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID
-                   )]))
+    message(paste0(
+      "The following taxIDs could not be retrieved even after ",
+      retry_times,
+      " attempts:\n",
+      organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID
+      )]
+    ))
   }
 
   return(results)
