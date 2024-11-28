@@ -2,12 +2,15 @@
 % Please edit documentation in R/check_cmd.R
 \name{check_cmd}
 \alias{check_cmd}
-\title{Check if Commands Are Available otherwise create conda environments for each
-tools}
+\title{Check if Commands Are Available otherwise create conda environments for each tool}
 \usage{
-check_cmd(cmd = "blastn", env_name = "blast-env", verbose = "silent")
+check_cmd(
+  cmd = "blastn",
+  env_name = "blast-env",
+  verbose = "silent",
+  force = FALSE
+)
 }
 \description{
-Check if Commands Are Available otherwise create conda environments for each
-tools
+Check if Commands Are Available otherwise create conda environments for each tool
 }
