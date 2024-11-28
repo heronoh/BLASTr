@@ -12,6 +12,7 @@ package_name := 'BLASTr'
   #!/usr/bin/env -vS bash -i
   \builtin set -euxo pipefail;
   R -q -e 'devtools::load_all();styler::style_pkg();';
+  R -q -e 'devtools::load_all();usethis::use_tidy_description();';
   R -q -e 'devtools::load_all();devtools::document();';
   R -q -e 'devtools::load_all();devtools::test();';
 
