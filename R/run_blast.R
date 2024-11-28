@@ -22,10 +22,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' blast_res <- BLASTr::run_blast(
+#' blast_res <- run_blast(
 #'   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
 #'     AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-#'   db_path = "/data/databases/nt/nt",
+#'   db_path = fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta"),
 #'   perc_id = 80,
 #'   num_thread = 1,
 #'   perc_qcov_hsp = 80,
@@ -36,11 +36,11 @@
 #' @export
 run_blast <- function(asv,
                       db_path,
-                      num_alignments = 4,
-                      num_threads = 1,
+                      num_alignments = 4L,
+                      num_threads = 1L,
                       blast_type = "blastn",
-                      perc_id = 80,
-                      perc_qcov_hsp = 80,
+                      perc_id = 80L,
+                      perc_qcov_hsp = 80L,
                       verbose = FALSE,
                       env_name = "blast-env") {
   #   if (is.null(db_path)) {
@@ -61,26 +61,43 @@ run_blast <- function(asv,
   #   )
   # }
 
+  rlang::check_required(asv)
+  rlang::check_required(db_path)
+  check_cmd(blast_type, env_name = env_name, verbose = verbose)
+
   query_path <- fs::file_temp("blast_input_", ext = "fasta")
   base::cat(asv, file = query_path)
 
-  check_cmd(blast_type, env_name = env_name)
-
-  # blast_bin <- check_bin(blast_type)
-  # rlang::inform(blast_bin)
-  blast_res <- condathis::run(
+  blast_res <- condathis::run_bin(
     blast_type,
     "-db", db_path,
     "-query", query_path,
     "-outfmt", "6 std qcovhsp staxid",
-    "-max_hsps", 1,
+    "-max_hsps", "1",
     "-perc_identity", perc_id,
     "-qcov_hsp_perc", perc_qcov_hsp,
     "-num_threads", as.character(num_threads),
     "-num_alignments", as.character(num_alignments),
     env_name = env_name,
-    verbose = verbose
+    verbose = verbose,
+    error = "continue"
   )
+
+  if (isTRUE(blast_res$status != 0L)) {
+    error_msg_list <- stringr::str_extract_all(blast_res$stderr, "Error:.*")
+
+    if (length(unlist(error_msg_list)) > 0) {
+      error_msg_vector <- unlist(error_msg_list)
+      names(error_msg_vector) <- c(rep("x", times = length(error_msg_vector)))
+    } else {
+      error_msg_vector <- blast_res$stderr
+    }
+
+    cli::cli_abort(
+      message = error_msg_vector,
+      class = "blastr_error_blast_run"
+    )
+  }
 
   return(blast_res)
 }

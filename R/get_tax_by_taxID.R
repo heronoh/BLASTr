@@ -32,7 +32,7 @@ get_tax_by_taxID <- function(organisms_taxIDs,
     "-format", "xml",
     env_name = env_name,
     verbose = verbose,
-    error = "continue"  #necessary for the function not to break when a taxID is wrong!
+    error = "continue" # necessary for the function not to break when a taxID is wrong!
   )
 
 
@@ -56,19 +56,22 @@ get_tax_by_taxID <- function(organisms_taxIDs,
     "Genus (NCBI)" = character(0L)
   )
 
-#testing if efetch returned a valid result
+  # testing if efetch returned a valid result
   if (isFALSE(stringr::str_detect(organism_xml$stdout, "TaxId"))) {
     message(paste0("------------------------> unable to retrieve taxonomy for: ", organisms_taxIDs, "\t"))
     return(organism_tbl_parsed_empty)
   }
 
-#testing integrity of xml output
-  xml_teste <- tryCatch({
-    xml_file <- xml2::read_xml(organism_xml$stdout)
-    message("XML file is valid!")
-  }, error = function(e) {
-    message(paste("Error in XML file:", e$message))
-  })
+  # testing integrity of xml output
+  xml_teste <- tryCatch(
+    {
+      xml_file <- xml2::read_xml(organism_xml$stdout)
+      message("XML file is valid!")
+    },
+    error = function(e) {
+      message(paste("Error in XML file:", e$message))
+    }
+  )
 
 
   if (isTRUE(stringr::str_detect(xml_teste, "^Error"))) {
@@ -76,7 +79,7 @@ get_tax_by_taxID <- function(organisms_taxIDs,
     return(organism_tbl_parsed_empty)
   }
 
-#processing valid xml
+  # processing valid xml
   organism_list <- organism_xml$stdout |>
     xml2::read_xml() |>
     xml2::as_list()

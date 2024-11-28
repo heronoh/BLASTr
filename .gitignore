@@ -1,6 +1,6 @@
 docs
 .Rproj.user
-*.Rproj
+# *.Rproj
 *.RData
 *.Rhistory
 *.gz

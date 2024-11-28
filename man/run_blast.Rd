@@ -7,11 +7,11 @@
 run_blast(
   asv,
   db_path,
-  num_alignments = 4,
-  num_threads = 1,
+  num_alignments = 4L,
+  num_threads = 1L,
   blast_type = "blastn",
-  perc_id = 80,
-  perc_qcov_hsp = 80,
+  perc_id = 80L,
+  perc_qcov_hsp = 80L,
   verbose = FALSE,
   env_name = "blast-env"
 )
@@ -49,10 +49,10 @@ For formatted results, use the function \emph{\code{BLASTr::get_blastn_results()
 }
 \examples{
 \dontrun{
-blast_res <- BLASTr::run_blast(
+blast_res <- run_blast(
   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
     AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-  db_path = "/data/databases/nt/nt",
+  db_path = fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta"),
   perc_id = 80,
   num_thread = 1,
   perc_qcov_hsp = 80,

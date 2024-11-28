@@ -7,11 +7,11 @@
 get_blast_results(
   asv,
   db_path,
-  num_threads,
+  num_threads = 1L,
   blast_type = "blastn",
-  perc_id = 80,
-  perc_qcov_hsp = 80,
-  num_alignments = 4,
+  perc_id = 80L,
+  perc_qcov_hsp = 80L,
+  num_alignments = 4L,
   verbose = FALSE,
   env_name = "blast-env"
 )

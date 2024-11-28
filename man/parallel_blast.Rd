@@ -7,14 +7,14 @@
 parallel_blast(
   asvs,
   db_path,
-  out_file,
-  out_RDS,
-  num_threads,
-  blast_type,
-  total_cores,
-  perc_id,
-  perc_qcov_hsp,
-  num_alignments,
+  out_file = NULL,
+  out_RDS = NULL,
+  num_threads = 1L,
+  blast_type = "blastn",
+  total_cores = 1L,
+  perc_id = 80L,
+  perc_qcov_hsp = 80L,
+  num_alignments = 4L,
   verbose = FALSE,
   env_name = "blast-env"
 )

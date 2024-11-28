@@ -2,7 +2,7 @@
 #'
 #' Check if Commands Are Available otherwise create conda environments for each
 #'    tools
-check_cmd <- function(cmd = "blastn", env_name = "blast-env") {
+check_cmd <- function(cmd = "blastn", env_name = "blast-env", verbose = "silent") {
   cmd_bin <- Sys.which(cmd)
 
   if (stringr::str_detect(cmd, "blast")) {
@@ -12,9 +12,9 @@ check_cmd <- function(cmd = "blastn", env_name = "blast-env") {
   }
 
   if (!condathis::env_exists(env_name) && !nzchar(cmd_bin)) {
-    condathis::create_env(packages_to_install, env_name = env_name, verbose = FALSE)
+    condathis::create_env(packages_to_install, env_name = env_name, verbose = verbose)
   } else if (!condathis::env_exists(env_name) && nzchar(cmd_bin)) {
-    condathis::create_env(env_name = env_name, verbose = FALSE)
+    condathis::create_env(env_name = env_name, verbose = verbose)
   }
   invisible(TRUE)
 }

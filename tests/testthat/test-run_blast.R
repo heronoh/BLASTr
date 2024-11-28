@@ -19,14 +19,32 @@ test_that("parallel_blast works", {
 })
 
 
-test_that("parallel_blast works", {
+test_that("run_blast works", {
   ASVs_test <- readLines(fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt"))
   db_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
 
   blast_res <- run_blast(
     asv = ASVs_test[1],
-    db_path = db_path
+    db_path = db_path,
+    verbose = FALSE
   )
 
+
   testthat::expect_equal(blast_res$status, 0)
+})
+
+test_that("run_blast fails", {
+  ASVs_test <- readLines(fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt"))
+  db_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+
+  testthat::expect_error(
+    blast_res <- run_blast(
+      asv = ASVs_test[1],
+      db_path = db_path,
+      perc_id = "MISSING_VALUE_STRInG",
+      verbose = FALSE
+    ),
+    class = "blastr_error_blast_run"
+  )
+  # testthat::expect_equal(blast_res$status, 0)
 })
