@@ -32,6 +32,7 @@ parallel_get_tax <- function(organisms_taxIDs,
     results <- tibble::tibble(
       "Sci_name" = character(0L),
       "query_taxID" = character(0L),
+      # "Division (NCBI)" = character(0L),
       "Superkingdom (NCBI)" = character(0L),
       "Kingdom (NCBI)" = character(0L),
       "Phylum (NCBI)" = character(0L),
@@ -70,8 +71,9 @@ parallel_get_tax <- function(organisms_taxIDs,
         parse_result = parse_result,
         env_name = env_name,
         verbose = verbose,
-        .options = furrr::furrr_options(seed = NULL),
-        .progress = TRUE
+        .options = furrr::furrr_options(seed = NULL)
+        # ,
+        # .progress = TRUE
       )
     } else {
       results_temp <- purrr::map_dfr(
@@ -79,8 +81,9 @@ parallel_get_tax <- function(organisms_taxIDs,
         .f = get_tax_by_taxID,
         parse_result = parse_result,
         env_name = env_name,
-        verbose = verbose,
-        .progress = TRUE
+        verbose = verbose
+        # ,
+        # .progress = TRUE
       )
     }
     retry_count <- retry_count + 1L
@@ -92,6 +95,14 @@ parallel_get_tax <- function(organisms_taxIDs,
     res_taxid <- unique(results$query_taxID)
     # missing taxids
     organisms_taxIDs <- organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]
+  }
+#message for problematic taxIDs
+  if (length(organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]) != 0) {
+    message(paste0("The following taxIDs could not be retrieved even after ",
+                   retry_times,
+                   " attempts:\n",
+                   organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID
+                   )]))
   }
 
   return(results)

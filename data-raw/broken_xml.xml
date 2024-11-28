@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE TaxaSet>
+<TaxaSet>
+  <Taxon>
+    <TaxId>73025</TaxId>
+    <ScientificName>Eutreptiella gymnastica</ScientificName>
+    <OtherNames>
+      <Name>
+        <ClassCDE>authority</ClassCDE>
+        <DispName>Eutreptiella gymnastica Throndsen, 1969</DispName>
+      </Name>
+    </OtherNames>
+    <ParentTaxId>73024</ParentTaxId>
+    <Rank>species</Rank>
+    <Division>Plants and Fungi</Division>
+    <GeneticCode>
+      <GCId>1</GCId>
+      <GCName>Standard</GCName>
+    </GeneticCode>
+    <MitoGeneticCode>
+      <MGCId>4</MGCId>
+      <MGCName>Mold Mitochondrial; Protozoan Mitochondrial; Coelenterate Mitochondrial; Mycoplasma; Spiroplasma</MGCName>
+    </MitoGeneticCode>
+    <Lineage>cellular organisms; Eukaryota; Discoba; Euglenozoa; Euglenida; Spirocuta; Euglenophyceae; Eutreptiales; Eutreptiella</Lineage>
+    <LineageEx>
+      <Taxon>
+        <TaxId>131567</TaxId>
+        <ScientificName>cellular organisms</ScientificName>
+        <Rank>no rank</Rank>
+      </Taxon>
+      <Taxon>
+        <TaxId>2759</TaxId>
+        <ScientificName>Eukaryota</ScientificName>
+        <Rank>superkingdom</Rank>
+      </Taxon>
+      <Taxon>
+        <TaxId>2611352</TaxId>
+        <ScientificName>Discoba</ScientificName>
+        <Rank>clade</Rank>
+      </Taxon>
+      <Taxon>
+        <TaxId>33682</TaxId>
+        <ScientificName>Euglenozoa</ScientificName>
+        <Rank>phylum</Rank>
+      </Taxon>
+      <Taxon>
+        <TaxId>3035</TaxId>
+        <ScientificName>Euglenida</ScientificName>
+        <Rank>class</Rank>
+      </Taxon>
+      <Taxon>
+        <TaxId>2570567</TaxId>
+        <ScientificName>Spirocuta</ScientificName>
+        <Rank>clade</Rank>
+      </Taxon>
+      <Taxon>
+        <TaxId>2704141</TaxId>
+        <ScientificName>Euglenophyceae</ScientificName>
+        <Rank>subclass</Rank>
+      </Taxon>
+      <Taxon>
+        <TaxId>86652</TaxId>
+        <ScientificName>Eutreptiales</ScientificName>
+        <Rank>order</Rank>
+      </Taxon>
+   <Taxon>
+        <TaxId>73024</TaxId>
+        <ScientificName>Eutreptiella</ScientificName>
+        <Rank>genus</Rank>
+      </Taxon>
+    </LineageEx>
+    <Properties>
+      <Property>
+        <PropName>pgcode</PropName>
+        <PropValueInt>11</PropValueInt>
+      </Property>
+    </Properties>
+    <CreateDate>1998/02/12 11:27:00</CreateDate>
+    <UpdateDate>2005/01/19 15:15:00</UpdateDate>
+    <PubDate>1999/09/06 01:00:00</PubDate>
+  </Taxon>
