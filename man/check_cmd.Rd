@@ -5,7 +5,7 @@
 \title{Check if Commands Are Available otherwise create conda environments for each
 tools}
 \usage{
-check_cmd(cmd = "blastn", env_name = "blast-env")
+check_cmd(cmd = "blastn", env_name = "blast-env", verbose = "silent")
 }
 \description{
 Check if Commands Are Available otherwise create conda environments for each

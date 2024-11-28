@@ -4,7 +4,7 @@
 \alias{install_dependencies}
 \title{Install Dependencies on Conda Environments}
 \usage{
-install_dependencies()
+install_dependencies(verbose = "silent")
 }
 \description{
 Install Dependencies on Conda Environments

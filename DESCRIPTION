@@ -22,8 +22,6 @@ Imports:
     fs,
     furrr,
     future,
-    glue,
-    processx,
     purrr,
     readr,
     rlang,
