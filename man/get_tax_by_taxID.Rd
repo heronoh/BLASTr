@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_tax_by_taxID.R
 \name{get_tax_by_taxID}
 \alias{get_tax_by_taxID}
-\title{Get taxonomy ranks using \emph{NCBI Taxonomy Tax ID}}
+\title{Retrieve Taxonomic Ranks Using NCBI Taxonomy Tax IDs}
 \usage{
 get_tax_by_taxID(
   organisms_taxIDs,
@@ -12,17 +12,33 @@ get_tax_by_taxID(
 )
 }
 \arguments{
-\item{organisms_taxIDs}{Vector of \emph{NCBI Taxonomy Tax ID} to retrieve taxonomy for.}
+\item{organisms_taxIDs}{A character vector of NCBI Taxonomy Tax IDs for which to retrieve taxonomy information.}
 
-\item{parse_result}{Should the taxonomy be returned as the \code{efetch} returns it or should it be parsed into a tibble.}
+\item{parse_result}{Logical indicating whether to parse the taxonomy information into a tibble (\code{TRUE}, default) or return the raw output as returned by \code{efetch} (\code{FALSE}).}
 
-\item{total_cores}{Number of threads to use. Defaults to 1.}
+\item{verbose}{Logical indicating whether to print verbose messages during the process. Default is \code{FALSE}.}
 
-\item{show_command}{Should the \code{efetch} command on command line be printed for debugging. Defaults to TRUE.}
+\item{env_name}{Character string specifying the name of the conda environment where \code{efetch} is installed. Default is \code{"entrez-env"}.}
 }
 \value{
-A tibble with all the taxonomic ranks for the corresponding taxID.
+A tibble containing the taxonomic ranks for the given Tax IDs.
 }
 \description{
-Recover complete taxonomy for a given \emph{NCBI Taxonomy Tax ID}
+Retrieves complete taxonomy information for given NCBI Taxonomy Tax IDs by querying the NCBI database using the \code{efetch} command.
+}
+\examples{
+\dontrun{
+# Retrieve taxonomy for a single Tax ID
+tax_info <- get_tax_by_taxID("9606") # Human
+
+# Retrieve taxonomy for multiple Tax IDs
+tax_ids <- c("9606", "10090", "10116") # Human, Mouse, Rat
+tax_info <- get_tax_by_taxID(tax_ids)
+
+# Get unparsed taxonomy result
+raw_tax_info <- get_tax_by_taxID("9606", parse_result = FALSE)
+
+# Enable verbose output
+tax_info <- get_tax_by_taxID("9606", verbose = TRUE)
+}
 }

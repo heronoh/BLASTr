@@ -124,5 +124,11 @@ parallel_blast <- function(asvs,
       file = out_RDS
     )
   }
+
+  # Reset future plan to default
+  if (total_cores > 1L) {
+    future::plan(future::sequential)
+  }
+
   return(blast_res)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/parallel_get_tax.R
 \name{parallel_get_tax}
 \alias{parallel_get_tax}
-\title{Get taxonomy ranks for a list of \emph{NCBI Taxonomy Tax ID}}
+\title{Retrieve Taxonomic Ranks for a List of NCBI Taxonomy Tax IDs in Parallel}
 \usage{
 parallel_get_tax(
   organisms_taxIDs,
@@ -14,17 +14,37 @@ parallel_get_tax(
 )
 }
 \arguments{
-\item{organisms_taxIDs}{Vector of \emph{NCBI Taxonomy Tax ID} to retrieve taxonomy for.}
+\item{organisms_taxIDs}{A character vector of NCBI Taxonomy Tax IDs to retrieve taxonomy information for.}
 
-\item{parse_result}{Should the taxonomy be returned as the \emph{efetch} returns it or should it be parsed into a tibble.}
+\item{parse_result}{Logical indicating whether to parse the taxonomy information into a tibble (\code{TRUE}, default) or return the raw output as returned by \code{efetch} (\code{FALSE}).}
 
-\item{total_cores}{Number of threads to use. Defaults to 1.}
+\item{total_cores}{Integer specifying the number of cores to use for parallel processing. Defaults to \code{1}.}
 
-\item{retry_times}{Number of times to retry fetching taxonomy if it fails at first.}
+\item{retry_times}{Integer specifying the number of times to retry fetching taxonomy information if it fails. Defaults to \code{10}.}
+
+\item{verbose}{Logical indicating whether to print verbose messages during the process. Default is \code{FALSE}.}
+
+\item{env_name}{Character string specifying the name of the conda environment where \code{efetch} is installed. Default is \code{"entrez-env"}.}
 }
 \value{
-Vector of Tax Ids.
+A tibble containing the taxonomic ranks for the given Tax IDs.
 }
 \description{
-Get taxonomy ranks for a list of \emph{NCBI Taxonomy Tax ID} in parallel.
+Retrieves taxonomy ranks for a list of NCBI Taxonomy Tax IDs using parallel processing. The function queries the NCBI database and can retry fetching taxonomy information multiple times if initial attempts fail.
+}
+\examples{
+\dontrun{
+# Retrieve taxonomy for multiple Tax IDs using 4 cores
+tax_ids <- c("9606", "10090", "10116") # Human, Mouse, Rat
+tax_info <- parallel_get_tax(tax_ids, total_cores = 4)
+
+# Retrieve unparsed taxonomy result
+tax_info_unparsed <- parallel_get_tax(tax_ids, parse_result = FALSE)
+
+# Increase the number of retry attempts
+tax_info <- parallel_get_tax(tax_ids, retry_times = 20)
+
+# Enable verbose output
+tax_info <- parallel_get_tax(tax_ids, verbose = TRUE)
+}
 }
