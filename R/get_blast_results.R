@@ -26,6 +26,9 @@ get_blast_results <- function(asv,
                               perc_id = 80L,
                               perc_qcov_hsp = 80L,
                               num_alignments = 4L,
+                              # task = task,
+                              # gapopen = 5,
+                              # gapextend = 2,
                               verbose = FALSE,
                               env_name = "blast-env") {
   #  if (is.null(db_path)) {
@@ -56,6 +59,9 @@ get_blast_results <- function(asv,
     perc_id = perc_id,
     perc_qcov_hsp = perc_qcov_hsp,
     num_alignments = num_alignments,
+    # gapopen = gapopen,
+    # gapextend = gapextend,
+    # task = task,
     verbose = verbose,
     env_name = env_name
   )
