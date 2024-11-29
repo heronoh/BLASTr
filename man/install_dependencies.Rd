@@ -2,10 +2,30 @@
 % Please edit documentation in R/install_dependencies.R
 \name{install_dependencies}
 \alias{install_dependencies}
-\title{Install Dependencies on Conda Environments}
+\title{Install Required Command-line Tool Dependencies}
 \usage{
 install_dependencies(verbose = "silent", force = FALSE)
 }
+\arguments{
+\item{verbose}{A character string specifying the verbosity level during environment creation. Options include \code{"silent"}, \code{"output"}, \code{"full"} etc. Default is \code{"silent"}.}
+
+\item{force}{A logical value indicating whether to force the re-creation of the Conda environments even if they already exist. Default is \code{FALSE}.}
+}
+\value{
+Invisibly returns \code{TRUE} after attempting to install the dependencies.
+}
 \description{
-Install Dependencies on Conda Environments
+Installs the necessary command-line tools ('blast' and 'efetch') into conda environments if they are not already available. This ensures that all dependencies required by the package are present and up-to-date.
+}
+\examples{
+\dontrun{
+# Install dependencies with default settings
+install_dependencies()
+
+# Install dependencies with verbose output
+install_dependencies(verbose = "verbose")
+
+# Force re-installation of dependencies
+install_dependencies(force = TRUE)
+}
 }

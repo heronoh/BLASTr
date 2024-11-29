@@ -84,9 +84,9 @@ parallel_blast <- function(asvs,
       num_threads = 1,
       blast_type = blast_type,
       num_alignments = num_alignments,
-                      # gapopen = 5,
-                      # gapextend = 2,
-                      # task = task,
+      # gapopen = 5,
+      # gapextend = 2,
+      # task = task,
       db_path = db_path,
       perc_id = perc_id,
       perc_qcov_hsp = perc_qcov_hsp,
@@ -124,5 +124,11 @@ parallel_blast <- function(asvs,
       file = out_RDS
     )
   }
+
+  # Reset future plan to default
+  if (total_cores > 1L) {
+    future::plan(future::sequential)
+  }
+
   return(blast_res)
 }

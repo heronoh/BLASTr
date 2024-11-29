@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_cmd.R
 \name{check_cmd}
 \alias{check_cmd}
-\title{Check if Commands Are Available otherwise create conda environments for each tool}
+\title{Determine if a Command is Available and Install if Necessary}
 \usage{
 check_cmd(
   cmd = "blastn",
@@ -11,6 +11,30 @@ check_cmd(
   force = FALSE
 )
 }
+\arguments{
+\item{cmd}{Character string specifying the command-line tool to check for. Supported commands are \code{"blastn"} and \code{"efetch"}. Default is \code{"blastn"}.}
+
+\item{env_name}{Character string specifying the name of the conda environment to create or use. Default is \code{"blast-env"}.}
+
+\item{verbose}{Character string specifying the verbosity level during environment creation. Options are \code{"silent"}, \code{"verbose"}, etc. Default is \code{"silent"}.}
+
+\item{force}{Logical indicating whether to force the re-creation of the conda environment even if it exists. Default is \code{FALSE}.}
+}
+\value{
+Invisibly returns \code{TRUE} if the command is available or successfully installed.
+}
 \description{
-Check if Commands Are Available otherwise create conda environments for each tool
+Checks if a specified command-line tool ('blastn' or 'efetch') is available on the system. If not, it creates a conda environment and installs the required tool.
+}
+\examples{
+\dontrun{
+# Check if 'blastn' command is available, and install it if not
+check_cmd("blastn", env_name = "blast-env")
+
+# Check if 'efetch' command is available, and install it if not
+check_cmd("efetch", env_name = "entrez-env")
+
+# Force re-creation of the conda environment and re-install 'blastn'
+check_cmd("blastn", env_name = "blast-env", force = TRUE)
+}
 }

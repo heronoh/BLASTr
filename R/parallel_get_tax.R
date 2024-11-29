@@ -1,20 +1,39 @@
-#' @title Get taxonomy ranks for a list of _NCBI Taxonomy Tax ID_
+#' Retrieve Taxonomic Ranks for a List of NCBI Taxonomy Tax IDs in Parallel
 #'
-#' @description Get taxonomy ranks for a list of _NCBI Taxonomy Tax ID_ in parallel.
-#' @param organisms_taxIDs Vector of _NCBI Taxonomy Tax ID_ to retrieve taxonomy for.
-#' @param parse_result Should the taxonomy be returned as the _efetch_ returns it or should it be parsed into a tibble.
-#' @param total_cores Number of threads to use. Defaults to 1.
-#' @param retry_times Number of times to retry fetching taxonomy if it fails at first.
+#' Retrieves taxonomy ranks for a list of NCBI Taxonomy Tax IDs using parallel processing. The function queries the NCBI database and can retry fetching taxonomy information multiple times if initial attempts fail.
 #'
-#' @return Vector of Tax Ids.
+#' @param organisms_taxIDs A character vector of NCBI Taxonomy Tax IDs to retrieve taxonomy information for.
+#' @param parse_result Logical indicating whether to parse the taxonomy information into a tibble (`TRUE`, default) or return the raw output as returned by `efetch` (`FALSE`).
+#' @param total_cores Integer specifying the number of cores to use for parallel processing. Defaults to `1`.
+#' @param retry_times Integer specifying the number of times to retry fetching taxonomy information if it fails. Defaults to `10`.
+#' @param verbose Logical indicating whether to print verbose messages during the process. Default is `FALSE`.
+#' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"entrez-env"`.
 #'
+#' @return A tibble containing the taxonomic ranks for the given Tax IDs.
+#'
+#' @examples
+#' \dontrun{
+#' # Retrieve taxonomy for multiple Tax IDs using 4 cores
+#' tax_ids <- c("9606", "10090", "10116") # Human, Mouse, Rat
+#' tax_info <- parallel_get_tax(tax_ids, total_cores = 4)
+#'
+#' # Retrieve unparsed taxonomy result
+#' tax_info_unparsed <- parallel_get_tax(tax_ids, parse_result = FALSE)
+#'
+#' # Increase the number of retry attempts
+#' tax_info <- parallel_get_tax(tax_ids, retry_times = 20)
+#'
+#' # Enable verbose output
+#' tax_info <- parallel_get_tax(tax_ids, verbose = TRUE)
+#' }
 #' @export
-parallel_get_tax <- function(organisms_taxIDs,
-                             parse_result = TRUE, # default value for parse_result
-                             total_cores = 1,
-                             retry_times = 10,
-                             verbose = FALSE,
-                             env_name = "entrez-env") {
+parallel_get_tax <- function(
+    organisms_taxIDs,
+    parse_result = TRUE,
+    total_cores = 1,
+    retry_times = 10,
+    verbose = FALSE,
+    env_name = "entrez-env") {
   organisms_taxIDs <- unique(organisms_taxIDs)
   check_cmd("efetch", env_name = env_name)
 
@@ -25,9 +44,6 @@ parallel_get_tax <- function(organisms_taxIDs,
       workers = total_cores
     )
   }
-
-
-
   if (rlang::is_true(parse_result)) {
     results <- tibble::tibble(
       "Sci_name" = character(0L),
@@ -72,8 +88,6 @@ parallel_get_tax <- function(organisms_taxIDs,
         env_name = env_name,
         verbose = verbose,
         .options = furrr::furrr_options(seed = NULL)
-        # ,
-        # .progress = TRUE
       )
     } else {
       results_temp <- purrr::map_dfr(
@@ -82,8 +96,6 @@ parallel_get_tax <- function(organisms_taxIDs,
         parse_result = parse_result,
         env_name = env_name,
         verbose = verbose
-        # ,
-        # .progress = TRUE
       )
     }
     retry_count <- retry_count + 1L
@@ -105,6 +117,10 @@ parallel_get_tax <- function(organisms_taxIDs,
       organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID
       )]
     ))
+  }
+  # Reset future plan to default
+  if (total_cores > 1L) {
+    future::plan(future::sequential)
   }
 
   return(results)
