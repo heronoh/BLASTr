@@ -30,6 +30,7 @@ Imports:
     tidyr,
     xml2
 Suggests:
+    curl,
     testthat (>= 3.0.0),
     tictoc,
     withr
