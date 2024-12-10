@@ -7,17 +7,19 @@ Authors@R: c(
     person("Heron", "Hilario", , "heronoh@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2548-1053"))
   )
-Description: Seamlessly run BLAST searches within R, tailored for ASV
-    (Amplicon Sequence Variant) analysis.  This package offers a robust
+Description: Seamlessly run 'BLAST' searches within 'R', tailored for ASV
+    (Amplicon Sequence Variant) analysis. This package offers a robust
     set of functions designed to efficiently identify and process
     sequences from high-throughput metagenomicmetagenomic experiments,
     following best practices for sequence data analysis.
 License: MIT + file LICENSE
 URL: https://github.com/heronoh/BLASTr, https://heronoh.github.io/BLASTr/
 BugReports: https://github.com/heronoh/BLASTr/issues
+Depends:
+    R (>= 4.0)
 Imports:
     cli,
-    condathis (>= 0.0.7),
+    condathis (>= 0.0.8),
     dplyr,
     fs,
     furrr,

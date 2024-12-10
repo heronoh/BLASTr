@@ -6,7 +6,7 @@
 \alias{BLASTr-package}
 \title{BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences}
 \description{
-Seamlessly run BLAST searches within R, tailored for ASV (Amplicon Sequence Variant) analysis. This package offers a robust set of functions designed to efficiently identify and process sequences from high-throughput metagenomicmetagenomic experiments, following best practices for sequence data analysis.
+Seamlessly run 'BLAST' searches within 'R', tailored for ASV (Amplicon Sequence Variant) analysis. This package offers a robust set of functions designed to efficiently identify and process sequences from high-throughput metagenomicmetagenomic experiments, following best practices for sequence data analysis.
 }
 \seealso{
 Useful links:
