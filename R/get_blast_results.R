@@ -19,18 +19,19 @@
 #' )
 #' }
 #' @export
-get_blast_results <- function(asv,
-                              db_path,
-                              num_threads = 1L,
-                              blast_type = "blastn",
-                              perc_id = 80L,
-                              perc_qcov_hsp = 80L,
-                              num_alignments = 4L,
-                              # task = task,
-                              # gapopen = 5,
-                              # gapextend = 2,
-                              verbose = FALSE,
-                              env_name = "blastr-blast-env") {
+get_blast_results <- function(
+    asv,
+    db_path,
+    num_threads = 1L,
+    blast_type = "blastn",
+    perc_id = 80L,
+    perc_qcov_hsp = 80L,
+    num_alignments = 4L,
+    # task = task,
+    # gapopen = 5,
+    # gapextend = 2,
+    verbose = FALSE,
+    env_name = "blastr-blast-env") {
   #  if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",

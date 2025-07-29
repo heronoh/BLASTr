@@ -30,7 +30,7 @@ check_cmd <- function(
   if (stringr::str_detect(cmd, "blast")) {
     packages_to_install <- "bioconda::blast==2.16"
   } else if (stringr::str_detect(cmd, "efetch")) {
-    packages_to_install <- "bioconda::entrez-direct==22.4"
+    packages_to_install <- "bioconda::entrez-direct==24.0"
   } else {
     cli::cli_abort(
       message = c(

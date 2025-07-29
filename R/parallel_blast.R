@@ -29,21 +29,22 @@
 #' )
 #' }
 #' @export
-parallel_blast <- function(asvs,
-                           db_path,
-                           out_file = NULL,
-                           out_RDS = NULL,
-                           num_threads = 1L,
-                           blast_type = "blastn",
-                           total_cores = 1L,
-                           # gapopen = gapopen,
-                           # gapextend = gapextend,
-                           # task = task,
-                           perc_id = 80L,
-                           perc_qcov_hsp = 80L,
-                           num_alignments = 4L,
-                           verbose = FALSE,
-                           env_name = "blastr-blast-env") {
+parallel_blast <- function(
+    asvs,
+    db_path,
+    out_file = NULL,
+    out_RDS = NULL,
+    num_threads = 1L,
+    blast_type = "blastn",
+    total_cores = 1L,
+    # gapopen = gapopen,
+    # gapextend = gapextend,
+    # task = task,
+    perc_id = 80L,
+    perc_qcov_hsp = 80L,
+    num_alignments = 4L,
+    verbose = FALSE,
+    env_name = "blastr-blast-env") {
   rlang::check_required(asvs)
   rlang::check_required(db_path)
   # rlang::check_required(out_file)

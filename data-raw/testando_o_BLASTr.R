@@ -3,11 +3,13 @@ library(BLASTr)
 
 devtools::load_all()
 
-install_dependencies(force = TRUE)
+install_dependencies(force = TRUE, verbose = "full")
 
 packageVersion("BLASTr")
 
 packageVersion("condathis")
+
+packageVersion("purrr")
 
 # set the number of availble threads to be used (exemplified by the total number of available threads - 2)
 # options(BLASTr.num_threads = length(future::availableWorkers()) - 2)
@@ -17,8 +19,9 @@ packageVersion("condathis")
 
 BLASTr.db_path <- paste0(fs::path_wd(), "/data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta")
 # here are 8 ASVs to be tested with the mock blast DB
+# options(BLASTr.dbapth = "/data/databases/nt/nt")
 
-fs::path_package("")
+# fs::path_package()
 
 ASVs_test <- c(
   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
@@ -32,17 +35,40 @@ ASVs_test <- c(
 
 # blaste_res_ASV <- get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",num_thread = 10)
 
-future::availableCores()
+parallelly::availableCores()
+# New mirai based parallel
+mirai::daemons(4)
+mirai::require_daemons()
+mirai::daemons(0)
+mirai::daemons(0)
 
-# options(BLASTr.dbapth = "/data/databases/nt/nt")
+# So for `parallel_blast` case
 
-blast_res <- parallel_blast(
+asvs <- ASVs_test
+
+blast_crate <- purrr::in_parallel(
+  .f = function(asvs) {
+    get_blast_results(asvs)
+  },
+  get_blast_results = get_blast_results
+)
+mirai::mirai(blast_crate(asvs), blast_crate = blast_crate) |>
+  mirai::collect_mirai()
+
+str(blast_crate)
+body(blast_crate)
+args(blast_crate)
+formals(blast_crate)
+attr(blast_crate, "class")
+
+# Test single process
+blast_single_res <- parallel_blast(
   asvs = ASVs_test,
   # db_path = "/data/databases/nt/nt",
   db_path = BLASTr.db_path,
   out_file = NA,
   out_RDS = NA,
-  total_cores = 4,
+  total_cores = 1,
   perc_id = 80,
   num_threads = 1,
   perc_qcov_hsp = 80,
@@ -51,16 +77,21 @@ blast_res <- parallel_blast(
   verbose = "full"
 )
 
-# blast_res1 <- BLASTr::run_blast(
-#   asv = ASVs_test[3],
-#   db_path = "/data/databases/nt/nt",
-#   perc_id = 80,
-#   num_thread = 1,
-#   perc_qcov_hsp = 80,
-#   num_alignments = 2
-#   # ,
-#   # blast_type = "blastn"
-# )
+# Testing multiple processes
+blast_multi_res <- parallel_blast(
+  asvs = ASVs_test,
+  # db_path = "/data/databases/nt/nt",
+  db_path = BLASTr.db_path,
+  out_file = NA,
+  out_RDS = NA,
+  total_cores = 2,
+  perc_id = 80,
+  num_threads = 1,
+  perc_qcov_hsp = 80,
+  num_alignments = 4,
+  blast_type = "blastn",
+  verbose = "full"
+)
 
 teste <- readRDS(file = "/home/heron/prjcts/omics/metaseqs/blast_out.RDS")
 

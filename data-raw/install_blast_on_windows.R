@@ -39,7 +39,7 @@ install_blast_windows <- function(env_name = "blast-win-env") {
 check_bin("blast")
 
 install_dependencies <- function(env_name = "blast-env") {
-  condathis::create_env("bioconda::entrez-direct==22.4", env_name = "entrez-env")
+  condathis::create_env("bioconda::entrez-direct==24.0", env_name = "entrez-env")
 
   condathis::create_env("bioconda::blast==2.16", env_name = "blast-env")
 }

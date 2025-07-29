@@ -16,7 +16,7 @@ License: MIT + file LICENSE
 URL: https://github.com/heronoh/BLASTr, https://heronoh.github.io/BLASTr/
 BugReports: https://github.com/heronoh/BLASTr/issues
 Depends:
-    R (>= 4.0)
+    R (>= 4.1)
 Imports:
     carrier (>= 0.2.0),
     cli,
