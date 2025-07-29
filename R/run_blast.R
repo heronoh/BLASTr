@@ -15,7 +15,7 @@
 #' @param blast_type One of the available BLAST+ search engines,
 #' #'   one of: `c("blastn", "blastp", "blastx", "tblastn", "tblastx")`.
 #' @param verbose Should condathis::run() internal command be shown?
-#' @param env_name The name of the conda environment with the parameter (i.e. "blast-env")
+#' @param env_name The name of the conda environment with the parameter (i.e. "blastr-blast-env")
 #' @return Unformatted BLAST results.
 #'   For results formatted as tibble, please use `BLASTr::get_blast_results()`
 #'
@@ -33,18 +33,19 @@
 #' }
 #'
 #' @export
-run_blast <- function(asv,
-                      db_path,
-                      num_alignments = 4L,
-                      num_threads = 1L,
-                      blast_type = "blastn",
-                      # gapopen = 5,
-                      # gapextend = 2,
-                      # task = "blastn",
-                      perc_id = 80L,
-                      perc_qcov_hsp = 80L,
-                      verbose = FALSE,
-                      env_name = "blast-env") {
+run_blast <- function(
+    asv,
+    db_path,
+    num_alignments = 4L,
+    num_threads = 1L,
+    blast_type = "blastn",
+    # gapopen = 5,
+    # gapextend = 2,
+    # task = "blastn",
+    perc_id = 80L,
+    perc_qcov_hsp = 80L,
+    verbose = FALSE,
+    env_name = "blastr-blast-env") {
   #   if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",

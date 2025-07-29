@@ -1,9 +1,13 @@
 # devtools::install_github("heronoh/BLASTr")
 library(BLASTr)
 
-install_dependencies(force = FALSE)
+devtools::load_all()
+
+install_dependencies(force = TRUE)
 
 packageVersion("BLASTr")
+
+packageVersion("condathis")
 
 # set the number of availble threads to be used (exemplified by the total number of available threads - 2)
 # options(BLASTr.num_threads = length(future::availableWorkers()) - 2)

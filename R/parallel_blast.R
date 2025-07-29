@@ -43,7 +43,7 @@ parallel_blast <- function(asvs,
                            perc_qcov_hsp = 80L,
                            num_alignments = 4L,
                            verbose = FALSE,
-                           env_name = "blast-env") {
+                           env_name = "blastr-blast-env") {
   rlang::check_required(asvs)
   rlang::check_required(db_path)
   # rlang::check_required(out_file)

@@ -1,6 +1,6 @@
 Package: BLASTr
 Title: Parallel Taxonomic Classification of Metabarcoding Sequences
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: c(
     person("Lucio", "Queiroz", , "luciorqueiroz@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-6090-1834")),
@@ -18,13 +18,15 @@ BugReports: https://github.com/heronoh/BLASTr/issues
 Depends:
     R (>= 4.0)
 Imports:
+    carrier (>= 0.2.0),
     cli,
-    condathis (>= 0.1.0),
+    condathis (>= 0.1.2),
     dplyr,
     fs,
-    furrr,
-    future,
-    purrr,
+    furrr (>= 0.3.1),
+    future (>= 1.34.0),
+    mirai (>= 2.4.1),
+    purrr (>= 1.1.0),
     readr,
     rlang,
     stringr,

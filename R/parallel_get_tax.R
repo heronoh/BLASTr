@@ -7,7 +7,7 @@
 #' @param total_cores Integer specifying the number of cores to use for parallel processing. Defaults to `1`.
 #' @param retry_times Integer specifying the number of times to retry fetching taxonomy information if it fails. Defaults to `10`.
 #' @param verbose Logical indicating whether to print verbose messages during the process. Default is `FALSE`.
-#' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"entrez-env"`.
+#' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"blastr-entrez-env"`.
 #'
 #' @return A tibble containing the taxonomic ranks for the given Tax IDs.
 #'
@@ -33,7 +33,7 @@ parallel_get_tax <- function(
     total_cores = 1,
     retry_times = 10,
     verbose = FALSE,
-    env_name = "entrez-env") {
+    env_name = "blastr-entrez-env") {
   organisms_taxIDs <- unique(organisms_taxIDs)
   check_cmd("efetch", env_name = env_name)
 

@@ -20,7 +20,17 @@
 #' }
 #' @export
 install_dependencies <- function(verbose = "silent", force = FALSE) {
-  check_cmd("blastn", env_name = "blast-env", verbose = verbose, force = force)
-  check_cmd("efetch", env_name = "entrez-env", verbose = verbose, force = force)
+  check_cmd(
+    cmd = "blastn",
+    env_name = "blastr-blast-env",
+    verbose = verbose,
+    force = force
+  )
+  check_cmd(
+    cmd = "efetch",
+    env_name = "blastr-entrez-env",
+    verbose = verbose,
+    force = force
+  )
   invisible(TRUE)
 }

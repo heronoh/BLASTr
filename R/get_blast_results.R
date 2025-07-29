@@ -30,7 +30,7 @@ get_blast_results <- function(asv,
                               # gapopen = 5,
                               # gapextend = 2,
                               verbose = FALSE,
-                              env_name = "blast-env") {
+                              env_name = "blastr-blast-env") {
   #  if (is.null(db_path)) {
   #   db_path <- getOption(
   #     "BLASTr.db_path",

@@ -4,14 +4,14 @@
 \alias{get_fasta_header}
 \title{Get header from SubjectID}
 \usage{
-get_fasta_header(id, db_path, env_name = "blast-env", verbose = FALSE)
+get_fasta_header(id, db_path, env_name = "blastr-blast-env", verbose = FALSE)
 }
 \arguments{
 \item{id}{SubjectID from BLAST results or any NCBI Nucleotide identifier.}
 
 \item{db_path}{Complete path do formatted BLAST database.}
 
-\item{env_name}{The name of the conda environment with the parameter (i.e. "blast-env")}
+\item{env_name}{The name of the conda environment with the parameter (i.e. "blastr-blast-env")}
 
 \item{verbose}{Should condathis::run() internal command be shown?}
 }

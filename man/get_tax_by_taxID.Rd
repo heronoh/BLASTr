@@ -8,7 +8,7 @@ get_tax_by_taxID(
   organisms_taxIDs,
   parse_result = TRUE,
   verbose = FALSE,
-  env_name = "entrez-env"
+  env_name = "blastr-entrez-env"
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ get_tax_by_taxID(
 
 \item{verbose}{Logical indicating whether to print verbose messages during the process. Default is \code{FALSE}.}
 
-\item{env_name}{Character string specifying the name of the conda environment where \code{efetch} is installed. Default is \code{"entrez-env"}.}
+\item{env_name}{Character string specifying the name of the conda environment where \code{efetch} is installed. Default is \code{"blastr-entrez-env"}.}
 }
 \value{
 A tibble containing the taxonomic ranks for the given Tax IDs.
