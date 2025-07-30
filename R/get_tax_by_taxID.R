@@ -5,7 +5,7 @@
 #' @param organisms_taxIDs A character vector of NCBI Taxonomy Tax IDs for which to retrieve taxonomy information.
 #' @param parse_result Logical indicating whether to parse the taxonomy information into a tibble (`TRUE`, default) or return the raw output as returned by `efetch` (`FALSE`).
 #' @param verbose Logical indicating whether to print verbose messages during the process. Default is `FALSE`.
-#' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"entrez-env"`.
+#' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"blastr-entrez-env"`.
 #'
 #' @return A tibble containing the taxonomic ranks for the given Tax IDs.
 #'
@@ -28,7 +28,7 @@
 get_tax_by_taxID <- function(organisms_taxIDs,
                              parse_result = TRUE,
                              verbose = FALSE,
-                             env_name = "entrez-env") {
+                             env_name = "blastr-entrez-env") {
   `%>%` <- dplyr::`%>%`
   .data <- rlang::.data
 
@@ -104,7 +104,9 @@ get_tax_by_taxID <- function(organisms_taxIDs,
     }) |>
     purrr::list_rbind() |>
     dplyr::mutate("query_taxID" = organisms_taxIDs) |>
-    dplyr::mutate("Sci_name" = unlist(organism_list$TaxaSet$Taxon$ScientificName))
+    dplyr::mutate(
+      "Sci_name" = unlist(organism_list$TaxaSet$Taxon$ScientificName)
+    )
 
   if (rlang::is_true(parse_result)) {
     temp_names_tbl <- tibble::tibble(
@@ -141,7 +143,6 @@ get_tax_by_taxID <- function(organisms_taxIDs,
       dplyr::bind_rows(
         temp_names_tbl
       )
-
     organism_tbl_parsed <- organism_tbl_parsed |>
       dplyr::relocate(
         "Sci_name", "query_taxID",

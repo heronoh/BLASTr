@@ -19,38 +19,21 @@
 #' )
 #' }
 #' @export
-get_blast_results <- function(asv,
-                              db_path,
-                              num_threads = 1L,
-                              blast_type = "blastn",
-                              perc_id = 80L,
-                              perc_qcov_hsp = 80L,
-                              num_alignments = 4L,
-                              # task = task,
-                              # gapopen = 5,
-                              # gapextend = 2,
-                              verbose = FALSE,
-                              env_name = "blast-env") {
-  #  if (is.null(db_path)) {
-  #   db_path <- getOption(
-  #     "BLASTr.db_path",
-  #     default = NULL
-  #   )
-  # }
-  # if (is.null(db_path)) {
-  #   cli::cli_abort(
-  #     message = "No BLAST database provided."
-  #   )
-  # }
-
+get_blast_results <- function(
+    asv,
+    db_path,
+    num_threads = 1L,
+    blast_type = "blastn",
+    perc_id = 80L,
+    perc_qcov_hsp = 80L,
+    num_alignments = 4L,
+    # task = task,
+    # gapopen = 5,
+    # gapextend = 2,
+    verbose = FALSE,
+    env_name = "blastr-blast-env") {
   .data <- rlang::.data
 
-  if (is.null(num_threads)) {
-    num_threads <- getOption(
-      "BLASTr.num_threads",
-      default = 1
-    )
-  }
   blast_res <- run_blast(
     asv = asv,
     blast_type = blast_type,
@@ -59,13 +42,10 @@ get_blast_results <- function(asv,
     perc_id = perc_id,
     perc_qcov_hsp = perc_qcov_hsp,
     num_alignments = num_alignments,
-    # gapopen = gapopen,
-    # gapextend = gapextend,
-    # task = task,
     verbose = verbose,
     env_name = env_name
   )
-  # test blast_res content ----
+
   if (isTRUE(blast_res$status != 0)) {
     cli::cli_abort(
       message = "{.pkg BLASTr} has not run correctly.",
@@ -100,10 +80,7 @@ get_blast_results <- function(asv,
       trim_ws = TRUE,
       comment = "#"
     ) |>
-    dplyr::mutate("staxid" = as.character(.data$staxid)) # adicionado para testes
-
-  # dplyr::mutate(dplyr::across(.cols = dplyr::ends_with("taxid"), # adicionado para testes
-  # ~ as.character(.)))
+    dplyr::mutate("staxid" = as.character(.data$staxid))
 
   blast_table$`subject header` <- purrr::map_chr(
     .x = blast_table$subject,
@@ -119,7 +96,7 @@ get_blast_results <- function(asv,
     blast_table,
     var = "res"
   )
-  # blast_table <- tidyr::pivot_wider(blast_table, id_cols = subject,  names_from = res, values_from = seq_len(ncol(blast_table)), names_glue = "{res}_{.value}")
+
   blast_table <- tidyr::pivot_wider(
     blast_table,
     names_from = "res",

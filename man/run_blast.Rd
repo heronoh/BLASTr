@@ -13,7 +13,7 @@ run_blast(
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   verbose = FALSE,
-  env_name = "blast-env"
+  env_name = "blastr-blast-env"
 )
 }
 \arguments{
@@ -37,7 +37,7 @@ Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{verbose}{Should condathis::run() internal command be shown?}
 
-\item{env_name}{The name of the conda environment with the parameter (i.e. "blast-env")}
+\item{env_name}{The name of the conda environment with the parameter (i.e. "blastr-blast-env")}
 }
 \value{
 Unformatted BLAST results.

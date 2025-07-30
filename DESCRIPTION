@@ -1,6 +1,6 @@
 Package: BLASTr
 Title: Parallel Taxonomic Classification of Metabarcoding Sequences
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: c(
     person("Lucio", "Queiroz", , "luciorqueiroz@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-6090-1834")),
@@ -8,23 +8,23 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-2548-1053"))
   )
 Description: Seamlessly run 'BLAST' searches within 'R', tailored for ASV
-    (Amplicon Sequence Variant) analysis. This package offers a robust
-    set of functions designed to efficiently identify and process
-    sequences from high-throughput metagenomicmetagenomic experiments,
-    following best practices for sequence data analysis.
+    (Amplicon Sequence Variant) analysis. This package offers a robust set
+    of functions designed to efficiently identify and process sequences
+    from high-throughput metagenomicmetagenomic experiments, following
+    best practices for sequence data analysis.
 License: MIT + file LICENSE
 URL: https://github.com/heronoh/BLASTr, https://heronoh.github.io/BLASTr/
 BugReports: https://github.com/heronoh/BLASTr/issues
 Depends:
-    R (>= 4.0)
+    R (>= 4.1)
 Imports:
+    carrier (>= 0.2.0),
     cli,
-    condathis (>= 0.0.8),
+    condathis (>= 0.1.2),
     dplyr,
     fs,
-    furrr,
-    future,
-    purrr,
+    mirai (>= 2.4.1),
+    purrr (>= 1.1.0),
     readr,
     rlang,
     stringr,
@@ -34,10 +34,7 @@ Imports:
 Suggests:
     curl,
     testthat (>= 3.0.0),
-    tictoc,
     withr
-Remotes:
-    github::luciorq/condathis
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

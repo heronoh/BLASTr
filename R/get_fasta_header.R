@@ -13,16 +13,11 @@
 #' BLASTr::get_fasta_header(id = "AP011979.1", db_path = "/data/databases/nt/nt")
 #' }
 #' @export
-get_fasta_header <- function(id,
-                             db_path,
-                             env_name = "blast-env",
-                             verbose = FALSE) {
-  if (is.null(db_path)) {
-    db_path <- getOption(
-      "BLASTr.db_path",
-      default = NULL
-    )
-  }
+get_fasta_header <- function(
+    id,
+    db_path,
+    env_name = "blastr-blast-env",
+    verbose = FALSE) {
   if (is.null(db_path)) {
     cli::cli_abort(
       message = "No BLAST database provided.",

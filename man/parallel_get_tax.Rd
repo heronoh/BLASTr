@@ -10,7 +10,7 @@ parallel_get_tax(
   total_cores = 1,
   retry_times = 10,
   verbose = FALSE,
-  env_name = "entrez-env"
+  env_name = "blastr-entrez-env"
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ parallel_get_tax(
 
 \item{verbose}{Logical indicating whether to print verbose messages during the process. Default is \code{FALSE}.}
 
-\item{env_name}{Character string specifying the name of the conda environment where \code{efetch} is installed. Default is \code{"entrez-env"}.}
+\item{env_name}{Character string specifying the name of the conda environment where \code{efetch} is installed. Default is \code{"blastr-entrez-env"}.}
 }
 \value{
 A tibble containing the taxonomic ranks for the given Tax IDs.
