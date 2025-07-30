@@ -37,9 +37,6 @@ parallel_blast <- function(
     num_threads = 1L,
     blast_type = "blastn",
     total_cores = 1L,
-    # gapopen = gapopen,
-    # gapextend = gapextend,
-    # task = task,
     perc_id = 80L,
     perc_qcov_hsp = 80L,
     num_alignments = 4L,
@@ -47,68 +44,51 @@ parallel_blast <- function(
     env_name = "blastr-blast-env") {
   rlang::check_required(asvs)
   rlang::check_required(db_path)
-  # rlang::check_required(out_file)
-  # rlang::check_required(out_RDS)
 
-  # TODO: Convert ASVs to vector, if needed
-
-
-  # if (is.null(db_path)) {
-  #   db_path <- getOption(
-  #     "BLASTr.db_path",
-  #     default = NULL
-  #   )
-  # }
-  # if (is.null(db_path)) {
-  #   cli::cli_abort(
-  #     message = "No BLAST database provided."
-  #   )
-  # }
-  # if (is.null(num_thread)) {
-  #   num_thread <- getOption(
-  #     "BLASTr.num_thread",
-  #     default = 1
-  #   )
-  # }
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
 
-  if (total_cores > 1) {
-    future::plan(future::multisession(),
-      workers = total_cores
-    )
+  parallel_set <- FALSE
 
-    blast_res <- furrr::future_map_dfr(
-      .x = asvs,
-      .f = get_blast_results,
-      .options = furrr::furrr_options(seed = NULL),
-      # .progress = TRUE,
-      num_threads = 1,
+  if (
+    isTRUE(total_cores > 1L) &&
+      isTRUE(mirai::status(.compute = "blastr-cpu")$connections < total_cores)
+  ) {
+    mirai::daemons(n = total_cores, .compute = "blastr-cpu")
+    parallel_set <- TRUE
+  }
+
+  blast_res <- purrr::map(
+    .x = asvs,
+    .f = purrr::in_parallel(
+      .f = \(x) {
+        get_blast_results(
+          asv = x,
+          db_path = db_path,
+          num_threads = num_threads,
+          blast_type = blast_type,
+          perc_id = perc_id,
+          perc_qcov_hsp = perc_qcov_hsp,
+          num_alignments = num_alignments,
+          verbose = verbose,
+          env_name = env_name
+        )
+      },
+      num_threads = 1L,
       blast_type = blast_type,
       num_alignments = num_alignments,
-      # gapopen = 5,
-      # gapextend = 2,
-      # task = task,
       db_path = db_path,
       perc_id = perc_id,
       perc_qcov_hsp = perc_qcov_hsp,
-      verbose = verbose
+      verbose = verbose,
+      env_name = env_name,
+      get_blast_results = get_blast_results,
+      run_blast = run_blast
     )
-  } else {
-    blast_res <- purrr::map_dfr(
-      .x = asvs,
-      .f = get_blast_results,
-      # .progress = TRUE,
-      num_threads = 1,
-      blast_type = blast_type,
-      num_alignments = num_alignments,
-      # gapopen = 5,
-      # gapextend = 2,
-      # task = task,
-      db_path = db_path,
-      perc_id = perc_id,
-      perc_qcov_hsp = perc_qcov_hsp,
-      verbose = verbose
-    )
+  ) |>
+    purrr::list_rbind()
+
+  if (identical(class(blast_res), "data.frame")) {
+    class(blast_res) <- c("tbl_df", "tbl", "data.frame")
   }
 
   if (isTRUE(!is.na(out_file) && !is.null(out_file))) {
@@ -126,9 +106,8 @@ parallel_blast <- function(
     )
   }
 
-  # Reset future plan to default
-  if (total_cores > 1L) {
-    future::plan(future::sequential)
+  if (isTRUE(total_cores > 1L) && isTRUE(parallel_set)) {
+    mirai::daemons(n = 0L, .compute = "blastr-cpu")
   }
 
   return(blast_res)

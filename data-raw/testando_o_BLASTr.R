@@ -37,29 +37,13 @@ ASVs_test <- c(
 
 parallelly::availableCores()
 # New mirai based parallel
-mirai::daemons(4)
-mirai::require_daemons()
-mirai::daemons(0)
-mirai::daemons(0)
+mirai::daemons(n = 4L, .compute = "blastr-cpu")
+mirai::require_daemons(.compute = "blastr-cpu")
+
+mirai::status(.compute = "blastr-cpu")
+mirai::status(.compute = "blastr-cpu")$connections
 
 # So for `parallel_blast` case
-
-asvs <- ASVs_test
-
-blast_crate <- purrr::in_parallel(
-  .f = function(asvs) {
-    get_blast_results(asvs)
-  },
-  get_blast_results = get_blast_results
-)
-mirai::mirai(blast_crate(asvs), blast_crate = blast_crate) |>
-  mirai::collect_mirai()
-
-str(blast_crate)
-body(blast_crate)
-args(blast_crate)
-formals(blast_crate)
-attr(blast_crate, "class")
 
 # Test single process
 blast_single_res <- parallel_blast(
@@ -68,11 +52,11 @@ blast_single_res <- parallel_blast(
   db_path = BLASTr.db_path,
   out_file = NA,
   out_RDS = NA,
-  total_cores = 1,
-  perc_id = 80,
-  num_threads = 1,
-  perc_qcov_hsp = 80,
-  num_alignments = 4,
+  total_cores = 1L,
+  perc_id = 80L,
+  num_threads = 1L,
+  perc_qcov_hsp = 80L,
+  num_alignments = 4L,
   blast_type = "blastn",
   verbose = "full"
 )
@@ -84,7 +68,7 @@ blast_multi_res <- parallel_blast(
   db_path = BLASTr.db_path,
   out_file = NA,
   out_RDS = NA,
-  total_cores = 2,
+  total_cores = 2L,
   perc_id = 80,
   num_threads = 1,
   perc_qcov_hsp = 80,
@@ -93,7 +77,13 @@ blast_multi_res <- parallel_blast(
   verbose = "full"
 )
 
+identical(blast_multi_res, blast_single_res)
+
 teste <- readRDS(file = "/home/heron/prjcts/omics/metaseqs/blast_out.RDS")
+
+# Close connections
+mirai::daemons(n = 0L, .compute = "blastr-cpu")
+
 
 # benchmarking
 

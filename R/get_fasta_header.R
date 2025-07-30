@@ -20,12 +20,6 @@ get_fasta_header <- function(
   verbose = FALSE
 ) {
   if (is.null(db_path)) {
-    db_path <- getOption(
-      "BLASTr.db_path",
-      default = NULL
-    )
-  }
-  if (is.null(db_path)) {
     cli::cli_abort(
       message = "No BLAST database provided.",
       class = "blastr_missing_blast_db"

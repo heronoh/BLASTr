@@ -46,24 +46,6 @@ run_blast <- function(
     perc_qcov_hsp = 80L,
     verbose = FALSE,
     env_name = "blastr-blast-env") {
-  #   if (is.null(db_path)) {
-  #   db_path <- getOption(
-  #     "BLASTr.db_path",
-  #     default = NULL
-  #   )
-  # }
-  # if (is.null(db_path)) {
-  #   cli::cli_abort(
-  #     message = "No BLAST database provided."
-  #   )
-  # }
-  # if (is.null(num_threads)) {
-  #   num_threads <- getOption(
-  #     "BLASTr.num_threads",
-  #     default = 1
-  #   )
-  # }
-
   rlang::check_required(asv)
   rlang::check_required(db_path)
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
@@ -92,7 +74,7 @@ run_blast <- function(
   if (isTRUE(blast_res$status != 0L)) {
     error_msg_list <- stringr::str_extract_all(blast_res$stderr, "Error:.*")
 
-    if (length(unlist(error_msg_list)) > 0) {
+    if (isTRUE(length(unlist(error_msg_list)) > 0)) {
       error_msg_vector <- unlist(error_msg_list)
       names(error_msg_vector) <- c(rep("x", times = length(error_msg_vector)))
     } else {

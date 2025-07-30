@@ -6,6 +6,8 @@
 
 * Remove of the `furrr` based functions in favor of the new `purrr` native parallel.
 
+* All `options()` based parameters have been removed in favor of explicit arguments in the functions.
+
 ### New features
 
 * New parallel framework based on native `purrr` functions,
@@ -18,6 +20,7 @@
 # BLASTr 0.1.3
 
 * Refactor handling of internal errors.
+
 * `shell_exec` is not available anymore.
 
 # BLASTr 0.1.2
