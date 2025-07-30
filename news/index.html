@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLASTr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,10 +33,26 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.5" id="blastr-015-dev">BLASTr 0.1.5 (dev)<a class="anchor" aria-label="anchor" href="#blastr-015-dev"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-1-5">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-5"></a></h3>
+<ul><li><p>The internal environments used by BLASTr have been renamed to <code>blastr-blast-env</code> and <code>blastr-entrez-env</code>.</p></li>
+<li><p>Remove of the <code>furrr</code> based functions in favor of the new <code>purrr</code> native parallel.</p></li>
+<li><p>All <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code> based parameters have been removed in favor of explicit arguments in the functions.</p></li>
+</ul><div class="section level4">
+<h4 id="new-features-0-1-5">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-5"></a></h4>
+<ul><li>New parallel framework based on native <code>purrr</code> functions, using <code>mirai</code> and <code>carrier</code> in the background.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="minor-improvements-and-fixes-0-1-5">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-0-1-5"></a></h4>
+<ul><li>Internal <code>entrez-direct</code> version bump to <code>24.0</code>.</li>
+</ul></div>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.3" id="blastr-013">BLASTr 0.1.3<a class="anchor" aria-label="anchor" href="#blastr-013"></a></h2>
-<ul><li>Refactor handling of internal errors.</li>
-<li>
-<code>shell_exec</code> is not available anymore.</li>
+<ul><li><p>Refactor handling of internal errors.</p></li>
+<li><p><code>shell_exec</code> is not available anymore.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2" id="blastr-012">BLASTr 0.1.2<a class="anchor" aria-label="anchor" href="#blastr-012"></a></h2>
@@ -52,7 +68,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
