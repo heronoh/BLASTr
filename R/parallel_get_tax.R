@@ -35,15 +35,19 @@ parallel_get_tax <- function(
     verbose = FALSE,
     env_name = "blastr-entrez-env") {
   organisms_taxIDs <- unique(organisms_taxIDs)
+
   check_cmd("efetch", env_name = env_name)
 
-  # Set up parallel plan
-  # future::plan(future::multisession, workers = total_cores)
-  if (total_cores > 1L) {
-    future::plan(future::multisession(),
-      workers = total_cores
-    )
+  parallel_set <- FALSE
+
+  if (
+    isTRUE(total_cores > 1L) &&
+      isTRUE(mirai::status(.compute = "blastr-cpu")$connections < total_cores)
+  ) {
+    mirai::daemons(n = total_cores, .compute = "blastr-cpu")
+    parallel_set <- TRUE
   }
+
   if (rlang::is_true(parse_result)) {
     results <- tibble::tibble(
       "Sci_name" = character(0L),
@@ -63,7 +67,6 @@ parallel_get_tax <- function(
     )
   }
 
-
   if (rlang::is_false(parse_result)) {
     # create empty tibble for binding
     results <- tibble::tibble(
@@ -74,30 +77,37 @@ parallel_get_tax <- function(
     )
   }
 
-
   res_taxid <- character(0L)
   retry_count <- 0L
-  while (isTRUE(retry_count < retry_times) && isFALSE(all(organisms_taxIDs %in% res_taxid))) {
+  while (
+    isTRUE(retry_count < retry_times) &&
+      isFALSE(all(organisms_taxIDs %in% res_taxid))
+  ) {
     message(paste0("retrying ", retry_count, " of ", retry_times))
-    # message(organisms_taxIDs)
-    if (total_cores > 1L) {
-      results_temp <- furrr::future_map_dfr(
-        .x = organisms_taxIDs,
-        .f = get_tax_by_taxID,
+
+    results_temp <- purrr::map(
+      .x = organisms_taxIDs,
+      .f = purrr::in_parallel(
+        .f = \(x) {
+          get_tax_by_taxID(
+            organisms_taxIDs = x,
+            parse_result = parse_result,
+            env_name = env_name,
+            verbose = verbose
+          )
+        },
         parse_result = parse_result,
         env_name = env_name,
         verbose = verbose,
-        .options = furrr::furrr_options(seed = NULL)
+        get_get_tax_by_taxID = get_tax_by_taxID
       )
-    } else {
-      results_temp <- purrr::map_dfr(
-        .x = organisms_taxIDs,
-        .f = get_tax_by_taxID,
-        parse_result = parse_result,
-        env_name = env_name,
-        verbose = verbose
-      )
+    ) |>
+      purrr::list_rbind()
+
+    if (identical(class(results_temp), "data.frame")) {
+      class(results_temp) <- c("tbl_df", "tbl", "data.frame")
     }
+
     retry_count <- retry_count + 1L
 
     results <- dplyr::bind_rows(results, results_temp) |>
@@ -109,18 +119,19 @@ parallel_get_tax <- function(
     organisms_taxIDs <- organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]
   }
   # message for problematic taxIDs
-  if (length(organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]) != 0) {
+  if (
+    length(organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]) != 0L
+  ) {
     message(paste0(
       "The following taxIDs could not be retrieved even after ",
       retry_times,
       " attempts:\n",
-      organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID
-      )]
+      organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]
     ))
   }
-  # Reset future plan to default
-  if (total_cores > 1L) {
-    future::plan(future::sequential)
+
+  if (isTRUE(total_cores > 1L) && isTRUE(parallel_set)) {
+    mirai::daemons(n = 0L, .compute = "blastr-cpu")
   }
 
   return(results)

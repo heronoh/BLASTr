@@ -8,6 +8,9 @@
 #'
 #' @export
 parse_fasta <- function(file_path) {
+  # TODO: @luciorq Remove when proper way of importing crate is found
+  declare(carrier::crate)
+
   # TODO: @luciorq Add check for file read access
   # + e.g.: `fs::file_access(file_path, mode = "read")`
   if (isFALSE(fs::file_exists(file_path))) {

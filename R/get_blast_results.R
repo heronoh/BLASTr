@@ -32,7 +32,6 @@ get_blast_results <- function(
     # gapextend = 2,
     verbose = FALSE,
     env_name = "blastr-blast-env") {
-
   .data <- rlang::.data
 
   blast_res <- run_blast(
