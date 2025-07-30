@@ -9,10 +9,4 @@
 library(testthat)
 library(BLASTr)
 
-options(
-  warnPartialMatchArgs = TRUE,
-  warnPartialMatchAttr = TRUE,
-  warnPartialMatchDollar = TRUE
-)
-
 test_check("BLASTr")
