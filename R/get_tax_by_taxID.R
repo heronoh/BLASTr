@@ -104,7 +104,9 @@ get_tax_by_taxID <- function(organisms_taxIDs,
     }) |>
     purrr::list_rbind() |>
     dplyr::mutate("query_taxID" = organisms_taxIDs) |>
-    dplyr::mutate("Sci_name" = unlist(organism_list$TaxaSet$Taxon$ScientificName))
+    dplyr::mutate(
+      "Sci_name" = unlist(organism_list$TaxaSet$Taxon$ScientificName)
+    )
 
   if (rlang::is_true(parse_result)) {
     temp_names_tbl <- tibble::tibble(
@@ -141,7 +143,6 @@ get_tax_by_taxID <- function(organisms_taxIDs,
       dplyr::bind_rows(
         temp_names_tbl
       )
-
     organism_tbl_parsed <- organism_tbl_parsed |>
       dplyr::relocate(
         "Sci_name", "query_taxID",

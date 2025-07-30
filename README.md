@@ -1,6 +1,4 @@
-
 # BLASTr
-
 
 An R package for parallel taxonomic classification of metabarcoding sequences.
 
@@ -41,7 +39,7 @@ which blastn
 
 The main way to install `BLASTr` is through:
 
-``` r
+```r
 install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
 ```
 -->
@@ -50,7 +48,7 @@ install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
 
 You can install the development version of BLASTr from [GitHub](https://github.com/heronoh/BLASTr) with:
 
-``` r
+```r
 # install.packages("remotes")
 remotes::install_github("heronoh/BLASTr")
 ```
@@ -90,20 +88,20 @@ chmod 755 "${BLAST_DB_PATH}"/*
 
 Another option is to download it directly fom the [NCBI ftp site](https://ftp.ncbi.nlm.nih.gov/blast/db/). It can be parallelized and is the best choice when you want to download only the new files.
 
-``` bash
+```bash
 #suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.
 #          tmux: https://tmuxcheatsheet.com/
 #          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
 
-# download volumes and md5 check files 
+# download volumes and md5 check files
 seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz -t 0 --show-progress
 seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 -t 0 --show-progress
      # where 000 is the first volume and 150, the last (up to now).
-     
+
 ls *5 | parallel md5sum -c {} >> check.txt
 sort check.txt > check_sort.txt
 
-ls *tar.gz | parallel tar -xvzf {} 
+ls *tar.gz | parallel tar -xvzf {}
 ```
 
 ### Formating a custom database
@@ -124,10 +122,11 @@ makeblastdb -in "${DB_FILE}" -dbtype "nucl" -parse_seqids -hash_index
 
 ## Testing
 
-The package installation can be with a mock BLAST formatted database provided in this [link](https://drive.google.com/file/d/1Qy4w4KIGSTiGjx-J4BrcyN6Y5wtRYBHl/view?usp=sharing). Alternatively, you can download the unformated mock database (a fasta file) and format it using the ncbi-blast+ functionalities, as you would do for any other custom database. You can obtain the fasta [here](https://drive.google.com/file/d/1WKIwq7RySleuSotWjZ4OJUXqbXELaE7q/view?usp=sharing).
+The package installation can be with a mock BLAST formatted database provided in this [link](https://drive.google.com/file/d/1Qy4w4KIGSTiGjx-J4BrcyN6Y5wtRYBHl/view?usp=sharing).
+Alternatively, you can download the unformated mock database (a fasta file) and format it using the ncbi-blast+ functionalities, as you would do for any other custom database.
+You can obtain the fasta [here](https://drive.google.com/file/d/1WKIwq7RySleuSotWjZ4OJUXqbXELaE7q/view?usp=sharing).
 
-
-``` bash
+```bash
 #set the path to your fasta file (replace the example below)
 DB_FILE="/data/database/shortest_minimal_db_BLASTr.fasta"
 
@@ -141,7 +140,7 @@ makeblastdb -in "${DB_FILE}" -dbtype "nucl" -parse_seqids -hash_index
 
 For the testing, execute the following commands on your R console.
 
-``` r
+```r
 library(BLASTr)
 
 
@@ -176,6 +175,5 @@ blast_res
 #or
 
 View(blast_res)
-
 ```
 

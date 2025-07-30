@@ -14,11 +14,10 @@
 #' }
 #' @export
 get_fasta_header <- function(
-  id,
-  db_path,
-  env_name = "blastr-blast-env",
-  verbose = FALSE
-) {
+    id,
+    db_path,
+    env_name = "blastr-blast-env",
+    verbose = FALSE) {
   if (is.null(db_path)) {
     cli::cli_abort(
       message = "No BLAST database provided.",
