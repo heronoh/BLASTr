@@ -129,7 +129,9 @@ ASVs_test <- readr::read_lines("dev/asv_test.txt")
 
 # paralela com 2 threads ----
 tictoc::tic("Parallel - Furrr 2 threads")
-ASVs_test |>
+
+ASVs_test
+
 teste_F2local_short <- furrr::future_map_dfr(
   get_blast_results,
   num_thread = 2,
