@@ -36,9 +36,9 @@ check_cmd <- function(
     verbose = "silent",
     force = FALSE) {
   packages_to_install <- NULL
-  if (stringr::str_detect(cmd, "blast")) {
+  if (stringr::str_detect(string = cmd, pattern = "^(t?)blast")) {
     packages_to_install <- "bioconda::blast==2.16"
-  } else if (stringr::str_detect(cmd, "efetch")) {
+  } else if (stringr::str_detect(string = cmd, pattern = "^efetch")) {
     packages_to_install <- "bioconda::entrez-direct==24.0"
   } else {
     cli::cli_abort(

@@ -60,4 +60,13 @@ base::rm(tmp_cache_path)
 base::rm(tmp_wd_path)
 
 cli::cli_inform(c(`!` = "Setting up test environment for {.pkg BLASTr} ..."))
-install_dependencies(verbose = "silent", force = FALSE)
+
+testthat::expect_true(install_dependencies(verbose = "silent", force = FALSE))
+
+testthat::expect_true(check_cmd("blastn"))
+
+testthat::expect_true(check_cmd("tblastn"))
+
+testthat::expect_true(check_cmd("efetch"))
+
+testthat::expect_error(check_cmd("xblastn"))
