@@ -70,3 +70,5 @@ testthat::expect_true(check_cmd("tblastn"))
 testthat::expect_true(check_cmd("efetch"))
 
 testthat::expect_error(check_cmd("xblastn"))
+
+testthat::expect_error(check_cmd("makeblastdb"))

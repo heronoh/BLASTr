@@ -13,6 +13,8 @@
 * New parallel framework based on native `purrr` functions,
   using `mirai` and `carrier` in the background.
 
+* New `make_blast_db()` function to create custom BLAST databases.
+
 ### Minor improvements and fixes
 
 * Internal `entrez-direct` version bump to `24.0`.

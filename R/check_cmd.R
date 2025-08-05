@@ -36,14 +36,14 @@ check_cmd <- function(
     verbose = "silent",
     force = FALSE) {
   packages_to_install <- NULL
-  if (stringr::str_detect(string = cmd, pattern = "^(t?)blast")) {
+  if (stringr::str_detect(string = cmd, pattern = "^(t?)blast|makeblastdb")) {
     packages_to_install <- "bioconda::blast==2.16"
   } else if (stringr::str_detect(string = cmd, pattern = "^efetch")) {
     packages_to_install <- "bioconda::entrez-direct==24.0"
   } else {
     cli::cli_abort(
       message = c(
-        `x` = "Unsupported command: only 'blast' variants and 'efetch' are supported."
+        `x` = "Unsupported command: only 'blast' variants, 'makeblastdb', and 'efetch' are supported."
       ),
       class = "blastr_check_cmd_unsupported_cmd"
     )

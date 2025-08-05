@@ -56,11 +56,10 @@ install_dependencies()
 
 # A vector of ASV sequences
 asvs <- c(
-  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
   "GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC",
   "AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT",
-  "XXXXAAANNN",
   "ACTATACCTATTATTCGGCGCATGAGCTGGAGTCCTAGGCACAGCTCTAAGCCTCCTTATTCGAGCCGAGCTGGGCCAGCCAGGCAACCTTCTAGGTAACGACCACATCTACAACGTTATCGTCACAGCCCATGCATTTGTAATAATCTTCTTCATAGTAATACCCATCATAATCGGAGGCTTTGGCAACTGACTAGTTCCCCTAATAATCGGTGCCCCCGATATG",
   "TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"
 )
@@ -91,56 +90,29 @@ tax_ids <- blast_results$`1_staxid`
 # Retrieve taxonomic information in parallel
 taxonomic_info <- parallel_get_tax(
   organisms_taxIDs = tax_ids,
-  total_cores = 2
+  total_cores = 2,
+  retry_times = 0
 )
-#> retrying 0 of 10
+#> retrying 0 of 0
 #> ------------------------> unable to retrieve taxonomy for: N/A   
 #> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 1 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 2 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 3 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 4 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 5 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 6 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 7 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 8 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> retrying 9 of 10
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
-#> The following taxIDs could not be retrieved even after 10 attempts:
-#> N/AThe following taxIDs could not be retrieved even after 10 attempts:
+#> The following taxIDs could not be retrieved even after 0 attempts:
+#> N/AThe following taxIDs could not be retrieved even after 0 attempts:
 #> NA
 ```
 
 ``` r
 # View the results
 print(blast_results)
-#> # A tibble: 7 × 57
+#> # A tibble: 6 × 57
 #>   Sequence               `1_subject header` `1_subject` `1_indentity` `1_length`
 #>   <chr>                  <chr>              <chr>               <dbl>      <dbl>
 #> 1 CTAGCCATAAACTTAAATGAA… "Gymnotus carapo … AP011979.1           97.0         99
 #> 2 CTAGCCATAAACTTAAATGAA…  <NA>              <NA>                 NA           NA
 #> 3 GCCAAATTTGTGTTTTGTCCT… "Brasilonema octa… CP030121.1           96.2         78
 #> 4 AACATTGTATTTTGTCTTTGG… "Symphoromyia cra… MG967958.1           84.9        179
-#> 5 XXXXAAANNN              <NA>              <NA>                 NA           NA
-#> 6 ACTATACCTATTATTCGGCGC… "Homo sapiens iso… MN849868.1          100          226
-#> 7 TTAGCCATAAACATAAAAGTT… "Hydrochoerus hyd… KX381515.1           99.0         99
+#> 5 ACTATACCTATTATTCGGCGC… "Homo sapiens iso… MN849868.1          100          226
+#> 6 TTAGCCATAAACATAAAAGTT… "Hydrochoerus hyd… KX381515.1           99.0         99
 #> # ℹ 52 more variables: `1_mismatches` <dbl>, `1_gaps` <dbl>,
 #> #   `1_query start` <dbl>, `1_query end` <dbl>, `1_subject start` <dbl>,
 #> #   `1_subject end` <dbl>, `1_e-value` <dbl>, `1_bitscore` <dbl>,
