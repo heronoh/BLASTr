@@ -25,10 +25,11 @@
 #' tax_info <- get_tax_by_taxID("9606", verbose = TRUE)
 #' }
 #' @export
-get_tax_by_taxID <- function(organisms_taxIDs,
-                             parse_result = TRUE,
-                             verbose = FALSE,
-                             env_name = "blastr-entrez-env") {
+get_tax_by_taxID <- function(
+    organisms_taxIDs,
+    parse_result = TRUE,
+    verbose = FALSE,
+    env_name = "blastr-entrez-env") {
   `%>%` <- dplyr::`%>%`
   .data <- rlang::.data
 

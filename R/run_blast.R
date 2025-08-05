@@ -49,7 +49,12 @@ run_blast <- function(
 
   query_path <- fs::file_temp("blast_input_", ext = "fasta")
   base::cat(asv, file = query_path)
-
+  withr::local_envvar(
+    .new = list(
+      BLAST_USAGE_REPORT = "false"
+    ),
+    action = "replace"
+  )
   blast_res <- condathis::run_bin(
     blast_type,
     "-db", db_path,

@@ -66,10 +66,11 @@ make_blast_db <- function(
     }
 
     cli::cli_abort(
-      message = error_msg_vector,
+      message = blast_db_res$stderr,
+      # message = error_msg_vector,
       class = "blastr_error_make_blast_db"
     )
   }
 
-  return(blast_db_res)
+  return(invisible(blast_db_res))
 }
