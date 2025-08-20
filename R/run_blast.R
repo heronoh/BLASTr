@@ -55,6 +55,7 @@ run_blast <- function(
     ),
     action = "replace"
   )
+
   blast_res <- condathis::run_bin(
     blast_type,
     "-db", db_path,

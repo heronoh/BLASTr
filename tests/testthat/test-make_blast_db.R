@@ -21,8 +21,8 @@ testthat::test_that("`make_blast_db()` fails with wrong db_type", {
     make_blast_db(
       fasta_path = fasta_path,
       db_path = db_path,
-      db_type = "MISSING_DB_TYPE",
-      verbose = "full"
+      db_type = "INVALID_DB_TYPE",
+      verbose = "silent"
     ),
     class = "blastr_error_make_blast_db"
   )
@@ -39,7 +39,7 @@ testthat::test_that("`make_blast_db()` works with `taxid_map`", {
     db_path = db_path,
     db_type = "nucl",
     taxid_map = taxid_map_path,
-    verbose = "full"
+    verbose = "silent"
   )
 
   testthat::expect_equal(db_res$status, 0)
@@ -57,7 +57,7 @@ testthat::test_that("`make_blast_db()` works with `parse_seqids`", {
     db_path = db_path,
     db_type = "nucl",
     taxid_map = taxid_map_path,
-    verbose = "full"
+    verbose = "silent"
   )
 
   testthat::expect_equal(db_res$status, 0)
@@ -79,7 +79,7 @@ testthat::test_that("`make_blast_db()` output has valid taxid", {
     db_path = db_path,
     db_type = "nucl",
     taxid_map = taxid_map_path,
-    verbose = "full"
+    verbose = "silent"
   )
 
   testthat::expect_true(fs::file_exists(fs::path(db_path)))

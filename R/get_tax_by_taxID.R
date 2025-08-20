@@ -2,7 +2,7 @@
 #'
 #' Retrieves complete taxonomy information for given NCBI Taxonomy Tax IDs by querying the NCBI database using the `efetch` command.
 #'
-#' @param organisms_taxids A character vector of NCBI Taxonomy Tax IDs for which to retrieve taxonomy information.
+#' @param organisms_taxIDs A character vector of NCBI Taxonomy Tax IDs for which to retrieve taxonomy information.
 #' @param parse_result Logical indicating whether to parse the taxonomy information into a tibble (`TRUE`, default) or return the raw output as returned by `efetch` (`FALSE`).
 #' @param verbose Logical indicating whether to print verbose messages during the process. Default is `FALSE`.
 #' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"blastr-entrez-env"`.
@@ -22,11 +22,11 @@
 #' raw_tax_info <- get_tax_by_taxID("9606", parse_result = FALSE)
 #'
 #' # Enable verbose output
-#' tax_info <- get_tax_by_taxiid("9606", verbose = TRUE)
+#' tax_info <- get_tax_by_taxid("9606", verbose = TRUE)
 #' }
 #' @export
-get_tax_by_taxid <- function(
-    organisms_taxids,
+get_tax_by_taxID <- function(
+    organisms_taxIDs,
     parse_result = TRUE,
     verbose = FALSE,
     env_name = "blastr-entrez-env" # ,
@@ -35,12 +35,7 @@ get_tax_by_taxid <- function(
   `%>%` <- dplyr::`%>%`
   .data <- rlang::.data
 
-  # if (!rlang::is_null(organisms_taxIDs) ) {
-  # }
-  # organisms_taxIDs <- as.character(organisms_taxIDs)
-
-  organisms_taxids <- as.character(organisms_taxids)
-  organisms_taxIDs <- organisms_taxids
+  organisms_taxIDs <- as.character(organisms_taxIDs)
 
   check_cmd("efetch", env_name = env_name)
 
@@ -189,7 +184,3 @@ get_tax_by_taxid <- function(
   }
   return(organism_tbl_final)
 }
-
-
-#' @export
-get_tax_by_taxID <- get_tax_by_taxid

@@ -56,7 +56,7 @@ withr::local_envvar(
 )
 
 # Create conda environment and install dependencies
-install_dependencies(verbose = "silent", force = FALSE)
+BLASTr::install_dependencies(verbose = "silent", force = FALSE)
 ```
 
 ```{r}
@@ -67,7 +67,7 @@ install_dependencies()
 
 # A vector of ASV sequences
 asvs <- c(
-   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
   "GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC",
   "AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT",
@@ -75,10 +75,21 @@ asvs <- c(
   "TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"
 )
 
-# Path to your local BLAST database
-db_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+# Path to your local FASTA database
+fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
 
-head(readLines(db_path))
+# Path to database
+db_path <- fs::path_temp("minimal_db_blast")
+
+make_blast_db(
+  fasta_path = fasta_path,
+  db_path = db_path,
+  db_type = "nucl"
+)
+
+head(readLines(fasta_path))
+
+file.exists(paste0(db_path, ".ndb"))
 ```
 
 ```{r}

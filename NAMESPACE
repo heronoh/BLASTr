@@ -3,6 +3,7 @@
 export(get_blast_results)
 export(get_fasta_header)
 export(get_tax_by_taxID)
+export(get_tax_by_taxid)
 export(install_dependencies)
 export(make_blast_db)
 export(parallel_blast)
