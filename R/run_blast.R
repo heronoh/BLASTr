@@ -81,7 +81,10 @@ run_blast <- function(
     }
 
     cli::cli_abort(
-      message = error_msg_vector,
+      message = c(
+        `!` = "Status code: {.val {blast_res$status}}",
+        error_msg_vector
+      ),
       class = "blastr_error_blast_run"
     )
   }

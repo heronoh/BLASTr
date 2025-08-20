@@ -46,7 +46,12 @@ make_blast_db <- function(
   if (!is.null(taxid_map)) {
     args <- c(args, "-taxid_map", taxid_map)
   }
-
+  withr::local_envvar(
+    .new = list(
+      BLAST_USAGE_REPORT = "false"
+    ),
+    action = "replace"
+  )
   blast_db_res <- condathis::run(
     cmd = "makeblastdb",
     args,
@@ -66,8 +71,10 @@ make_blast_db <- function(
     }
 
     cli::cli_abort(
-      message = blast_db_res$stderr,
-      # message = error_msg_vector,
+      message = c(
+        `!` = "Status code: {.val {blast_db_res$status}}",
+        error_msg_vector
+      ),
       class = "blastr_error_make_blast_db"
     )
   }
