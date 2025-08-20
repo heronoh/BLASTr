@@ -65,6 +65,10 @@ testthat::test_that("`make_blast_db()` works with `parse_seqids`", {
 })
 
 testthat::test_that("`make_blast_db()` output has valid taxid", {
+  # TODO: @luciorq Remove `skip` when example fasta actually
+  # + have taxid in the header
+  testthat::skip("The example fasta does not have taxid in the header")
+
   fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast.fasta")
   db_path <- fs::file_temp("minimal_db_blast_")
   taxid_map_path <- fs::file_temp("taxid_map_", ext = "tsv")
@@ -78,7 +82,7 @@ testthat::test_that("`make_blast_db()` output has valid taxid", {
     verbose = "full"
   )
 
-  testthat::expect_true(fs::file_exists(db_path))
+  testthat::expect_true(fs::file_exists(fs::path(db_path)))
 
 
   testthat::expect_equal(db_res$status, 0)
