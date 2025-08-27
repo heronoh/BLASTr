@@ -119,14 +119,15 @@ print(taxonomic_info)
 
 ## Main Functions
 
-* `install_dependencies()`: Installs BLAST+ and Entrez Direct if they are not found on your system.
-* `parallel_blast()`: Runs BLAST searches for multiple sequences in parallel.
-* `get_blast_results()`: Runs a BLAST search for a single sequence.
-* `parallel_get_tax()`: Retrieves taxonomic information for multiple NCBI Taxonomy IDs in parallel.
-* `get_tax_by_taxID()`: Retrieves taxonomic information for a single NCBI Taxonomy ID.
-* `run_blast()`: A lower-level function to run a BLAST search and return the raw output.
-* `parse_fasta()`: Extracts sequences from a FASTA file.
-* `get_fasta_header()`: Retrieves the full header of a sequence from a BLAST database.
+- `install_dependencies()`: Installs BLAST+ and Entrez Direct if they are not found on your system.
+- `make_blast_db()`: Creates a BLAST database from a FASTA file.
+- `parallel_blast()`: Runs BLAST searches for multiple sequences in parallel.
+- `get_blast_results()`: Runs a BLAST search for a single sequence.
+- `parallel_get_tax()`: Retrieves taxonomic information for multiple NCBI Taxonomy IDs in parallel.
+- `get_tax_by_taxID()`: Retrieves taxonomic information for a single NCBI Taxonomy ID.
+- `run_blast()`: A lower-level function to run a BLAST search and return the raw output.
+- `parse_fasta()`: Extracts sequences from a FASTA file.
+- `get_fasta_header()`: Retrieves the full header of a sequence from a BLAST database.
 
 ## Dependency Management
 
