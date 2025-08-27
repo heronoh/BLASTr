@@ -13,3 +13,4 @@ renv.lock
 revdep
 .Rprofile
 README.html
+.Rapp.history
