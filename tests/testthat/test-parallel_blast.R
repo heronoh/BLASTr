@@ -1,4 +1,6 @@
 testthat::test_that("parallel blast - single thread", {
+  testthat::skip_on_cran()
+  testthat::skip_if_offline()
   asvs_test <- readLines(
     fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt")
   )
@@ -22,6 +24,8 @@ testthat::test_that("parallel blast - single thread", {
 })
 
 testthat::test_that("parallel blast - empty args", {
+  testthat::skip_on_cran()
+  testthat::skip_if_offline()
   blast_res <- parallel_blast(asvs = NULL, db_path = NULL)
   testthat::expect_s3_class(blast_res, "data.frame")
   testthat::expect_s3_class(blast_res, "tbl_df")

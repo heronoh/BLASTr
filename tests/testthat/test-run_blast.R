@@ -1,4 +1,6 @@
-test_that("parallel_blast works", {
+testthat::test_that("parallel_blast works", {
+  testthat::skip_on_cran()
+  testthat::skip_if_offline()
   ASVs_test <- readLines(fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt"))
   db_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
   blast_res <- parallel_blast(
@@ -18,8 +20,9 @@ test_that("parallel_blast works", {
   testthat::expect_s3_class(blast_res, "tbl_df")
 })
 
-
-test_that("run_blast works", {
+testthat::test_that("run_blast works", {
+  testthat::skip_on_cran()
+  testthat::skip_if_offline()
   ASVs_test <- readLines(fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt"))
   db_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
 
@@ -29,11 +32,12 @@ test_that("run_blast works", {
     verbose = FALSE
   )
 
-
   testthat::expect_equal(blast_res$status, 0)
 })
 
-test_that("run_blast fails", {
+testthat::test_that("run_blast fails", {
+  testthat::skip_on_cran()
+  testthat::skip_if_offline()
   ASVs_test <- readLines(fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt"))
   db_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
 
