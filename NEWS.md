@@ -1,4 +1,4 @@
-# BLASTr 0.1.5 (dev)
+# BLASTr 0.1.5 2025-08-27
 
 ## Breaking Changes
 
