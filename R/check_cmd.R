@@ -36,6 +36,11 @@ check_cmd <- function(
     verbose = "silent",
     force = FALSE) {
   packages_to_install <- NULL
+  # supported_archs <- names(conda_packages_list)
+  # Check if operational system is in the included list of available systems
+  # if (isTRUE(stringr::str_detect(condathis::get_sys_arch(), pattern = "^Windows"))) {
+  # }
+
   if (stringr::str_detect(string = cmd, pattern = "^(t?)blast|makeblastdb")) {
     packages_to_install <- "bioconda::blast==2.16"
   } else if (stringr::str_detect(string = cmd, pattern = "^efetch")) {

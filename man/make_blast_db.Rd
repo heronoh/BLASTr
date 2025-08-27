@@ -38,7 +38,10 @@ Create a BLAST database from a FASTA file.
 \examples{
 \dontrun{
 make_blast_db(
-  fasta_path = fs::path_package("BLASTr", "extdata", "minimal_db_blast.fasta"),
+  fasta_path = fs::path_package(
+    "BLASTr", "extdata", "minimal_db_blast",
+    ext = "fasta"
+  ),
   db_path = fs::path_temp("minimal_db_blast"),
   db_type = "nucl"
 )

@@ -54,19 +54,40 @@ withr::local_envvar(
   .local_envir = testthat::teardown_env()
 )
 
+# `tmp_blast_db_path` is used in the actual tests.
+tmp_blast_db_path <- fs::path(tmp_wd_path, "minimal_db_blast")
 base::rm(tmp_home_path)
 base::rm(tmp_data_path)
 base::rm(tmp_cache_path)
 base::rm(tmp_wd_path)
 
-cli::cli_inform(c(`!` = "Setting up test environment for {.pkg BLASTr} ..."))
 
-testthat::expect_true(install_dependencies(verbose = "silent", force = FALSE))
+# This is the check used inside skip_if_cran
+if (!(!interactive() && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false"))))) {
+  cli::cli_inform(c(`!` = "Setting up test environment for {.pkg BLASTr} ..."))
 
-testthat::expect_true(check_cmd("blastn", env_name = "blastr-blast-env"))
+  testthat::expect_true(install_dependencies(verbose = "silent", force = FALSE))
 
-testthat::expect_true(check_cmd("tblastn", env_name = "blastr-blast-env"))
+  testthat::expect_true(check_cmd("blastn", env_name = "blastr-blast-env"))
 
-testthat::expect_true(check_cmd("efetch", env_name = "blastr-entrez-env"))
+  testthat::expect_true(check_cmd("tblastn", env_name = "blastr-blast-env"))
 
-testthat::expect_true(check_cmd("makeblastdb", env_name = "blastr-blast-env"))
+  testthat::expect_true(check_cmd("efetch", env_name = "blastr-entrez-env"))
+
+  testthat::expect_true(check_cmd("makeblastdb", env_name = "blastr-blast-env"))
+
+  # For local testing use:
+  # + `tmp_blast_db_path <- fs::file_temp("minimal_db_blast_")`
+  make_blast_db(
+    fasta_path = fs::path_package(
+      "BLASTr", "extdata", "minimal_db_blast", ext = "fasta"
+    ),
+    db_path = tmp_blast_db_path,
+    db_type = "nucl",
+    verbose = "silent"
+  )
+
+  testthat::expect_true(
+    fs::file_exists(fs::path(tmp_blast_db_path, ext = "nsq"))
+  )
+}

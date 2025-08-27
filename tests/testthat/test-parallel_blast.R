@@ -4,14 +4,12 @@ testthat::test_that("parallel blast - single thread", {
   asvs_test <- readLines(
     fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt")
   )
-  db_test <- fs::path_package(
-    "BLASTr", "extdata", "minimal_db_blast",
-    ext = "fasta"
-  )
+
+  db_path <- tmp_blast_db_path
 
   blast_res <- parallel_blast(
     asvs = asvs_test,
-    db_path = db_test,
+    db_path = db_path,
     num_threads = 1,
     total_cores = 1
   )
