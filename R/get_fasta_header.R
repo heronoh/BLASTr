@@ -25,6 +25,13 @@ get_fasta_header <- function(
     )
   }
 
+  withr::local_envvar(
+    .new = list(
+      BLAST_USAGE_REPORT = "false"
+    ),
+    action = "replace"
+  )
+
   blastdbcmd_res <- condathis::run_bin(
     "blastdbcmd",
     "-db", db_path,

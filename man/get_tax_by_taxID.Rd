@@ -39,6 +39,6 @@ tax_info <- get_tax_by_taxID(tax_ids)
 raw_tax_info <- get_tax_by_taxID("9606", parse_result = FALSE)
 
 # Enable verbose output
-tax_info <- get_tax_by_taxID("9606", verbose = TRUE)
+tax_info <- get_tax_by_taxid("9606", verbose = TRUE)
 }
 }

@@ -88,10 +88,12 @@ get_blast_results <- function(
     db_path = db_path,
     verbose = verbose
   )
+
   blast_table <- dplyr::relocate(
     blast_table,
     "subject header"
   )
+
   blast_table <- tibble::rowid_to_column(
     blast_table,
     var = "res"

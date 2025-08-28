@@ -1,152 +1,61 @@
-# BLASTr
 
-An R package for parallel taxonomic classification of metabarcoding sequences.
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences <a href="https://heronoh.github.io/BLASTr/"><img src="man/figures/logo.png" align="right" height="138" alt="BLASTr website" /></a>
 
 <!-- badges: start -->
-<!--[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)-->
+
+[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)
+<!-- [![CRAN status](https://www.r-pkg.org/badges/version/BLASTr)](https://CRAN.R-project.org/package=BLASTr) -->
 <!-- badges: end -->
 
-The BLASTr package is a powerful tool for performing BLAST operations from within the R environment.
-Despite being initially developed for metagenomic applications, the BLASTr package is flexible for other applications.
-It can be used with any installed NCBI BLAST+ search strategy, configuration, and any database on UNIX and Windows platforms through Windows Subsystem for Linux.
-This makes it a versatile tool that can be used in various applications and contexts requiring sequence identification on tabular outputs.
-Additionally, the package includes documentation and functions for parsing and analyzing the results of BLAST searches, making it easier for users to extract useful information from their BLAST results.
-Overall, the BLASTr package is a valuable tool for bioinformaticians and researchers who need to perform BLAST operations from within R.
+## Overview
 
-## Requirements
+`BLASTr` is an R package that seamlessly integrates BLAST+ searches into
+your R workflow. It is specifically designed for the analysis of
+Amplicon Sequence Variants (ASVs) from metabarcoding and metagenomic
+studies. With `BLASTr`, you can efficiently perform taxonomic
+classification of your sequences by leveraging the power of parallel
+processing and automated dependency management.
 
-The BLASTr package requires the NCBI BLAST+ to be installed.
-The easiest way to perform its installation is on the UNIX command line.
+## Features
 
-``` bash
-#install NCBI-BLAST+
-
-sudo apt update
-sudo apt install ncbi-blast+
-
-#chech installation using one of its applicaitons
-blastn -help
-
-# identify the executable complete path
-which blastn
-
-```
+- **Parallel BLAST Searches:** Run multiple BLAST searches concurrently
+  to significantly speed up your analysis.
+- **Automated Dependency Management:** `BLASTr` automatically installs
+  and manages BLAST+ and Entrez Direct dependencies using `condathis`,
+  ensuring a hassle-free setup.
+- **Taxonomic Classification:** Retrieve detailed taxonomic information
+  for your sequences using their NCBI Taxonomy IDs.
+- **Flexible and Easy to Use:** The package provides a set of intuitive
+  functions that simplify the process of running thousands of BLAST
+  searches and handling the results.
+- **Reproducible Research:** By managing dependencies in isolated Conda
+  environments, `BLASTr` helps ensure that your analyses are
+  reproducible.
 
 ## Installation
 
-<!--
-### R-Universe
+You can install the development version of `BLASTr` from GitHub with:
 
-The main way to install `BLASTr` is through:
-
-```r
-install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
-```
--->
-
-### Development version
-
-You can install the development version of BLASTr from [GitHub](https://github.com/heronoh/BLASTr) with:
-
-```r
-# install.packages("remotes")
-remotes::install_github("heronoh/BLASTr")
+``` r
+# install.packages("devtools")
+devtools::install_github("heronoh/BLASTr")
 ```
 
-## Documentation
+## Basic Usage
 
-The main place to look for help and documentation is <heronoh.github.io/BLASTr/>
+Here’s a simple example of how to use `BLASTr` to perform a BLAST search
+and retrieve taxonomic information:
 
-## Database configuration
-
-### Obtaining NCBI complete databases
-
-Identifications can be performed using NCBI complete databases, such as NT, which are readily available to download and update.
-This can be performed using the *BLAST+* _script_ [update_blastdb.pl](https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/lxr/source/src/app/blast/update_blastdb.pl).
-
-``` bash
-#set a folder to download the desired database (for example, the nt database)
-BLAST_DB_PATH="/data/database/blast/nt"
-
-#create dir
-mkdir -p  "${BLAST_DB_PATH}"
-
-#enter dir
-cd "${BLAST_DB_PATH}"
-
-#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.
-#          tmux: https://tmuxcheatsheet.com/
-#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
-
-#user BLAST+ executable to download/update db files
-update_blastdb --passive --decompress nt
-
-#set permissions to enable usage by all users
-chown root "${BLAST_DB_PATH}"/*
-chmod 755 "${BLAST_DB_PATH}"/*
-```
-
-Another option is to download it directly fom the [NCBI ftp site](https://ftp.ncbi.nlm.nih.gov/blast/db/). It can be parallelized and is the best choice when you want to download only the new files.
-
-```bash
-#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.
-#          tmux: https://tmuxcheatsheet.com/
-#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
-
-# download volumes and md5 check files
-seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz -t 0 --show-progress
-seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 -t 0 --show-progress
-     # where 000 is the first volume and 150, the last (up to now).
-
-ls *5 | parallel md5sum -c {} >> check.txt
-sort check.txt > check_sort.txt
-
-ls *tar.gz | parallel tar -xvzf {}
-```
-
-### Formating a custom database
-
-In case you prefer, any FASTA file can be formated as a BLAST+ database, using the *BLAST+* _script_ *_makeblastdb_*.
-
-``` bash
-#set the path to your fasta file (replace the example below)
-DB_FILE="/data/database/my_db.fasta"
-
-#check parameters and usage
-makeblastdb
-
-#format your db
-makeblastdb -in "${DB_FILE}" -dbtype "nucl" -parse_seqids -hash_index
-```
-
-
-## Testing
-
-The package installation can be with a mock BLAST formatted database provided in this [link](https://drive.google.com/file/d/1Qy4w4KIGSTiGjx-J4BrcyN6Y5wtRYBHl/view?usp=sharing).
-Alternatively, you can download the unformated mock database (a fasta file) and format it using the ncbi-blast+ functionalities, as you would do for any other custom database.
-You can obtain the fasta [here](https://drive.google.com/file/d/1WKIwq7RySleuSotWjZ4OJUXqbXELaE7q/view?usp=sharing).
-
-```bash
-#set the path to your fasta file (replace the example below)
-DB_FILE="/data/database/shortest_minimal_db_BLASTr.fasta"
-
-#check parameters and usage
-makeblastdb
-
-#format your db
-makeblastdb -in "${DB_FILE}" -dbtype "nucl" -parse_seqids -hash_index
-
-```
-
-For the testing, execute the following commands on your R console.
-
-```r
+``` r
 library(BLASTr)
 
+# First, make sure you have the necessary dependencies installed
+install_dependencies()
 
-#here are 8 ASVs to be tested with the mock blast DB
-
-ASVs_test <- c(
+# A vector of ASV sequences
+asvs <- c(
   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
   "GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC",
@@ -155,25 +64,119 @@ ASVs_test <- c(
   "TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"
 )
 
-blast_res <- BLASTr::parallel_blast(
-  asvs = ASVs_test,                                                 # vector of sequences to be searched
-  db_path = "/data/database/shortest_minimal_db_BLASTr.fasta",      # path to a formated blast database
-  out_file = NULL,                                                  # path to a .csv file to be created with results (on an existing folder)
-  out_RDS = NULL,                                                   # path to a .RDS file to be created with results (on an existing folder)
-  perc_id = 80,                                                     # minimum identity percentual cutoff
-  perc_qcov_hsp = 80,                                               # minimum percentual coverage of query sequence by subject sequence cutoff
-  num_threads = 1,                                                  # number of threads/cores to run each blast on
-  total_cores = 8,                                                  # number of tota threads/cores to alocate all blast searches
-  num_alignments = 3,                                               # maximum number of alignments/matches to retrieve results for each query sequence
-  blast_type = "blastn"                                             # blast search engine to use
+# Path to your local FASTA database
+fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+
+# Path to database
+db_path <- fs::path_temp("minimal_db_blast")
+
+make_blast_db(
+  fasta_path = fasta_path,
+  db_path = db_path,
+  db_type = "nucl"
 )
 
-# check identificaitons results
+head(readLines(fasta_path))
+#> [1] ">AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"
+#> [2] "TACAAACTGGGATTAGATACCCCACTATGCCTAGCCATAAACTTAAATGAAACTATACTAAACTCATTCGCCAGAGTACT"
+#> [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"
+#> [4] ">CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"
+#> [5] "TAGCTCCCGTCGAGTCTCTGCACCTTCCGCATTAGTCATTTATCATTTGTCGTTAGTCATTTGCTAGTAACAATTAACTA"
+#> [6] "AAAACGAAGGACAAAAGACAAATTTGGC"
 
-blast_res
-
-#or
-
-View(blast_res)
+file.exists(paste0(db_path, ".ndb"))
+#> [1] TRUE
 ```
 
+``` r
+# Run BLAST in parallel
+blast_results <- parallel_blast(
+  asvs = asvs,
+  db_path = db_path,
+  total_cores = 2 # Number of cores to use
+)
+
+# Extract the taxonomy IDs from the BLAST results
+tax_ids <- blast_results$`1_staxid`
+
+# Retrieve taxonomic information in parallel
+taxonomic_info <- parallel_get_tax(
+  organisms_taxIDs = tax_ids,
+  total_cores = 2,
+  retry_times = 0
+)
+#> retrying 0 of 0
+#> ------------------------> unable to retrieve taxonomy for: N/A
+#> ------------------------> unable to retrieve taxonomy for: NA
+#> The following taxIDs could not be retrieved even after 0 attempts:
+#> N/AThe following taxIDs could not be retrieved even after 0 attempts:
+#> NA
+```
+
+``` r
+# View the results
+print(blast_results)
+#> # A tibble: 6 × 57
+#>   Sequence               `1_subject header` `1_subject` `1_indentity` `1_length`
+#>   <chr>                  <chr>              <chr>               <dbl>      <dbl>
+#> 1 CTAGCCATAAACTTAAATGAA… "Gymnotus carapo … AP011979.1           97.0         99
+#> 2 CTAGCCATAAACTTAAATGAA…  <NA>              <NA>                 NA           NA
+#> 3 GCCAAATTTGTGTTTTGTCCT… "Brasilonema octa… CP030121.1           96.2         78
+#> 4 AACATTGTATTTTGTCTTTGG… "Symphoromyia cra… MG967958.1           84.9        179
+#> 5 ACTATACCTATTATTCGGCGC… "Homo sapiens iso… MN849868.1          100          226
+#> 6 TTAGCCATAAACATAAAAGTT… "Hydrochoerus hyd… KX381515.1           99.0         99
+#> # ℹ 52 more variables: `1_mismatches` <dbl>, `1_gaps` <dbl>,
+#> #   `1_query start` <dbl>, `1_query end` <dbl>, `1_subject start` <dbl>,
+#> #   `1_subject end` <dbl>, `1_e-value` <dbl>, `1_bitscore` <dbl>,
+#> #   `1_qcovhsp` <dbl>, `1_staxid` <chr>, `2_subject header` <chr>,
+#> #   `2_subject` <chr>, `2_indentity` <dbl>, `2_length` <dbl>,
+#> #   `2_mismatches` <dbl>, `2_gaps` <dbl>, `2_query start` <dbl>,
+#> #   `2_query end` <dbl>, `2_subject start` <dbl>, `2_subject end` <dbl>, …
+print(taxonomic_info)
+#> # A tibble: 0 × 13
+#> # ℹ 13 variables: Sci_name <chr>, query_taxID <chr>, Superkingdom (NCBI) <chr>,
+#> #   Kingdom (NCBI) <chr>, Phylum (NCBI) <chr>, Subphylum (NCBI) <chr>,
+#> #   Class (NCBI) <chr>, Subclass (NCBI) <chr>, Order (NCBI) <chr>,
+#> #   Suborder (NCBI) <chr>, Family (NCBI) <chr>, Subfamily (NCBI) <chr>,
+#> #   Genus (NCBI) <chr>
+```
+
+## Main Functions
+
+- `install_dependencies()`: Installs BLAST+ and Entrez Direct if they
+  are not found on your system.
+- `make_blast_db()`: Creates a BLAST database from a FASTA file.
+- `parallel_blast()`: Runs BLAST searches for multiple sequences in
+  parallel.
+- `get_blast_results()`: Runs a BLAST search for a single sequence.
+- `parallel_get_tax()`: Retrieves taxonomic information for multiple
+  NCBI Taxonomy IDs in parallel.
+- `get_tax_by_taxID()`: Retrieves taxonomic information for a single
+  NCBI Taxonomy ID.
+- `run_blast()`: A lower-level function to run a BLAST search and return
+  the raw output.
+- `parse_fasta()`: Extracts sequences from a FASTA file.
+- `get_fasta_header()`: Retrieves the full header of a sequence from a
+  BLAST database.
+
+## Dependency Management
+
+`BLASTr` uses the `condathis` package to manage its dependencies (BLAST+
+and Entrez Direct). When you run a function that requires one of these
+tools, `BLASTr` will automatically check if it’s installed. If not, it
+will create a Conda environment and install the necessary software. This
+ensures that you always have the correct versions of the dependencies
+without having to install them manually.
+
+You can control the installation process with the `force` and `verbose`
+arguments in the `install_dependencies()` and `check_cmd()` functions.
+
+## Contributing
+
+Contributions are welcome! Please see the [contributing
+guide](.github/CONTRIBUTING.md) for more details.
+
+## License
+
+This project is licensed under the MIT License - see the
+[LICENSE](LICENSE) file for details.

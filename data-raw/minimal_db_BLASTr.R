@@ -82,6 +82,7 @@ dna_BLASTr[str_detect(
 
 dna_BLASTr[2]
 
+1:10
 
 for (seq in 1:nrow(BLASTr_tbl)) {
   dna_BLASTr[str_detect(
@@ -120,11 +121,7 @@ Biostrings::writeXStringSet(
 # test! ----
 
 
-
-
-
 ASVs_test <- readr::read_lines("dev/asv_test.txt")
-
 
 
 # paralela com 2 threads ----
@@ -138,10 +135,34 @@ teste_F2local_short <- furrr::future_map_dfr(
   .options = furrr::furrr_options(seed = NULL),
   # db_path = "/data/databases/nt/nt",
   # db_path = "/home/heron/prjcts/BLASTr/dev/minimal_db/shortest_minimal_db_BLASTr.fasta",
-  db_path = fs::path_package("BLASTr", "inst", "ext", "minimal_db"),
+  db_path = fs::path_package("BLASTr", "inst", "extdata", "minimal_db"),
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
   blast_type = "blastn"
 )
 tictoc::toc()
+
+
+# =============================================================================
+# Second Try
+# =============================================================================
+
+# Check sequences in the database
+
+# retrieve actual fasta sequences from the database
+format_string <- "%f"
+
+# retrieve Accession, Sequence Length, and Definition
+format_string <- "%a %l %t"
+
+db_path <- fs::path_package("BLASTr", "inst", "extdata", "minimal_db_blast", ext = "fasta")
+
+condathis::run(
+  cmd = "blastdbcmd",
+  "-db", db_path,
+  "-entry", "all",
+  "-outfmt", format_string,
+  env_name = "blastr-blast-env",
+  verbose = "full"
+)

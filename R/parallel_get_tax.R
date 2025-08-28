@@ -80,7 +80,7 @@ parallel_get_tax <- function(
   res_taxid <- character(0L)
   retry_count <- 0L
   while (
-    isTRUE(retry_count < retry_times) &&
+    isTRUE(retry_count <= retry_times) &&
       isFALSE(all(organisms_taxIDs %in% res_taxid))
   ) {
     message(paste0("retrying ", retry_count, " of ", retry_times))
@@ -118,6 +118,7 @@ parallel_get_tax <- function(
     # missing taxids
     organisms_taxIDs <- organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]
   }
+
   # message for problematic taxIDs
   if (
     length(organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]) != 0L

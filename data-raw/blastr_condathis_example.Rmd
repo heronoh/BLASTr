@@ -42,9 +42,9 @@ fs::dir_ls(fs::path_package("BLASTr", "extdata"))
 
 ```{r}
 make_blast_db <- function(
-    input_path,
-    db_type = "nucl",
-    output_path = NULL
+  input_path,
+  db_type = "nucl",
+  output_path = NULL
 ) {
   # fs::file_exists()
   db_input_file <- fs::path_real(input_path)
@@ -168,7 +168,7 @@ ASVs_test <- c(
 )
 
 blast_res <- parallel_blast(
-  asvs = ASVs_test,                                                 #vector of sequences to be searched  
+  asvs = ASVs_test,                                                 #vector of sequences to be searched
   db_path = db_file_path,      #path to a formated blast database
   out_file = NULL,                                                  #path to a .csv file to be created with results (on an existing folder)
   out_RDS = NULL,                                                   #path to a .RDS file to be created with results (on an existing folder)
@@ -177,7 +177,7 @@ blast_res <- parallel_blast(
   num_threads = 1,                                                  #number of threads/cores to run each blast on
   total_cores = 8,                                                  #number of tota threads/cores to alocate all blast searches
   num_alignments = 3,                                               #maximum number of alignments/matches to retrieve results for each query sequence
-  blast_type = "blastn"                                             #blast search engine to use  
+  blast_type = "blastn"                                             #blast search engine to use
 )
 
 # check identificaitons results
@@ -214,7 +214,7 @@ get_fasta_header_condathis <- function(
   # result <- shell_exec(
   #  cmd = command
   #)
-  
+
   result <- condathis::run(
     "blastdbcmd",
     "-db", db_path,

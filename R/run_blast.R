@@ -49,6 +49,12 @@ run_blast <- function(
 
   query_path <- fs::file_temp("blast_input_", ext = "fasta")
   base::cat(asv, file = query_path)
+  withr::local_envvar(
+    .new = list(
+      BLAST_USAGE_REPORT = "false"
+    ),
+    action = "replace"
+  )
 
   blast_res <- condathis::run_bin(
     blast_type,
@@ -76,7 +82,10 @@ run_blast <- function(
     }
 
     cli::cli_abort(
-      message = error_msg_vector,
+      message = c(
+        `!` = "Status code: {.val {blast_res$status}}",
+        error_msg_vector
+      ),
       class = "blastr_error_blast_run"
     )
   }

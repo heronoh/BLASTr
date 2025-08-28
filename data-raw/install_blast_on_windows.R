@@ -25,7 +25,6 @@ install_blast_windows <- function(env_name = "blast-win-env") {
   # download.file()
 
 
-
   cli::cli_inform(
     c(
       `v` = "{.field BLAST} successfully installed.",
@@ -33,8 +32,6 @@ install_blast_windows <- function(env_name = "blast-win-env") {
     )
   )
 }
-
-
 
 check_bin("blast")
 

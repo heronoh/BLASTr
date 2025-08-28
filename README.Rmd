@@ -1,0 +1,146 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences <a href="https://heronoh.github.io/BLASTr/"><img src="man/figures/logo.png" align="right" height="138" alt="BLASTr website" /></a>
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)
+<!-- [![CRAN status](https://www.r-pkg.org/badges/version/BLASTr)](https://CRAN.R-project.org/package=BLASTr) -->
+<!-- badges: end -->
+
+## Overview
+
+`BLASTr` is an R package that seamlessly integrates BLAST+ searches into your R workflow.
+It is specifically designed for the analysis of Amplicon Sequence Variants (ASVs) from metabarcoding and metagenomic studies.
+With `BLASTr`, you can efficiently perform taxonomic classification of your sequences by leveraging the power of parallel processing and automated dependency management.
+
+## Features
+
+* **Parallel BLAST Searches:** Run multiple BLAST searches concurrently to significantly speed up your analysis.
+* **Automated Dependency Management:** `BLASTr` automatically installs and manages BLAST+ and Entrez Direct dependencies using `condathis`, ensuring a hassle-free setup.
+* **Taxonomic Classification:** Retrieve detailed taxonomic information for your sequences using their NCBI Taxonomy IDs.
+* **Flexible and Easy to Use:** The package provides a set of intuitive functions that simplify the process of running thousands of BLAST searches and handling the results.
+* **Reproducible Research:** By managing dependencies in isolated Conda environments, `BLASTr` helps ensure that your analyses are reproducible.
+
+## Installation
+
+You can install the development version of `BLASTr` from GitHub with:
+
+```{r eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("heronoh/BLASTr")
+```
+
+## Basic Usage
+
+Here's a simple example of how to use `BLASTr` to perform a BLAST search and retrieve taxonomic information:
+
+```{r include=FALSE}
+# Make sure that environments are installed in a temporary directory
+withr::local_envvar(
+  .new = list(
+    `R_USER_DATA_DIR` = fs::path_temp("home", "data")
+  )
+)
+
+# Create conda environment and install dependencies
+BLASTr::install_dependencies(verbose = "silent", force = FALSE)
+```
+
+```{r}
+library(BLASTr)
+
+# First, make sure you have the necessary dependencies installed
+install_dependencies()
+
+# A vector of ASV sequences
+asvs <- c(
+  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
+  "GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC",
+  "AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT",
+  "ACTATACCTATTATTCGGCGCATGAGCTGGAGTCCTAGGCACAGCTCTAAGCCTCCTTATTCGAGCCGAGCTGGGCCAGCCAGGCAACCTTCTAGGTAACGACCACATCTACAACGTTATCGTCACAGCCCATGCATTTGTAATAATCTTCTTCATAGTAATACCCATCATAATCGGAGGCTTTGGCAACTGACTAGTTCCCCTAATAATCGGTGCCCCCGATATG",
+  "TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"
+)
+
+# Path to your local FASTA database
+fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+
+# Path to database
+db_path <- fs::path_temp("minimal_db_blast")
+
+make_blast_db(
+  fasta_path = fasta_path,
+  db_path = db_path,
+  db_type = "nucl"
+)
+
+head(readLines(fasta_path))
+
+file.exists(paste0(db_path, ".ndb"))
+```
+
+```{r}
+# Run BLAST in parallel
+blast_results <- parallel_blast(
+  asvs = asvs,
+  db_path = db_path,
+  total_cores = 2 # Number of cores to use
+)
+
+# Extract the taxonomy IDs from the BLAST results
+tax_ids <- blast_results$`1_staxid`
+
+# Retrieve taxonomic information in parallel
+taxonomic_info <- parallel_get_tax(
+  organisms_taxIDs = tax_ids,
+  total_cores = 2,
+  retry_times = 0
+)
+```
+
+```{r}
+# View the results
+print(blast_results)
+print(taxonomic_info)
+```
+
+## Main Functions
+
+- `install_dependencies()`: Installs BLAST+ and Entrez Direct if they are not found on your system.
+- `make_blast_db()`: Creates a BLAST database from a FASTA file.
+- `parallel_blast()`: Runs BLAST searches for multiple sequences in parallel.
+- `get_blast_results()`: Runs a BLAST search for a single sequence.
+- `parallel_get_tax()`: Retrieves taxonomic information for multiple NCBI Taxonomy IDs in parallel.
+- `get_tax_by_taxID()`: Retrieves taxonomic information for a single NCBI Taxonomy ID.
+- `run_blast()`: A lower-level function to run a BLAST search and return the raw output.
+- `parse_fasta()`: Extracts sequences from a FASTA file.
+- `get_fasta_header()`: Retrieves the full header of a sequence from a BLAST database.
+
+## Dependency Management
+
+`BLASTr` uses the `condathis` package to manage its dependencies (BLAST+ and Entrez Direct).
+When you run a function that requires one of these tools, `BLASTr` will automatically check if it's installed. If not, it will create a Conda environment and install the necessary software.
+This ensures that you always have the correct versions of the dependencies without having to install them manually.
+
+You can control the installation process with the `force` and `verbose` arguments in the `install_dependencies()` and `check_cmd()` functions.
+
+## Contributing
+
+Contributions are welcome! Please see the [contributing guide](.github/CONTRIBUTING.md) for more details.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

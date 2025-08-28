@@ -9,7 +9,7 @@ package_name := 'BLASTr'
   just --choose
 
 @test:
-  #!/usr/bin/env -vS bash -i
+  #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   R -q -e 'devtools::load_all();styler::style_pkg();';
   R -q -e 'devtools::load_all();usethis::use_tidy_description();';
@@ -20,18 +20,18 @@ package_name := 'BLASTr'
   just check;
 
 @test-all-examples:
-  #!/usr/bin/env -vS bash -i
+  #!/usr/bin/env bash
   \builtin set -euxo pipefail;
-  R -q -e 'devtools::load_all();devtools::run_examples(run_dontrun = TRUE, run_donttest = TRUE);';
+  R -q -e 'devtools::load_all();devtools::document();devtools::run_examples(run_dontrun = TRUE, run_donttest = TRUE);';
 
 @check:
-  #!/usr/bin/env -vS bash -i
+  #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   R -q -e 'rcmdcheck::rcmdcheck(args = c("--as-cran"), repos = c(CRAN = "https://cloud.r-project.org"));';
 
 # Use R package version on the Description file to tag latest commit of the git repo
 @git-tag:
-  #!/usr/bin/env -vS bash -i
+  #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   __r_pkg_version="$(R -q --no-echo --silent -e 'suppressMessages({pkgload::load_all()});cat(as.character(utils::packageVersion("{{ package_name }}")));')";
   \builtin echo -ne "Tagging version: ${__r_pkg_version}\n";
@@ -40,9 +40,10 @@ package_name := 'BLASTr'
 
 # Things to run before releasing a new version
 @pre-release:
-  #!/usr/bin/env -vS bash -i
+  #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   R -q -e 'urlchecker::url_check()';
+  R -q -e 'remotes::install_local(".", force = TRUE, dependencies = TRUE)';
   R -q -e 'devtools::build_readme()';
   R -q -e 'withr::with_options(list(repos = c(CRAN = "https://cloud.r-project.org")), {devtools::check(remote = TRUE, manual = TRUE)})';
   R -q -e 'devtools::check_win_devel()';

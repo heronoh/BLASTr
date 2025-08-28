@@ -1,4 +1,4 @@
-# BLASTr 0.1.5 (dev)
+# BLASTr 0.1.5 2025-08-27
 
 ## Breaking Changes
 
@@ -12,6 +12,8 @@
 
 * New parallel framework based on native `purrr` functions,
   using `mirai` and `carrier` in the background.
+
+* New `make_blast_db()` function to create custom BLAST databases.
 
 ### Minor improvements and fixes
 
