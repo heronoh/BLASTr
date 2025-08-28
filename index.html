@@ -13,6 +13,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Parallel Taxonomic Classification of Metabarcoding Sequences">
 <meta name="description" content="Seamlessly run BLAST searches within R, tailored for ASV (Amplicon Sequence Variant) analysis. This package offers a robust set of functions designed to efficiently identify and process sequences from high-throughput metagenomicmetagenomic experiments, following best practices for sequence data analysis.">
 <meta property="og:description" content="Seamlessly run BLAST searches within R, tailored for ASV (Amplicon Sequence Variant) analysis. This package offers a robust set of functions designed to efficiently identify and process sequences from high-throughput metagenomicmetagenomic experiments, following best practices for sequence data analysis.">
+<meta property="og:image" content="https://heronoh.github.io/BLASTr/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -47,129 +48,54 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="blastr">BLASTr<a class="anchor" aria-label="anchor" href="#blastr"></a>
-</h1></div>
-<p>An R package for parallel taxonomic classification of metabarcoding sequences.</p>
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="blastr-parallel-taxonomic-classification-of-metabarcoding-sequences-">BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences 
+<a class="anchor" aria-label="anchor" href="#blastr-parallel-taxonomic-classification-of-metabarcoding-sequences-"></a>
+</h1>
+</div>
 <!-- badges: start -->
-<!--[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)-->
-<!-- badges: end -->
-<p>The BLASTr package is a powerful tool for performing BLAST operations from within the R environment. Despite being initially developed for metagenomic applications, the BLASTr package is flexible for other applications. It can be used with any installed NCBI BLAST+ search strategy, configuration, and any database on UNIX and Windows platforms through Windows Subsystem for Linux. This makes it a versatile tool that can be used in various applications and contexts requiring sequence identification on tabular outputs. Additionally, the package includes documentation and functions for parsing and analyzing the results of BLAST searches, making it easier for users to extract useful information from their BLAST results. Overall, the BLASTr package is a valuable tool for bioinformaticians and researchers who need to perform BLAST operations from within R.</p>
+
 <div class="section level2">
-<h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The BLASTr package requires the NCBI BLAST+ to be installed. The easiest way to perform its installation is on the UNIX command line.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">#install NCBI-BLAST+</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">sudo</span> apt update</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">sudo</span> apt install ncbi-blast+</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#chech installation using one of its applicaitons</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="ex">blastn</span> <span class="at">-help</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># identify the executable complete path</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">which</span> blastn</span></code></pre></div>
+<p><code>BLASTr</code> is an R package that seamlessly integrates BLAST+ searches into your R workflow. It is specifically designed for the analysis of Amplicon Sequence Variants (ASVs) from metabarcoding and metagenomic studies. With <code>BLASTr</code>, you can efficiently perform taxonomic classification of your sequences by leveraging the power of parallel processing and automated dependency management.</p>
+</div>
+<div class="section level2">
+<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+</h2>
+<ul>
+<li>
+<strong>Parallel BLAST Searches:</strong> Run multiple BLAST searches concurrently to significantly speed up your analysis.</li>
+<li>
+<strong>Automated Dependency Management:</strong> <code>BLASTr</code> automatically installs and manages BLAST+ and Entrez Direct dependencies using <code>condathis</code>, ensuring a hassle-free setup.</li>
+<li>
+<strong>Taxonomic Classification:</strong> Retrieve detailed taxonomic information for your sequences using their NCBI Taxonomy IDs.</li>
+<li>
+<strong>Flexible and Easy to Use:</strong> The package provides a set of intuitive functions that simplify the process of running thousands of BLAST searches and handling the results.</li>
+<li>
+<strong>Reproducible Research:</strong> By managing dependencies in isolated Conda environments, <code>BLASTr</code> helps ensure that your analyses are reproducible.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<!--
-### R-Universe
-
-The main way to install `BLASTr` is through:
-
-```r
-install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
-```
--->
-<div class="section level3">
-<h3 id="development-version">Development version<a class="anchor" aria-label="anchor" href="#development-version"></a>
-</h3>
-<p>You can install the development version of BLASTr from <a href="https://github.com/heronoh/BLASTr" class="external-link">GitHub</a> with:</p>
+<p>You can install the development version of <code>BLASTr</code> from GitHub with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"heronoh/BLASTr"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="basic-usage">Basic Usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
+</h2>
+<p>Here’s a simple example of how to use <code>BLASTr</code> to perform a BLAST search and retrieve taxonomic information:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"heronoh/BLASTr"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
-</h2>
-<p>The main place to look for help and documentation is &lt;heronoh.github.io/BLASTr/&gt;</p>
-</div>
-<div class="section level2">
-<h2 id="database-configuration">Database configuration<a class="anchor" aria-label="anchor" href="#database-configuration"></a>
-</h2>
-<div class="section level3">
-<h3 id="obtaining-ncbi-complete-databases">Obtaining NCBI complete databases<a class="anchor" aria-label="anchor" href="#obtaining-ncbi-complete-databases"></a>
-</h3>
-<p>Identifications can be performed using NCBI complete databases, such as NT, which are readily available to download and update. This can be performed using the <em>BLAST+</em> <em>script</em> <a href="https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/lxr/source/src/app/blast/update_blastdb.pl" class="external-link">update_blastdb.pl</a>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#set a folder to download the desired database (for example, the nt database)</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="va">BLAST_DB_PATH</span><span class="op">=</span><span class="st">"/data/database/blast/nt"</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#create dir</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span>  <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#enter dir</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#user BLAST+ executable to download/update db files</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="ex">update_blastdb</span> <span class="at">--passive</span> <span class="at">--decompress</span> nt</span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#set permissions to enable usage by all users</span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="fu">chown</span> root <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span>/<span class="pp">*</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="fu">chmod</span> 755 <span class="st">"</span><span class="va">${BLAST_DB_PATH}</span><span class="st">"</span>/<span class="pp">*</span></span></code></pre></div>
-<p>Another option is to download it directly fom the <a href="https://ftp.ncbi.nlm.nih.gov/blast/db/" class="external-link">NCBI ftp site</a>. It can be parallelized and is the best choice when you want to download only the new files.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># download volumes and md5 check files</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz <span class="at">-t</span> 0 <span class="at">--show-progress</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 <span class="at">-t</span> 0 <span class="at">--show-progress</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>     <span class="co"># where 000 is the first volume and 150, the last (up to now).</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>5 <span class="kw">|</span> <span class="ex">parallel</span> md5sum <span class="at">-c</span> {} <span class="op">&gt;&gt;</span> check.txt</span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">sort</span> check.txt <span class="op">&gt;</span> check_sort.txt</span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>tar.gz <span class="kw">|</span> <span class="ex">parallel</span> tar <span class="at">-xvzf</span> {}</span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="formating-a-custom-database">Formating a custom database<a class="anchor" aria-label="anchor" href="#formating-a-custom-database"></a>
-</h3>
-<p>In case you prefer, any FASTA file can be formated as a BLAST+ database, using the <em>BLAST+</em> <em>script</em> <em><em>makeblastdb</em></em>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#set the path to your fasta file (replace the example below)</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="va">DB_FILE</span><span class="op">=</span><span class="st">"/data/database/my_db.fasta"</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#check parameters and usage</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="ex">makeblastdb</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#format your db</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="ex">makeblastdb</span> <span class="at">-in</span> <span class="st">"</span><span class="va">${DB_FILE}</span><span class="st">"</span> <span class="at">-dbtype</span> <span class="st">"nucl"</span> <span class="at">-parse_seqids</span> <span class="at">-hash_index</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a>
-</h2>
-<p>The package installation can be with a mock BLAST formatted database provided in this <a href="https://drive.google.com/file/d/1Qy4w4KIGSTiGjx-J4BrcyN6Y5wtRYBHl/view?usp=sharing" class="external-link">link</a>. Alternatively, you can download the unformated mock database (a fasta file) and format it using the ncbi-blast+ functionalities, as you would do for any other custom database. You can obtain the fasta <a href="https://drive.google.com/file/d/1WKIwq7RySleuSotWjZ4OJUXqbXELaE7q/view?usp=sharing" class="external-link">here</a>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#set the path to your fasta file (replace the example below)</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="va">DB_FILE</span><span class="op">=</span><span class="st">"/data/database/shortest_minimal_db_BLASTr.fasta"</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#check parameters and usage</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="ex">makeblastdb</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#format your db</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="ex">makeblastdb</span> <span class="at">-in</span> <span class="st">"</span><span class="va">${DB_FILE}</span><span class="st">"</span> <span class="at">-dbtype</span> <span class="st">"nucl"</span> <span class="at">-parse_seqids</span> <span class="at">-hash_index</span></span></code></pre></div>
-<p>For the testing, execute the following commands on your R console.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/heronoh/BLASTr" class="external-link">BLASTr</a></span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># First, make sure you have the necessary dependencies installed</span></span>
+<span><span class="fu"><a href="reference/install_dependencies.html">install_dependencies</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#here are 8 ASVs to be tested with the mock blast DB</span></span>
-<span></span>
-<span><span class="va">ASVs_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span><span class="co"># A vector of ASV sequences</span></span>
+<span><span class="va">asvs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"</span>,</span>
 <span>  <span class="st">"CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"</span>,</span>
 <span>  <span class="st">"GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC"</span>,</span>
@@ -178,26 +104,117 @@ install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
 <span>  <span class="st">"TTAGCCATAAACATAAAAGTTCACATAACAAGAACTTTTGCCCGAGAACTACTAGCAACAGCTTAAAACTCAAAGGACTTGGCGGTGCTTTATATCCAC"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">blast_res</span> <span class="op">&lt;-</span> <span class="fu">BLASTr</span><span class="fu">::</span><span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span></span>
-<span>  asvs <span class="op">=</span> <span class="va">ASVs_test</span>,                                                 <span class="co"># vector of sequences to be searched</span></span>
-<span>  db_path <span class="op">=</span> <span class="st">"/data/database/shortest_minimal_db_BLASTr.fasta"</span>,      <span class="co"># path to a formated blast database</span></span>
-<span>  out_file <span class="op">=</span> <span class="cn">NULL</span>,                                                  <span class="co"># path to a .csv file to be created with results (on an existing folder)</span></span>
-<span>  out_RDS <span class="op">=</span> <span class="cn">NULL</span>,                                                   <span class="co"># path to a .RDS file to be created with results (on an existing folder)</span></span>
-<span>  perc_id <span class="op">=</span> <span class="fl">80</span>,                                                     <span class="co"># minimum identity percentual cutoff</span></span>
-<span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80</span>,                                               <span class="co"># minimum percentual coverage of query sequence by subject sequence cutoff</span></span>
-<span>  num_threads <span class="op">=</span> <span class="fl">1</span>,                                                  <span class="co"># number of threads/cores to run each blast on</span></span>
-<span>  total_cores <span class="op">=</span> <span class="fl">8</span>,                                                  <span class="co"># number of tota threads/cores to alocate all blast searches</span></span>
-<span>  num_alignments <span class="op">=</span> <span class="fl">3</span>,                                               <span class="co"># maximum number of alignments/matches to retrieve results for each query sequence</span></span>
-<span>  blast_type <span class="op">=</span> <span class="st">"blastn"</span>                                             <span class="co"># blast search engine to use</span></span>
+<span><span class="co"># Path to your local FASTA database</span></span>
+<span><span class="va">fasta_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path_package.html" class="external-link">path_package</a></span><span class="op">(</span><span class="st">"BLASTr"</span>, <span class="st">"extdata"</span>, <span class="st">"minimal_db_blast"</span>, ext <span class="op">=</span> <span class="st">"fasta"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Path to database</span></span>
+<span><span class="va">db_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_temp.html" class="external-link">path_temp</a></span><span class="op">(</span><span class="st">"minimal_db_blast"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/make_blast_db.html">make_blast_db</a></span><span class="op">(</span></span>
+<span>  fasta_path <span class="op">=</span> <span class="va">fasta_path</span>,</span>
+<span>  db_path <span class="op">=</span> <span class="va">db_path</span>,</span>
+<span>  db_type <span class="op">=</span> <span class="st">"nucl"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># check identificaitons results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">fasta_path</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "&gt;AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"</span></span>
+<span><span class="co">#&gt; [2] "TACAAACTGGGATTAGATACCCCACTATGCCTAGCCATAAACTTAAATGAAACTATACTAAACTCATTCGCCAGAGTACT"</span></span>
+<span><span class="co">#&gt; [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"</span></span>
+<span><span class="co">#&gt; [4] "&gt;CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"</span></span>
+<span><span class="co">#&gt; [5] "TAGCTCCCGTCGAGTCTCTGCACCTTCCGCATTAGTCATTTATCATTTGTCGTTAGTCATTTGCTAGTAACAATTAACTA"</span></span>
+<span><span class="co">#&gt; [6] "AAAACGAAGGACAAAAGACAAATTTGGC"</span></span>
 <span></span>
-<span><span class="va">blast_res</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">db_path</span>, <span class="st">".ndb"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run BLAST in parallel</span></span>
+<span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span></span>
+<span>  asvs <span class="op">=</span> <span class="va">asvs</span>,</span>
+<span>  db_path <span class="op">=</span> <span class="va">db_path</span>,</span>
+<span>  total_cores <span class="op">=</span> <span class="fl">2</span> <span class="co"># Number of cores to use</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#or</span></span>
+<span><span class="co"># Extract the taxonomy IDs from the BLAST results</span></span>
+<span><span class="va">tax_ids</span> <span class="op">&lt;-</span> <span class="va">blast_results</span><span class="op">$</span><span class="va">`1_staxid`</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">blast_res</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Retrieve taxonomic information in parallel</span></span>
+<span><span class="va">taxonomic_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_get_tax.html">parallel_get_tax</a></span><span class="op">(</span></span>
+<span>  organisms_taxIDs <span class="op">=</span> <span class="va">tax_ids</span>,</span>
+<span>  total_cores <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  retry_times <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; retrying 0 of 0</span></span>
+<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: N/A</span></span>
+<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: NA</span></span>
+<span><span class="co">#&gt; The following taxIDs could not be retrieved even after 0 attempts:</span></span>
+<span><span class="co">#&gt; N/AThe following taxIDs could not be retrieved even after 0 attempts:</span></span>
+<span><span class="co">#&gt; NA</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># View the results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 57</span></span>
+<span><span class="co">#&gt;   Sequence               `1_subject header` `1_subject` `1_indentity` `1_length`</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                  &lt;chr&gt;              &lt;chr&gt;               &lt;dbl&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 CTAGCCATAAACTTAAATGAA… "Gymnotus carapo … AP011979.1           97.0         99</span></span>
+<span><span class="co">#&gt; 2 CTAGCCATAAACTTAAATGAA…  &lt;NA&gt;              &lt;NA&gt;                 NA           NA</span></span>
+<span><span class="co">#&gt; 3 GCCAAATTTGTGTTTTGTCCT… "Brasilonema octa… CP030121.1           96.2         78</span></span>
+<span><span class="co">#&gt; 4 AACATTGTATTTTGTCTTTGG… "Symphoromyia cra… MG967958.1           84.9        179</span></span>
+<span><span class="co">#&gt; 5 ACTATACCTATTATTCGGCGC… "Homo sapiens iso… MN849868.1          100          226</span></span>
+<span><span class="co">#&gt; 6 TTAGCCATAAACATAAAAGTT… "Hydrochoerus hyd… KX381515.1           99.0         99</span></span>
+<span><span class="co">#&gt; # ℹ 52 more variables: `1_mismatches` &lt;dbl&gt;, `1_gaps` &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   `1_query start` &lt;dbl&gt;, `1_query end` &lt;dbl&gt;, `1_subject start` &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   `1_subject end` &lt;dbl&gt;, `1_e-value` &lt;dbl&gt;, `1_bitscore` &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   `1_qcovhsp` &lt;dbl&gt;, `1_staxid` &lt;chr&gt;, `2_subject header` &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   `2_subject` &lt;chr&gt;, `2_indentity` &lt;dbl&gt;, `2_length` &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   `2_mismatches` &lt;dbl&gt;, `2_gaps` &lt;dbl&gt;, `2_query start` &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   `2_query end` &lt;dbl&gt;, `2_subject start` &lt;dbl&gt;, `2_subject end` &lt;dbl&gt;, …</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">taxonomic_info</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 0 × 13</span></span>
+<span><span class="co">#&gt; # ℹ 13 variables: Sci_name &lt;chr&gt;, query_taxID &lt;chr&gt;, Superkingdom (NCBI) &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   Kingdom (NCBI) &lt;chr&gt;, Phylum (NCBI) &lt;chr&gt;, Subphylum (NCBI) &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   Class (NCBI) &lt;chr&gt;, Subclass (NCBI) &lt;chr&gt;, Order (NCBI) &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   Suborder (NCBI) &lt;chr&gt;, Family (NCBI) &lt;chr&gt;, Subfamily (NCBI) &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   Genus (NCBI) &lt;chr&gt;</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="main-functions">Main Functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
+</h2>
+<ul>
+<li>
+<code><a href="reference/install_dependencies.html">install_dependencies()</a></code>: Installs BLAST+ and Entrez Direct if they are not found on your system.</li>
+<li>
+<code><a href="reference/make_blast_db.html">make_blast_db()</a></code>: Creates a BLAST database from a FASTA file.</li>
+<li>
+<code><a href="reference/parallel_blast.html">parallel_blast()</a></code>: Runs BLAST searches for multiple sequences in parallel.</li>
+<li>
+<code><a href="reference/get_blast_results.html">get_blast_results()</a></code>: Runs a BLAST search for a single sequence.</li>
+<li>
+<code><a href="reference/parallel_get_tax.html">parallel_get_tax()</a></code>: Retrieves taxonomic information for multiple NCBI Taxonomy IDs in parallel.</li>
+<li>
+<code><a href="reference/get_tax_by_taxID.html">get_tax_by_taxID()</a></code>: Retrieves taxonomic information for a single NCBI Taxonomy ID.</li>
+<li>
+<code><a href="reference/run_blast.html">run_blast()</a></code>: A lower-level function to run a BLAST search and return the raw output.</li>
+<li>
+<code><a href="reference/parse_fasta.html">parse_fasta()</a></code>: Extracts sequences from a FASTA file.</li>
+<li>
+<code><a href="reference/get_fasta_header.html">get_fasta_header()</a></code>: Retrieves the full header of a sequence from a BLAST database.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="dependency-management">Dependency Management<a class="anchor" aria-label="anchor" href="#dependency-management"></a>
+</h2>
+<p><code>BLASTr</code> uses the <code>condathis</code> package to manage its dependencies (BLAST+ and Entrez Direct). When you run a function that requires one of these tools, <code>BLASTr</code> will automatically check if it’s installed. If not, it will create a Conda environment and install the necessary software. This ensures that you always have the correct versions of the dependencies without having to install them manually.</p>
+<p>You can control the installation process with the <code>force</code> and <code>verbose</code> arguments in the <code><a href="reference/install_dependencies.html">install_dependencies()</a></code> and <code><a href="reference/check_cmd.html">check_cmd()</a></code> functions.</p>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Contributions are welcome! Please see the <a href="CONTRIBUTING.html">contributing guide</a> for more details.</p>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -232,7 +249,12 @@ install.packages('BLASTr', repos = "https://heronoh.r-universe.dev")
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
