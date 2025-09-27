@@ -1,13 +1,14 @@
-#' @title Run BLAST on parallel
+#' @title Run Parallelized BLAST
 #'
-#' @description Run parallel BLAST for set of sequences
+#' @description Run parallel BLAST for a set of sequences
 #'
 #' @inheritParams get_blast_results
 #'
 #' @param asvs Character vector with sequences
 #' @param out_file Complete path to output .csv file on an existing folder.
 #' @param out_RDS Complete path to output RDS file on an existing folder.
-#' @param total_cores Total available cores to run BLAST in parallel. Check your max with *future::availableCores()*
+#' @param total_cores Total available cores to run BLAST in parallel.
+#'   Check your max with *future::availableCores()*.
 #' @param blast_type BLAST+ executable to be used on search.
 #'
 #' @return A tibble with the BLAST tabular output.
@@ -40,7 +41,7 @@ parallel_blast <- function(
     perc_id = 80L,
     perc_qcov_hsp = 80L,
     num_alignments = 4L,
-    verbose = FALSE,
+    verbose = "silent",
     env_name = "blastr-blast-env") {
   rlang::check_required(asvs)
   rlang::check_required(db_path)

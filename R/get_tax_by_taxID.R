@@ -4,7 +4,7 @@
 #'
 #' @param organisms_taxIDs A character vector of NCBI Taxonomy Tax IDs for which to retrieve taxonomy information.
 #' @param parse_result Logical indicating whether to parse the taxonomy information into a tibble (`TRUE`, default) or return the raw output as returned by `efetch` (`FALSE`).
-#' @param verbose Logical indicating whether to print verbose messages during the process. Default is `FALSE`.
+#' @param verbose Character indicating whether to print verbose messages during the process. Default is `"silent"`.
 #' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"blastr-entrez-env"`.
 #'
 #' @return A tibble containing the taxonomic ranks for the given Tax IDs.
@@ -22,13 +22,13 @@
 #' raw_tax_info <- get_tax_by_taxID("9606", parse_result = FALSE)
 #'
 #' # Enable verbose output
-#' tax_info <- get_tax_by_taxid("9606", verbose = TRUE)
+#' tax_info <- get_tax_by_taxID("9606", verbose = "output")
 #' }
 #' @export
 get_tax_by_taxID <- function(
     organisms_taxIDs,
     parse_result = TRUE,
-    verbose = FALSE,
+    verbose = "silent",
     env_name = "blastr-entrez-env" # ,
     # organisms_taxIDs = NULL
     ) {

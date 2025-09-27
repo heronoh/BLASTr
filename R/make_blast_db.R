@@ -7,9 +7,9 @@
 #' @param db_type Type of database to create, either "nucl" or "prot".
 #' @param taxid_map Optional path to a file mapping sequence IDs to taxonomy IDs.
 #' @param parse_seqids Whether to parse sequence IDs.
-#' @param verbose Should condathis::run() internal command be shown?
+#' @param verbose Should `[condathis::run()]` internal command be shown?
 #' @param env_name The name of the conda environment with the parameter (i.e. "blastr-blast-env")
-#' @return The result of the makeblastdb command.
+#' @return The result of the `makeblastdb` command.
 #'
 #' @examples
 #' \dontrun{
@@ -30,11 +30,11 @@ make_blast_db <- function(
     db_type = "nucl",
     taxid_map = NULL,
     parse_seqids = TRUE,
-    verbose = FALSE,
+    verbose = "silent",
     env_name = "blastr-blast-env") {
   rlang::check_required(fasta_path)
   rlang::check_required(db_path)
-  check_cmd("makeblastdb", env_name = env_name, verbose = verbose)
+  check_cmd(cmd = "makeblastdb", env_name = env_name, verbose = verbose)
 
   args <- c(
     "-in", fasta_path,

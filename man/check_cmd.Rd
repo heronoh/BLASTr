@@ -7,7 +7,7 @@
 check_cmd(
   cmd = "blastn",
   env_name = "blastr-blast-env",
-  verbose = "silent",
+  verbose = c("silent", "cmd", "output", "full"),
   force = FALSE
 )
 }
@@ -21,7 +21,8 @@ Default is \code{"blastr-blast-env"}.}
 
 \item{verbose}{Character string specifying the verbosity level during
 environment creation.
-Options are \code{"silent"}, \code{"verbose"}, etc. Default is \code{"silent"}.}
+Options are \code{"silent"}, \code{"output"}, "cmd", or "full".
+Default is \code{"silent"}.}
 
 \item{force}{Logical indicating whether to force the re-creation of the
 conda environment even if it exists.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/parallel_blast.R
 \name{parallel_blast}
 \alias{parallel_blast}
-\title{Run BLAST on parallel}
+\title{Run Parallelized BLAST}
 \usage{
 parallel_blast(
   asvs,
@@ -15,7 +15,7 @@ parallel_blast(
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  verbose = FALSE,
+  verbose = "silent",
   env_name = "blastr-blast-env"
 )
 }
@@ -33,7 +33,8 @@ Passed on to BLAST+ argument \code{-num_threads}.}
 
 \item{blast_type}{BLAST+ executable to be used on search.}
 
-\item{total_cores}{Total available cores to run BLAST in parallel. Check your max with \emph{future::availableCores()}}
+\item{total_cores}{Total available cores to run BLAST in parallel.
+Check your max with \emph{future::availableCores()}.}
 
 \item{perc_id}{Lowest identity percentage cutoff.
 Passed on to BLAST+ \code{-perc_identity}.}
@@ -51,7 +52,7 @@ Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 A tibble with the BLAST tabular output.
 }
 \description{
-Run parallel BLAST for set of sequences
+Run parallel BLAST for a set of sequences
 }
 \examples{
 \dontrun{

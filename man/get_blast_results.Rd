@@ -12,7 +12,7 @@ get_blast_results(
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  verbose = FALSE,
+  verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env"
 )
 }

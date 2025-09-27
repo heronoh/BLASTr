@@ -15,7 +15,7 @@ testthat::test_that("parallel_blast works", {
     perc_qcov_hsp = 80,
     num_alignments = 4,
     blast_type = "blastn",
-    verbose = FALSE
+    verbose = "silent"
   )
 
   testthat::expect_s3_class(blast_res, "tbl_df")
@@ -50,7 +50,7 @@ testthat::test_that("run_blast fails", {
       asv = ASVs_test[1],
       db_path = db_path,
       perc_id = "MISSING_VALUE_STRInG",
-      verbose = FALSE
+      verbose = "silent"
     ),
     class = "blastr_error_blast_run"
   )

@@ -17,7 +17,9 @@ get_fasta_header <- function(
     id,
     db_path,
     env_name = "blastr-blast-env",
-    verbose = FALSE) {
+    verbose = "silent") {
+  rlang::check_required(id)
+  rlang::check_required(db_path)
   if (is.null(db_path)) {
     cli::cli_abort(
       message = "No BLAST database provided.",

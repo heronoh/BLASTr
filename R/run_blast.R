@@ -41,11 +41,11 @@ run_blast <- function(
     blast_type = "blastn",
     perc_id = 80L,
     perc_qcov_hsp = 80L,
-    verbose = FALSE,
+    verbose = "silent",
     env_name = "blastr-blast-env") {
   rlang::check_required(asv)
   rlang::check_required(db_path)
-  check_cmd(blast_type, env_name = env_name, verbose = verbose)
+  check_cmd(cmd = blast_type, env_name = env_name, verbose = verbose)
 
   query_path <- fs::file_temp("blast_input_", ext = "fasta")
   base::cat(asv, file = query_path)
