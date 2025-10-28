@@ -77,10 +77,10 @@ make_blast_db(
 )
 
 head(readLines(fasta_path))
-#> [1] ">AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"
+#> [1] ">AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"           
 #> [2] "TACAAACTGGGATTAGATACCCCACTATGCCTAGCCATAAACTTAAATGAAACTATACTAAACTCATTCGCCAGAGTACT"
-#> [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"
-#> [4] ">CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"
+#> [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"                               
+#> [4] ">CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"                           
 #> [5] "TAGCTCCCGTCGAGTCTCTGCACCTTCCGCATTAGTCATTTATCATTTGTCGTTAGTCATTTGCTAGTAACAATTAACTA"
 #> [6] "AAAACGAAGGACAAAAGACAAATTTGGC"
 
@@ -106,8 +106,8 @@ taxonomic_info <- parallel_get_tax(
   retry_times = 0
 )
 #> retrying 0 of 0
-#> ------------------------> unable to retrieve taxonomy for: N/A
-#> ------------------------> unable to retrieve taxonomy for: NA
+#> ------------------------> unable to retrieve taxonomy for: N/A   
+#> ------------------------> unable to retrieve taxonomy for: NA    
 #> The following taxIDs could not be retrieved even after 0 attempts:
 #> N/AThe following taxIDs could not be retrieved even after 0 attempts:
 #> NA

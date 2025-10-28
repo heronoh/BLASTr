@@ -7,9 +7,9 @@
 #' @param db_type Type of database to create, either "nucl" or "prot".
 #' @param taxid_map Optional path to a file mapping sequence IDs to taxonomy IDs.
 #' @param parse_seqids Whether to parse sequence IDs.
-#' @param verbose Should condathis::run() internal command be shown?
+#' @param verbose Should `[condathis::run()]` internal command be shown?
 #' @param env_name The name of the conda environment with the parameter (i.e. "blastr-blast-env")
-#' @return The result of the makeblastdb command.
+#' @return The result of the `makeblastdb` command.
 #'
 #' @examples
 #' \dontrun{
@@ -25,21 +25,25 @@
 #'
 #' @export
 make_blast_db <- function(
-    fasta_path,
-    db_path,
-    db_type = "nucl",
-    taxid_map = NULL,
-    parse_seqids = TRUE,
-    verbose = FALSE,
-    env_name = "blastr-blast-env") {
+  fasta_path,
+  db_path,
+  db_type = "nucl",
+  taxid_map = NULL,
+  parse_seqids = TRUE,
+  verbose = "silent",
+  env_name = "blastr-blast-env"
+) {
   rlang::check_required(fasta_path)
   rlang::check_required(db_path)
-  check_cmd("makeblastdb", env_name = env_name, verbose = verbose)
+  check_cmd(cmd = "makeblastdb", env_name = env_name, verbose = verbose)
 
   args <- c(
-    "-in", fasta_path,
-    "-dbtype", db_type,
-    "-out", db_path
+    "-in",
+    fasta_path,
+    "-dbtype",
+    db_type,
+    "-out",
+    db_path
   )
 
   if (isTRUE(parse_seqids)) {
@@ -49,6 +53,7 @@ make_blast_db <- function(
   if (!is.null(taxid_map)) {
     args <- c(args, "-taxid_map", taxid_map)
   }
+  # NOTE: attemp to remove phone home in blast
   withr::local_envvar(
     .new = list(
       BLAST_USAGE_REPORT = "false"

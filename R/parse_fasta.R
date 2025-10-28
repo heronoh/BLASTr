@@ -6,6 +6,10 @@
 #'
 #' @return vector containing the sequences.
 #'
+#' @examples
+#' fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+#' seqs <- parse_fasta(file_path = fasta_path)
+#'
 #' @export
 parse_fasta <- function(file_path) {
   # TODO: @luciorq Remove when proper way of importing crate is found
@@ -22,16 +26,24 @@ parse_fasta <- function(file_path) {
     )
   }
   fasta_file <- readr::read_lines(file_path)
-  seqs <- vector()
+  final_seq_vector <- vector()
+  current_seq_string <- character(0L)
   for (line in fasta_file) {
     if (startsWith(line, "#")) {
+      final_seq_vector <- c(final_seq_vector, current_seq_string)
+      current_seq_string <- character(0L)
       next
     }
     if (startsWith(line, ">")) {
+      final_seq_vector <- c(final_seq_vector, current_seq_string)
+      current_seq_string <- character(0L)
       next
     } else {
-      seqs <- c(seqs, line)
+      current_seq_string <- paste0(current_seq_string, line, collapse = "")
     }
   }
-  return(seqs)
+  final_seq_vector <- c(final_seq_vector, current_seq_string)
+  final_seq_vector <- final_seq_vector[final_seq_vector != ""]
+
+  return(final_seq_vector)
 }

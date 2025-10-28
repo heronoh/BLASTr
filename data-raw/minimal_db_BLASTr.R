@@ -17,7 +17,6 @@ teste20$`1_subject` |>
   paste0(collapse = ",")
 
 
-
 # get original seqs from original nt ----
 # blastdbcmd -db /data/databases/nt/nt -entry "KX902240.1,KJ710708.1" -outfmt %f
 
@@ -70,8 +69,6 @@ BLASTr_tbl <- teste20 |>
   ) |>
   filter(!is.na(`1_subject header`)) |>
   unique()
-
-
 
 
 # get subsequence of the original DB seq to make shortest DB ----
@@ -131,7 +128,7 @@ ASVs_test
 
 teste_F2local_short <- furrr::future_map_dfr(
   get_blast_results,
-  num_thread = 2,
+  num_threads = 2,
   .options = furrr::furrr_options(seed = NULL),
   # db_path = "/data/databases/nt/nt",
   # db_path = "/home/heron/prjcts/BLASTr/dev/minimal_db/shortest_minimal_db_BLASTr.fasta",

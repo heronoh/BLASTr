@@ -7,7 +7,7 @@
 get_tax_by_taxID(
   organisms_taxIDs,
   parse_result = TRUE,
-  verbose = FALSE,
+  verbose = "silent",
   env_name = "blastr-entrez-env"
 )
 }
@@ -16,7 +16,7 @@ get_tax_by_taxID(
 
 \item{parse_result}{Logical indicating whether to parse the taxonomy information into a tibble (\code{TRUE}, default) or return the raw output as returned by \code{efetch} (\code{FALSE}).}
 
-\item{verbose}{Logical indicating whether to print verbose messages during the process. Default is \code{FALSE}.}
+\item{verbose}{Character indicating whether to print verbose messages during the process. Default is \code{"silent"}.}
 
 \item{env_name}{Character string specifying the name of the conda environment where \code{efetch} is installed. Default is \code{"blastr-entrez-env"}.}
 }
@@ -39,6 +39,6 @@ tax_info <- get_tax_by_taxID(tax_ids)
 raw_tax_info <- get_tax_by_taxID("9606", parse_result = FALSE)
 
 # Enable verbose output
-tax_info <- get_tax_by_taxid("9606", verbose = TRUE)
+tax_info <- get_tax_by_taxID("9606", verbose = "output")
 }
 }

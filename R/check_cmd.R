@@ -11,7 +11,8 @@
 #'   Default is `"blastr-blast-env"`.
 #' @param verbose Character string specifying the verbosity level during
 #'   environment creation.
-#'   Options are `"silent"`, `"verbose"`, etc. Default is `"silent"`.
+#'   Options are `"silent"`, `"output"`, "cmd", or "full".
+#'   Default is `"silent"`.
 #' @param force Logical indicating whether to force the re-creation of the
 #'   conda environment even if it exists.
 #'   Default is `FALSE`.
@@ -30,11 +31,15 @@
 #' # Force re-creation of the conda environment and re-install 'blastn'
 #' check_cmd("blastn", env_name = "blastr-blast-env", force = TRUE)
 #' }
+#'
+#' @keywords internal
+#' @noRd
 check_cmd <- function(
-    cmd = "blastn",
-    env_name = "blastr-blast-env",
-    verbose = "silent",
-    force = FALSE) {
+  cmd = "blastn",
+  env_name = "blastr-blast-env",
+  verbose = c("silent", "cmd", "output", "full"),
+  force = FALSE
+) {
   packages_to_install <- NULL
   # supported_archs <- names(conda_packages_list)
   # Check if operational system is in the included list of available systems
@@ -57,6 +62,7 @@ check_cmd <- function(
   if (isTRUE(force)) {
     condathis::create_env(
       packages = packages_to_install,
+      channels = c("conda-forge", "bioconda"),
       env_name = env_name,
       verbose = verbose,
       overwrite = force
@@ -64,14 +70,16 @@ check_cmd <- function(
   } else if (isFALSE(condathis::env_exists(env_name))) {
     condathis::create_env(
       packages = packages_to_install,
-      env_name = env_name,
-      verbose = verbose
-    )
-  } else if (isFALSE(condathis::env_exists(env_name))) {
-    condathis::create_env(
+      channels = c("conda-forge", "bioconda"),
       env_name = env_name,
       verbose = verbose
     )
   }
+  # else if (isFALSE(condathis::env_exists(env_name))) {
+  #  condathis::create_env(
+  #    env_name = env_name,
+  #    verbose = verbose
+  #  )
+  # }
   invisible(TRUE)
 }

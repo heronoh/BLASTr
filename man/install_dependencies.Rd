@@ -4,10 +4,14 @@
 \alias{install_dependencies}
 \title{Install Required Command-line Tool Dependencies}
 \usage{
-install_dependencies(verbose = "silent", force = FALSE)
+install_dependencies(
+  verbose = c("silent", "cmd", "output", "full"),
+  force = FALSE
+)
 }
 \arguments{
-\item{verbose}{A character string specifying the verbosity level during environment creation. Options include \code{"silent"}, \code{"output"}, \code{"full"} etc. Default is \code{"silent"}.}
+\item{verbose}{A character string specifying the verbosity level during environment creation.
+Options include \code{"silent"}, \code{"cmd"}, \code{"output"}, or \code{"full"}. Default is \code{"silent"}.}
 
 \item{force}{A logical value indicating whether to force the re-creation of the Conda environments even if they already exist. Default is \code{FALSE}.}
 }
@@ -23,7 +27,7 @@ Installs the necessary command-line tools ('blast' and 'efetch') into conda envi
 install_dependencies()
 
 # Install dependencies with verbose output
-install_dependencies(verbose = "verbose")
+install_dependencies(verbose = "output")
 
 # Force re-installation of dependencies
 install_dependencies(force = TRUE)

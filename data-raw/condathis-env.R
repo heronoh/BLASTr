@@ -1,7 +1,8 @@
 condathis::create_env("bioconda::blast==1.16", env_name = "blast-env")
 
-
+#' @inheritParams rlang::args_dots_empty
 shell_exec <- function(cmd = "blastn", ..., env_name = "blast-env") {
+  rlang::check_dots_unnamed()
   condathis::run(cmd, ..., env_name = env_name)
 }
 

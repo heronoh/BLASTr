@@ -3,33 +3,76 @@
 
 package_name := 'BLASTr'
 
-# github_org := 'heronoh'
+# gh_upstream := 'heronoh'
+# gh_origin := 'luciorq'
 
 @default:
   just --choose
 
-@test:
+# =============================================================================
+# General R Package Development Tasks
+# =============================================================================
+@document:
+  #!/usr/bin/env bash
+  \builtin set -euxo pipefail;
+  R -q -e 'devtools::load_all();usethis::use_tidy_description();';
+  R -q -e 'devtools::load_all();devtools::document();';
+  \builtin echo "Documentation updated!";
+
+@lint:
   #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   R -q -e 'devtools::load_all();styler::style_pkg();';
-  R -q -e 'devtools::load_all();usethis::use_tidy_description();';
-  R -q -e 'devtools::load_all();devtools::document();';
+  air format ./R/ || true;
+  air format ./tests/ || true;
+  just document;
+  \builtin echo "Linting done!";
+
+@test: lint
+  #!/usr/bin/env bash
+  \builtin set -euxo pipefail;
   R -q -e 'devtools::load_all();devtools::run_examples();';
   R -q -e 'devtools::load_all();devtools::test();';
-  R -q -e 'devtools::load_all();if(file.exists("README.Rmd"))rmarkdown::render("README.Rmd", encoding = "UTF-8")';
-  just check;
+  \builtin echo "All tests passed!";
 
-@test-all-examples:
+@build-readme: lint
+  #!/usr/bin/env bash
+  \builtin set -euxo pipefail;
+  # Lint markdown files
+  [[ -f ./README.Rmd ]] && cat ./README.Rmd | rumdl check --stdin || true;
+  [[ -f ./README.qmd ]] && cat ./README.qmd | rumdl check --stdin || true;
+  [[ -f ./README.Rmd ]] && R -q -e 'devtools::load_all();if(file.exists("README.Rmd"))rmarkdown::render("README.Rmd", encoding = "UTF-8")' || true;
+  [[ -f ./README.qmd ]] && quarto render README.qmd --to gfm || true;
+  # Lint Final README.md
+  rumdl check README.md || true;
+  markdownlint README.md || true;
+  \builtin echo "README built and linted!";
+
+@test-all-examples: document
   #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   R -q -e 'devtools::load_all();devtools::document();devtools::run_examples(run_dontrun = TRUE, run_donttest = TRUE);';
 
-@check:
+@check: test test-all-examples
   #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   R -q -e 'rcmdcheck::rcmdcheck(args = c("--as-cran"), repos = c(CRAN = "https://cloud.r-project.org"));';
 
-# Use R package version on the Description file to tag latest commit of the git repo
+# Force GitHub Actions Checks to start for the main branch
+@check-gha-trigger:
+  #!/usr/bin/env bash
+  \builtin set -euxo pipefail;
+  gh workflow run "r-cmd-check" --ref main;
+
+# Print latest GitHub Actions Checks results for the main branch
+@monitor-gha:
+  #!/usr/bin/env bash
+  \builtin set -euxo pipefail;
+  gh run list;
+  latest_job_id="$(gh run list -w "r-cmd-check" --json databaseId --jq '.[0].databaseId')";
+  gh run view "${latest_job_id}";
+
+# Use R package version on the DESCRIPTION file to tag latest commit of the git repo
 @git-tag:
   #!/usr/bin/env bash
   \builtin set -euxo pipefail;
@@ -43,10 +86,33 @@ package_name := 'BLASTr'
   #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   R -q -e 'urlchecker::url_check()';
-  R -q -e 'remotes::install_local(".", force = TRUE, dependencies = TRUE)';
   R -q -e 'devtools::build_readme()';
   R -q -e 'withr::with_options(list(repos = c(CRAN = "https://cloud.r-project.org")), {devtools::check(remote = TRUE, manual = TRUE)})';
   R -q -e 'devtools::check_win_devel()';
+  # revdepcheck::revdep_check(num_workers = 4)
   # Update CRAN comments
   # usethis::use_version('patch')
+  # devtools::build_rmd("vignettes/my-vignette.Rmd")
   # devtools::submit_cran()
+  \builtin echo "Pre-release checks done!";
+
+@build-vignettes:
+  #!/usr/bin/env bash
+  \builtin set -euxo pipefail;
+  R -q -e 'devtools::load_all();devtools::document();';
+  R -q -e 'devtools::install(pkg = ".", build_vignettes = TRUE, dependencies = c("Imports", "Suggests", "Depends"), upgrade = "always");';
+  R -q -e 'print(vignette(package = "{{ package_name }}"));';
+
+@build-pkgdown-website:
+  #!/usr/bin/env bash
+  \builtin set -euxo pipefail;
+  R -q -e 'devtools::load_all();devtools::document();pkgdown::build_site();';
+  # git add docs/;
+  # git commit -m "chore: update pkgdown website";
+  # git push;
+
+@release-github:
+  #!/usr/bin/env bash
+  \builtin set -euxo pipefail;
+  # gh release create v0.1.0 --title "v0.1.0" --notes "First Zenodo archiving release"
+  \builtin echo "Not implemented yet";

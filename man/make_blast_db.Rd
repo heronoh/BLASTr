@@ -10,7 +10,7 @@ make_blast_db(
   db_type = "nucl",
   taxid_map = NULL,
   parse_seqids = TRUE,
-  verbose = FALSE,
+  verbose = "silent",
   env_name = "blastr-blast-env"
 )
 }
@@ -25,12 +25,12 @@ make_blast_db(
 
 \item{parse_seqids}{Whether to parse sequence IDs.}
 
-\item{verbose}{Should condathis::run() internal command be shown?}
+\item{verbose}{Should \verb{[condathis::run()]} internal command be shown?}
 
 \item{env_name}{The name of the conda environment with the parameter (i.e. "blastr-blast-env")}
 }
 \value{
-The result of the makeblastdb command.
+The result of the \code{makeblastdb} command.
 }
 \description{
 Create a BLAST database from a FASTA file.

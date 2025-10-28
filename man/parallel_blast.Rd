@@ -2,20 +2,21 @@
 % Please edit documentation in R/parallel_blast.R
 \name{parallel_blast}
 \alias{parallel_blast}
-\title{Run BLAST on parallel}
+\title{Run Parallelized BLAST}
 \usage{
 parallel_blast(
   asvs,
   db_path,
+  ...,
   out_file = NULL,
   out_RDS = NULL,
+  total_cores = 1L,
   num_threads = 1L,
   blast_type = "blastn",
-  total_cores = 1L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  verbose = FALSE,
+  verbose = "silent",
   env_name = "blastr-blast-env"
 )
 }
@@ -24,16 +25,19 @@ parallel_blast(
 
 \item{db_path}{Complete path do formatted BLAST database.}
 
+\item{...}{These dots are for future extensions and must be empty.}
+
 \item{out_file}{Complete path to output .csv file on an existing folder.}
 
 \item{out_RDS}{Complete path to output RDS file on an existing folder.}
+
+\item{total_cores}{Total available cores to run BLAST in parallel.
+Check your max with \emph{future::availableCores()}.}
 
 \item{num_threads}{Number of threads to run BLAST on.
 Passed on to BLAST+ argument \code{-num_threads}.}
 
 \item{blast_type}{BLAST+ executable to be used on search.}
-
-\item{total_cores}{Total available cores to run BLAST in parallel. Check your max with \emph{future::availableCores()}}
 
 \item{perc_id}{Lowest identity percentage cutoff.
 Passed on to BLAST+ \code{-perc_identity}.}
@@ -45,25 +49,36 @@ Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{verbose}{Should condathis::run() internal command be shown?}
 
-\item{env_name}{The name of the conda environment with the parameter (i.e. "blastr-blast-env")}
+\item{env_name}{The name of the conda environment used to run
+command-line tools (i.e. "blastr-blast-env").}
 }
 \value{
 A tibble with the BLAST tabular output.
 }
 \description{
-Run parallel BLAST for set of sequences
+Run parallel BLAST for a set of sequences
 }
 \examples{
 \dontrun{
-blast_res <- BLASTr::parallel_blast(
-  asvs = ASVs_test, # vector of sequences to be searched
-  db_path = "/data/databases/nt/nt", # path to a formatted blast database
+dna_fasta_path <- fs::path_package(
+  "BLASTr", "extdata", "minimal_db_blast",
+  ext = "fasta"
+)
+temp_db_path <- fs::path_temp("minimal_db_blast")
+make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
+asvs_string <- c(
+  "CTAGCCATAAACTTAAATGAAGCTATACTAA",
+  "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
+)
+blast_res <- parallel_blast(
+  asvs = asvs_string, # vector of sequences to be searched
+  db_path = temp_db_path, # path to a formatted blast database
   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
   out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)
   perc_id = 80, # minimum identity percentage cutoff
+  total_cores = 1, # Number of BLAST process to start in parallel
   perc_qcov_hsp = 80, # minimum percentage coverage of query sequence by subject sequence cutoff
   num_threads = 1, # number of threads/cores to run each blast on
-  total_cores = 8, # number of total threads/cores to allocate all blast searches
   # maximum number of alignments/matches to retrieve results for each query sequence
   num_alignments = 3,
   blast_type = "blastn" # blast search engine to use

@@ -7,9 +7,9 @@
 parallel_get_tax(
   organisms_taxIDs,
   parse_result = TRUE,
-  total_cores = 1,
-  retry_times = 10,
-  verbose = FALSE,
+  total_cores = 1L,
+  retry_times = 10L,
+  verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-entrez-env"
 )
 }
@@ -22,7 +22,7 @@ parallel_get_tax(
 
 \item{retry_times}{Integer specifying the number of times to retry fetching taxonomy information if it fails. Defaults to \code{10}.}
 
-\item{verbose}{Logical indicating whether to print verbose messages during the process. Default is \code{FALSE}.}
+\item{verbose}{Character string indicating whether to print verbose messages during the process. Default is \code{silent}.}
 
 \item{env_name}{Character string specifying the name of the conda environment where \code{efetch} is installed. Default is \code{"blastr-entrez-env"}.}
 }
@@ -45,6 +45,6 @@ tax_info_unparsed <- parallel_get_tax(tax_ids, parse_result = FALSE)
 tax_info <- parallel_get_tax(tax_ids, retry_times = 20)
 
 # Enable verbose output
-tax_info <- parallel_get_tax(tax_ids, verbose = TRUE)
+tax_info <- parallel_get_tax(tax_ids, verbose = "output")
 }
 }

@@ -1,6 +1,6 @@
 Package: BLASTr
 Title: Parallel Taxonomic Classification of Metabarcoding Sequences
-Version: 0.1.5
+Version: 0.1.6
 Authors@R: c(
     person("Lucio", "Queiroz", , "luciorqueiroz@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-6090-1834")),
@@ -16,7 +16,7 @@ License: MIT + file LICENSE
 URL: https://github.com/heronoh/BLASTr, https://heronoh.github.io/BLASTr/
 BugReports: https://github.com/heronoh/BLASTr/issues
 Depends:
-    R (>= 4.1)
+    R (>= 4.3)
 Imports:
     carrier (>= 0.2.0),
     cli,
@@ -38,4 +38,4 @@ Suggests:
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

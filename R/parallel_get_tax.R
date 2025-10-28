@@ -6,7 +6,7 @@
 #' @param parse_result Logical indicating whether to parse the taxonomy information into a tibble (`TRUE`, default) or return the raw output as returned by `efetch` (`FALSE`).
 #' @param total_cores Integer specifying the number of cores to use for parallel processing. Defaults to `1`.
 #' @param retry_times Integer specifying the number of times to retry fetching taxonomy information if it fails. Defaults to `10`.
-#' @param verbose Logical indicating whether to print verbose messages during the process. Default is `FALSE`.
+#' @param verbose Character string indicating whether to print verbose messages during the process. Default is `silent`.
 #' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"blastr-entrez-env"`.
 #'
 #' @return A tibble containing the taxonomic ranks for the given Tax IDs.
@@ -24,27 +24,31 @@
 #' tax_info <- parallel_get_tax(tax_ids, retry_times = 20)
 #'
 #' # Enable verbose output
-#' tax_info <- parallel_get_tax(tax_ids, verbose = TRUE)
+#' tax_info <- parallel_get_tax(tax_ids, verbose = "output")
 #' }
 #' @export
 parallel_get_tax <- function(
-    organisms_taxIDs,
-    parse_result = TRUE,
-    total_cores = 1,
-    retry_times = 10,
-    verbose = FALSE,
-    env_name = "blastr-entrez-env") {
+  organisms_taxIDs,
+  parse_result = TRUE,
+  total_cores = 1L,
+  retry_times = 10L,
+  verbose = c("silent", "cmd", "output", "full"),
+  env_name = "blastr-entrez-env"
+) {
   organisms_taxIDs <- unique(organisms_taxIDs)
 
-  check_cmd("efetch", env_name = env_name)
+  check_cmd(cmd = "efetch", env_name = env_name)
 
   parallel_set <- FALSE
 
   if (
-    isTRUE(total_cores > 1L) &&
-      isTRUE(mirai::status(.compute = "blastr-cpu")$connections < total_cores)
+    isTRUE(length(organisms_taxIDs) > 1L) &&
+      isTRUE(total_cores > 1L) &&
+      isTRUE(mirai::status()$connections < total_cores)
   ) {
-    mirai::daemons(n = total_cores, .compute = "blastr-cpu")
+    # TODO: @luciorq add withr defer instead of stopping daemons at the end
+    mirai::daemons(n = total_cores)
+    # NOTE: @luciorq only set to true if daemons were created by this function
     parallel_set <- TRUE
   }
 
@@ -99,7 +103,7 @@ parallel_get_tax <- function(
         parse_result = parse_result,
         env_name = env_name,
         verbose = verbose,
-        get_get_tax_by_taxID = get_tax_by_taxID
+        get_tax_by_taxID = get_tax_by_taxID
       )
     ) |>
       purrr::list_rbind()
@@ -116,7 +120,9 @@ parallel_get_tax <- function(
     # taxids that were found
     res_taxid <- unique(results$query_taxID)
     # missing taxids
-    organisms_taxIDs <- organisms_taxIDs[!(organisms_taxIDs %in% results$query_taxID)]
+    organisms_taxIDs <- organisms_taxIDs[
+      !(organisms_taxIDs %in% results$query_taxID)
+    ]
   }
 
   # message for problematic taxIDs
@@ -132,7 +138,7 @@ parallel_get_tax <- function(
   }
 
   if (isTRUE(total_cores > 1L) && isTRUE(parallel_set)) {
-    mirai::daemons(n = 0L, .compute = "blastr-cpu")
+    mirai::daemons(n = 0L)
   }
 
   return(results)

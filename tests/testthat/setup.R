@@ -80,7 +80,10 @@ if (!(!interactive() && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false"))))) {
   # + `tmp_blast_db_path <- fs::file_temp("minimal_db_blast_")`
   make_blast_db(
     fasta_path = fs::path_package(
-      "BLASTr", "extdata", "minimal_db_blast", ext = "fasta"
+      "BLASTr",
+      "extdata",
+      "minimal_db_blast",
+      ext = "fasta"
     ),
     db_path = tmp_blast_db_path,
     db_type = "nucl",
