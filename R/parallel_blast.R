@@ -55,12 +55,14 @@ parallel_blast <- function(
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
 
   parallel_set <- FALSE
-
   if (
-    isTRUE(total_cores > 1L) &&
-      isTRUE(mirai::status(.compute = "blastr-cpu")$connections < total_cores)
+    isTRUE(length(asvs) > 1L) &&
+      isTRUE(total_cores > 1L) &&
+      isTRUE(mirai::status()$connections < total_cores)
   ) {
-    mirai::daemons(n = total_cores, .compute = "blastr-cpu")
+    # TODO: @luciorq add withr defer instead of stopping daemons at the end
+    mirai::daemons(n = total_cores)
+    # NOTE: @luciorq only set to true if daemons were created by this function
     parallel_set <- TRUE
   }
 
@@ -98,7 +100,7 @@ parallel_blast <- function(
     class(blast_res) <- c("tbl_df", "tbl", "data.frame")
   }
 
-  if (isTRUE(!is.na(out_file) && !is.null(out_file))) {
+  if (!rlang::is_na(out_file) && !rlang::is_null(out_file)) {
     readr::write_csv(
       x = blast_res,
       file = out_file,
@@ -114,7 +116,7 @@ parallel_blast <- function(
   }
 
   if (isTRUE(total_cores > 1L) && isTRUE(parallel_set)) {
-    mirai::daemons(n = 0L, .compute = "blastr-cpu")
+    mirai::daemons(n = 0L)
   }
 
   return(blast_res)
