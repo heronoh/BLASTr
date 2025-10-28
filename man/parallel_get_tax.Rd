@@ -7,8 +7,8 @@
 parallel_get_tax(
   organisms_taxIDs,
   parse_result = TRUE,
-  total_cores = 1,
-  retry_times = 10,
+  total_cores = 1L,
+  retry_times = 10L,
   verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-entrez-env"
 )

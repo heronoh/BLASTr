@@ -25,21 +25,25 @@
 #'
 #' @export
 make_blast_db <- function(
-    fasta_path,
-    db_path,
-    db_type = "nucl",
-    taxid_map = NULL,
-    parse_seqids = TRUE,
-    verbose = "silent",
-    env_name = "blastr-blast-env") {
+  fasta_path,
+  db_path,
+  db_type = "nucl",
+  taxid_map = NULL,
+  parse_seqids = TRUE,
+  verbose = "silent",
+  env_name = "blastr-blast-env"
+) {
   rlang::check_required(fasta_path)
   rlang::check_required(db_path)
   check_cmd(cmd = "makeblastdb", env_name = env_name, verbose = verbose)
 
   args <- c(
-    "-in", fasta_path,
-    "-dbtype", db_type,
-    "-out", db_path
+    "-in",
+    fasta_path,
+    "-dbtype",
+    db_type,
+    "-out",
+    db_path
   )
 
   if (isTRUE(parse_seqids)) {

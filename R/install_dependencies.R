@@ -21,8 +21,9 @@
 #' }
 #' @export
 install_dependencies <- function(
-    verbose = c("silent", "cmd", "output", "full"),
-    force = FALSE) {
+  verbose = c("silent", "cmd", "output", "full"),
+  force = FALSE
+) {
   check_cmd(
     cmd = "blastn",
     env_name = "blastr-blast-env",

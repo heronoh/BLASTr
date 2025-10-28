@@ -37,7 +37,8 @@ Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{verbose}{Should condathis::run() internal command be shown?}
 
-\item{env_name}{The name of the conda environment with the parameter (i.e. "blastr-blast-env")}
+\item{env_name}{The name of the conda environment used to run
+command-line tools (i.e. "blastr-blast-env").}
 }
 \value{
 A \code{tibble} with the results of BLASTn for each sequence.
@@ -47,14 +48,12 @@ Retrieve BLAST results from a given ASV
 }
 \examples{
 \dontrun{
-blast_res <- BLASTr::get_blast_results(
-  asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTA
-  CTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-  db_path = "/data/databases/nt/nt",
-  perc_id = 80,
-  num_thread = 1,
-  perc_qcov_hsp = 80,
-  num_alignments = 2
-)
+dna_fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+temp_db_path <- fs::path_temp("minimal_db_blast")
+make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
+asvs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
+AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
+
+get_blast_results(asv = asvs_string, db_path = temp_db_path)
 }
 }

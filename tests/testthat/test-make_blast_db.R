@@ -1,7 +1,12 @@
 testthat::test_that("`make_blast_db()` works", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
-  fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+  fasta_path <- fs::path_package(
+    "BLASTr",
+    "extdata",
+    "minimal_db_blast",
+    ext = "fasta"
+  )
   db_path <- fs::file_temp("minimal_db_blast_")
 
   db_res <- make_blast_db(
@@ -19,7 +24,12 @@ testthat::test_that("`make_blast_db()` fails with wrong db_type", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+  fasta_path <- fs::path_package(
+    "BLASTr",
+    "extdata",
+    "minimal_db_blast",
+    ext = "fasta"
+  )
   db_path <- fs::file_temp("minimal_db_blast_")
 
   testthat::expect_error(
@@ -37,7 +47,12 @@ testthat::test_that("`make_blast_db()` works with `taxid_map`", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+  fasta_path <- fs::path_package(
+    "BLASTr",
+    "extdata",
+    "minimal_db_blast",
+    ext = "fasta"
+  )
   db_path <- fs::file_temp("minimal_db_blast_")
   taxid_map_path <- fs::file_temp("taxid_map_", ext = "tsv")
   write("AY882416	2759", taxid_map_path)
@@ -58,7 +73,12 @@ testthat::test_that("`make_blast_db()` works with `parse_seqids`", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+  fasta_path <- fs::path_package(
+    "BLASTr",
+    "extdata",
+    "minimal_db_blast",
+    ext = "fasta"
+  )
   db_path <- fs::file_temp("minimal_db_blast_")
   taxid_map_path <- fs::file_temp("taxid_map_", ext = "tsv")
   write("AY882416	2759", taxid_map_path)
@@ -82,7 +102,12 @@ testthat::test_that("`make_blast_db()` output has valid taxid", {
   # + have taxid in the header
   testthat::skip("The example fasta does not have taxid in the header")
 
-  fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+  fasta_path <- fs::path_package(
+    "BLASTr",
+    "extdata",
+    "minimal_db_blast",
+    ext = "fasta"
+  )
   db_path <- fs::file_temp("minimal_db_blast_")
   taxid_map_path <- fs::file_temp("taxid_map_", ext = "tsv")
   base::write("AY882416	2759", taxid_map_path)
@@ -96,7 +121,6 @@ testthat::test_that("`make_blast_db()` output has valid taxid", {
   )
 
   testthat::expect_true(fs::file_exists(fs::path(db_path)))
-
 
   testthat::expect_equal(db_res$status, 0)
   testthat::expect_true(fs::file_exists(paste0(db_path, ".nsq")))

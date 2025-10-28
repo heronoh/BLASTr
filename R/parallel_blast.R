@@ -17,16 +17,25 @@
 #'
 #' @examples
 #' \dontrun{
-#' blast_res <- BLASTr::parallel_blast(
-#'   asvs = ASVs_test, # vector of sequences to be searched
-#'   db_path = "/data/databases/nt/nt", # path to a formatted blast database
+#' dna_fasta_path <- fs::path_package(
+#'   "BLASTr", "extdata", "minimal_db_blast",
+#'   ext = "fasta"
+#' )
+#' temp_db_path <- fs::path_temp("minimal_db_blast")
+#' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
+#' asvs_string <- c(
+#'   "CTAGCCATAAACTTAAATGAAGCTATACTAA",
+#'   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
+#' )
+#' blast_res <- parallel_blast(
+#'   asvs = asvs_string, # vector of sequences to be searched
+#'   db_path = temp_db_path, # path to a formatted blast database
 #'   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
 #'   out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)
-#'   perc_id = 80, # minimum identity percentage cutoff,
-#'   total_cores = 1
+#'   perc_id = 80, # minimum identity percentage cutoff
+#'   total_cores = 1, # Number of BLAST process to start in parallel
 #'   perc_qcov_hsp = 80, # minimum percentage coverage of query sequence by subject sequence cutoff
 #'   num_threads = 1, # number of threads/cores to run each blast on
-#'   total_cores = 8, # number of total threads/cores to allocate all blast searches
 #'   # maximum number of alignments/matches to retrieve results for each query sequence
 #'   num_alignments = 3,
 #'   blast_type = "blastn" # blast search engine to use
@@ -34,18 +43,18 @@
 #' }
 #' @export
 parallel_blast <- function(
-    asvs,
-    db_path,
-    ...,
-    out_file = NULL,
-    out_RDS = NULL,
-    total_cores = 1L,
-    num_threads = 1L,
-    blast_type = "blastn",
-    perc_id = 80L,
-    perc_qcov_hsp = 80L,
-    num_alignments = 4L,
-    verbose = "silent",
+  asvs,
+  db_path,
+  ...,
+  out_file = NULL,
+  out_RDS = NULL,
+  total_cores = 1L,
+  num_threads = 1L,
+  blast_type = "blastn",
+  perc_id = 80L,
+  perc_qcov_hsp = 80L,
+  num_alignments = 4L,
+  verbose = "silent",
   env_name = "blastr-blast-env"
 ) {
   rlang::check_required(asvs)

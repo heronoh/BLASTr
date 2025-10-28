@@ -1,7 +1,12 @@
 testthat::test_that("parallel_blast works", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
-  ASVs_test <- readLines(fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt"))
+  ASVs_test <- readLines(fs::path_package(
+    "BLASTr",
+    "extdata",
+    "asvs_test",
+    ext = "txt"
+  ))
   db_path <- tmp_blast_db_path
 
   blast_res <- parallel_blast(
@@ -25,7 +30,12 @@ testthat::test_that("run_blast works", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  ASVs_test <- readLines(fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt"))
+  ASVs_test <- readLines(fs::path_package(
+    "BLASTr",
+    "extdata",
+    "asvs_test",
+    ext = "txt"
+  ))
   db_path <- tmp_blast_db_path
 
   blast_res <- run_blast(
@@ -41,7 +51,12 @@ testthat::test_that("run_blast fails", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  ASVs_test <- readLines(fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt"))
+  ASVs_test <- readLines(fs::path_package(
+    "BLASTr",
+    "extdata",
+    "asvs_test",
+    ext = "txt"
+  ))
   # `tmp_blast_db_path <- fs::file_temp("minimal_db_blast_")`
   db_path <- tmp_blast_db_path
 

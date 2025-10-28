@@ -31,11 +31,15 @@
 #' # Force re-creation of the conda environment and re-install 'blastn'
 #' check_cmd("blastn", env_name = "blastr-blast-env", force = TRUE)
 #' }
+#'
+#' @keywords internal
+#' @noRd
 check_cmd <- function(
-    cmd = "blastn",
-    env_name = "blastr-blast-env",
-    verbose = c("silent", "cmd", "output", "full"),
-    force = FALSE) {
+  cmd = "blastn",
+  env_name = "blastr-blast-env",
+  verbose = c("silent", "cmd", "output", "full"),
+  force = FALSE
+) {
   packages_to_install <- NULL
   # supported_archs <- names(conda_packages_list)
   # Check if operational system is in the included list of available systems

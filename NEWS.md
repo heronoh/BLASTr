@@ -4,14 +4,21 @@ Release Date: Unreleased
 
 Development Changelog: [dev](https://github.com/heronoh/BLASTr/compare/v0.1.5...HEAD)
 
-### Added
-
-* Support for Windows versions of BLAST CLI.
-
 ### Fixed
 
 * Fix hard coded `num_threads = 1L` in `parallel_blast()`.
-  `parallel_blast()` now correctly uses the user provided `num_threads` argument.
+  `parallel_blast()` now correctly uses the user provided `num_threads`
+  argument.
+
+* Fix parallel functions not using the the custom compute profile.
+  `purrr::map` do not have an argument for specifying the `mirai` `.compute`
+  argument correctly.
+  Now all parallel functions use the "default" mirai compute profile
+  `.compute = NULL`.
+
+* Fix `get_tax_by_taxID()` when multiple tax IDs are provided.
+
+* Fix `parse_fasta()` concatenate lines for multiline FASTA.
 
 ## BLASTr 0.1.5
 

@@ -1,7 +1,7 @@
 #' @title Run BLAST
 #'
 #' @description Run BLAST for a single sequence and return raw results.
-#'   For formatted results, use the function *`BLASTr::get_blastn_results()`*
+#'   For formatted results, use the function `[BLASTr::get_blastn_results()]`.
 #'
 #' @param asv Vector of sequences to be BLASTed.
 #' @param db_path Complete path do formatted BLAST database.
@@ -15,34 +15,38 @@
 #' @param blast_type One of the available BLAST+ search engines,
 #' #'   one of: `c("blastn", "blastp", "blastx", "tblastn", "tblastx")`.
 #' @param verbose Should condathis::run() internal command be shown?
-#' @param env_name The name of the conda environment with the parameter (i.e. "blastr-blast-env")
+#' @param env_name The name of the conda environment used to run
+#'   command-line tools (i.e. "blastr-blast-env").
+#'
 #' @return Unformatted BLAST results.
-#'   For results formatted as tibble, please use `BLASTr::get_blast_results()`
+#'   For results formatted as tibble, please use `[get_blast_results()]`
 #'
 #' @examples
 #' \dontrun{
+#'
+#' dna_fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+#' temp_db_path <- fs::path_temp("minimal_db_blast")
+#' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
+#' asvs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
+#' AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
 #' blast_res <- run_blast(
-#'   asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
-#'     AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
-#'   db_path = fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta"),
-#'   perc_id = 80,
-#'   num_thread = 1,
-#'   perc_qcov_hsp = 80,
-#'   num_alignments = 2
+#'   asv = asvs_string,
+#'   db_path = temp_db_path
 #' )
 #' }
 #'
 #' @export
 run_blast <- function(
-    asv,
-    db_path,
-    num_alignments = 4L,
-    num_threads = 1L,
-    blast_type = "blastn",
-    perc_id = 80L,
-    perc_qcov_hsp = 80L,
-    verbose = "silent",
-    env_name = "blastr-blast-env") {
+  asv,
+  db_path,
+  num_alignments = 4L,
+  num_threads = 1L,
+  blast_type = "blastn",
+  perc_id = 80L,
+  perc_qcov_hsp = 80L,
+  verbose = "silent",
+  env_name = "blastr-blast-env"
+) {
   rlang::check_required(asv)
   rlang::check_required(db_path)
   check_cmd(cmd = blast_type, env_name = env_name, verbose = verbose)
@@ -58,19 +62,26 @@ run_blast <- function(
 
   blast_res <- condathis::run_bin(
     blast_type,
-    "-db", db_path,
-    "-query", query_path,
-    "-outfmt", "6 std qcovhsp staxid",
-    "-max_hsps", "1",
-    "-perc_identity", perc_id,
-    "-qcov_hsp_perc", perc_qcov_hsp,
-    "-num_threads", as.character(num_threads),
-    "-num_alignments", as.character(num_alignments),
+    "-db",
+    db_path,
+    "-query",
+    query_path,
+    "-outfmt",
+    "6 std qcovhsp staxid",
+    "-max_hsps",
+    "1",
+    "-perc_identity",
+    perc_id,
+    "-qcov_hsp_perc",
+    perc_qcov_hsp,
+    "-num_threads",
+    as.character(num_threads),
+    "-num_alignments",
+    as.character(num_alignments),
     env_name = env_name,
     verbose = verbose,
     error = "continue"
   )
-
   if (isTRUE(blast_res$status != 0L)) {
     error_msg_list <- stringr::str_extract_all(blast_res$stderr, "Error:.*")
 

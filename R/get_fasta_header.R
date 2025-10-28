@@ -10,17 +10,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' BLASTr::get_fasta_header(id = "AP011979.1", db_path = "/data/databases/nt/nt")
+#' dna_fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+#' temp_db_path <- fs::path_temp("minimal_db_blast")
+#' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
+#' get_fasta_header(id = "AP011979.1", db_path = temp_db_path)
 #' }
 #' @export
 get_fasta_header <- function(
-    id,
-    db_path,
-    env_name = "blastr-blast-env",
-    verbose = "silent") {
+  id,
+  db_path,
+  env_name = "blastr-blast-env",
+  verbose = "silent"
+) {
   rlang::check_required(id)
   rlang::check_required(db_path)
-  if (is.null(db_path)) {
+  if (rlang::is_null(db_path)) {
     cli::cli_abort(
       message = "No BLAST database provided.",
       class = "blastr_missing_blast_db"
@@ -36,9 +40,12 @@ get_fasta_header <- function(
 
   blastdbcmd_res <- condathis::run_bin(
     "blastdbcmd",
-    "-db", db_path,
-    "-entry", id,
-    "-outfmt", "%t",
+    "-db",
+    db_path,
+    "-entry",
+    id,
+    "-outfmt",
+    "%t",
     env_name = env_name,
     verbose = verbose
   )

@@ -15,3 +15,8 @@ vector containing the sequences.
 \description{
 Extract sequences From FASTA file
 }
+\examples{
+fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
+seqs <- parse_fasta(file_path = fasta_path)
+
+}
