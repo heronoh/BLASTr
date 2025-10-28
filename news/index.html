@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLASTr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,33 +32,61 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.5" id="blastr-015-2025-08-27">BLASTr 0.1.5 2025-08-27<a class="anchor" aria-label="anchor" href="#blastr-015-2025-08-27"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.6" id="blastr-016">BLASTr 0.1.6<a class="anchor" aria-label="anchor" href="#blastr-016"></a></h2>
+<p>Release Date: 2025-10-28</p>
+<p>Development Changelog: <a href="https://github.com/heronoh/BLASTr/compare/v0.1.5...v0.1.6" class="external-link">0.1.6</a></p>
 <div class="section level3">
-<h3 id="breaking-changes-0-1-5">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-5"></a></h3>
-<ul><li><p>The internal environments used by BLASTr have been renamed to <code>blastr-blast-env</code> and <code>blastr-entrez-env</code>.</p></li>
-<li><p>Remove of the <code>furrr</code> based functions in favor of the new <code>purrr</code> native parallel.</p></li>
-<li><p>All <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code> based parameters have been removed in favor of explicit arguments in the functions.</p></li>
-</ul><div class="section level4">
-<h4 id="new-features-0-1-5">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-5"></a></h4>
+<h3 id="fixed-0-1-6">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-1-6"></a></h3>
+<ul><li><p>Fix hard coded <code>num_threads = 1L</code> in <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code>. <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> now correctly uses the user provided <code>num_threads</code> argument.</p></li>
+<li><p>Fix parallel functions not using the the custom compute profile. <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::map</a></code> do not have an argument for specifying the <code>mirai</code> <code>.compute</code> argument correctly. Now all parallel functions use the “default” mirai compute profile <code>.compute = NULL</code>.</p></li>
+<li><p>Fix <code><a href="../reference/get_tax_by_taxID.html">get_tax_by_taxID()</a></code> when multiple tax IDs are provided.</p></li>
+<li><p>Fix <code><a href="../reference/parse_fasta.html">parse_fasta()</a></code> concatenate lines for multiline FASTA.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.5" id="blastr-015">BLASTr 0.1.5<a class="anchor" aria-label="anchor" href="#blastr-015"></a></h2>
+<p>Release Date: 2025-08-27</p>
+<p>Development Changelog: <a href="https://github.com/heronoh/BLASTr/compare/v0.1.4...v0.1.5" class="external-link">0.1.5</a></p>
+<div class="section level3">
+<h3 id="added-0-1-5">Added<a class="anchor" aria-label="anchor" href="#added-0-1-5"></a></h3>
 <ul><li><p>New parallel framework based on native <code>purrr</code> functions, using <code>mirai</code> and <code>carrier</code> in the background.</p></li>
 <li><p>New <code><a href="../reference/make_blast_db.html">make_blast_db()</a></code> function to create custom BLAST databases.</p></li>
 </ul></div>
-<div class="section level4">
-<h4 id="minor-improvements-and-fixes-0-1-5">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-0-1-5"></a></h4>
-<ul><li>Internal <code>entrez-direct</code> version bump to <code>24.0</code>.</li>
+<div class="section level3">
+<h3 id="changed-0-1-5">Changed<a class="anchor" aria-label="anchor" href="#changed-0-1-5"></a></h3>
+<ul><li><p>Internal <code>entrez-direct</code> version bump to <code>24.0</code>.</p></li>
+<li><p>The internal environments used by BLASTr have been renamed to <code>blastr-blast-env</code> and <code>blastr-entrez-env</code>.</p></li>
+<li><p>Remove of the <code>furrr</code> based functions in favor of the new <code>purrr</code> native parallel.</p></li>
+<li><p>All <code><a href="https://rdrr.io/r/base/options.html" class="external-link">options()</a></code> based parameters have been removed in favor of explicit arguments in the functions.</p></li>
 </ul></div>
 </div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.4" id="blastr-014">BLASTr 0.1.4<a class="anchor" aria-label="anchor" href="#blastr-014"></a></h2>
+<div class="section level3">
+<h3 id="changed-0-1-4">Changed<a class="anchor" aria-label="anchor" href="#changed-0-1-4"></a></h3>
+<ul><li>All functions have better defaults and less mandatory arguments.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixed-0-1-4">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-1-4"></a></h3>
+<ul><li>Fix progress bars when parallel processing is used.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.3" id="blastr-013">BLASTr 0.1.3<a class="anchor" aria-label="anchor" href="#blastr-013"></a></h2>
+<div class="section level3">
+<h3 id="added-0-1-3">Added<a class="anchor" aria-label="anchor" href="#added-0-1-3"></a></h3>
 <ul><li><p>Refactor handling of internal errors.</p></li>
 <li><p><code>shell_exec</code> is not available anymore.</p></li>
 </ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2" id="blastr-012">BLASTr 0.1.2<a class="anchor" aria-label="anchor" href="#blastr-012"></a></h2>
+<div class="section level3">
+<h3 id="added-0-1-2">Added<a class="anchor" aria-label="anchor" href="#added-0-1-2"></a></h3>
 <ul><li><p>New <code><a href="../reference/install_dependencies.html">install_dependencies()</a></code> automatically create environments.</p></li>
 <li><p>Initial support for <code>condathis</code> for managing dependency installation.</p></li>
 </ul></div>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

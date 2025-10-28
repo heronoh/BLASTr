@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">BLASTr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -117,10 +117,10 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">fasta_path</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "&gt;AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"</span></span>
+<span><span class="co">#&gt; [1] "&gt;AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"           </span></span>
 <span><span class="co">#&gt; [2] "TACAAACTGGGATTAGATACCCCACTATGCCTAGCCATAAACTTAAATGAAACTATACTAAACTCATTCGCCAGAGTACT"</span></span>
-<span><span class="co">#&gt; [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"</span></span>
-<span><span class="co">#&gt; [4] "&gt;CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"</span></span>
+<span><span class="co">#&gt; [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"                               </span></span>
+<span><span class="co">#&gt; [4] "&gt;CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"                           </span></span>
 <span><span class="co">#&gt; [5] "TAGCTCCCGTCGAGTCTCTGCACCTTCCGCATTAGTCATTTATCATTTGTCGTTAGTCATTTGCTAGTAACAATTAACTA"</span></span>
 <span><span class="co">#&gt; [6] "AAAACGAAGGACAAAAGACAAATTTGGC"</span></span>
 <span></span>
@@ -144,8 +144,8 @@
 <span>  retry_times <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; retrying 0 of 0</span></span>
-<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: N/A</span></span>
-<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: NA</span></span>
+<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: N/A   </span></span>
+<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: NA    </span></span>
 <span><span class="co">#&gt; The following taxIDs could not be retrieved even after 0 attempts:</span></span>
 <span><span class="co">#&gt; N/AThe following taxIDs could not be retrieved even after 0 attempts:</span></span>
 <span><span class="co">#&gt; NA</span></span></code></pre></div>
@@ -204,7 +204,7 @@
 <h2 id="dependency-management">Dependency Management<a class="anchor" aria-label="anchor" href="#dependency-management"></a>
 </h2>
 <p><code>BLASTr</code> uses the <code>condathis</code> package to manage its dependencies (BLAST+ and Entrez Direct). When you run a function that requires one of these tools, <code>BLASTr</code> will automatically check if it’s installed. If not, it will create a Conda environment and install the necessary software. This ensures that you always have the correct versions of the dependencies without having to install them manually.</p>
-<p>You can control the installation process with the <code>force</code> and <code>verbose</code> arguments in the <code><a href="reference/install_dependencies.html">install_dependencies()</a></code> and <code><a href="reference/check_cmd.html">check_cmd()</a></code> functions.</p>
+<p>You can control the installation process with the <code>force</code> and <code>verbose</code> arguments in the <code><a href="reference/install_dependencies.html">install_dependencies()</a></code> and <code>check_cmd()</code> functions.</p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
