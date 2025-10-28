@@ -7,8 +7,6 @@ get_tax_by_taxID(
 )
 
 
-
-
 # parallel ----
 source("/home/heron/prjcts/BLASTr/R/parallel_get_tax.R")
 
@@ -38,7 +36,6 @@ retry_times <- 2
 
 teste <- xml2::read_xml(x = "/home/heron/prjcts/BLASTr/data-raw/broken_xml.xml") |>
   xml2::as_list()
-
 
 
 xml_teste <- tryCatch(

@@ -1,6 +1,7 @@
 install_blast_windows <- function(
-    env_name = "blastr-blast-win-env",
-    verbose = "full") {
+  env_name = "blastr-blast-win-env",
+  verbose = "full"
+) {
   # Create env with dependencies
 
   withr::with_envvar(

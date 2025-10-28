@@ -21,7 +21,7 @@
 #
 # #1b - run_blast ----
 # ###                  function to run blast for each ASV/OTU                  ###
-# run_blast <- function(asv, db_path = "/data/databases/nt/nt", num_alignments = 3, num_thread = 40) {
+# run_blast <- function(asv, db_path = "/data/databases/nt/nt", num_alignments = 3, num_threads = 40) {
 #
 #   #BLAST command
 #   blast_cmd <- "echo -e '>seq1\n{asv}' | blastn -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity 80 -qcov_hsp_perc 80 -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
@@ -45,8 +45,8 @@
 # #1d - get_blast_results ----
 # ###          function to get fasta names from db based on subjectIDs         ###
 #
-# get_blast_results <- function(asv, num_thread = 40) {
-#   blast_res <- run_blast(asv, num_thread = num_thread)
+# get_blast_results <- function(asv, num_threads = 40) {
+#   blast_res <- run_blast(asv, num_threads = num_threads)
 #   if (blast_res$status != 0) {
 #     rlang::abort(message = "Blast has not run correctly.")
 #   }
@@ -96,8 +96,8 @@
 # future::plan(future::multisession(workers = cores_to_be_used))
 #
 # #2b - Run BLAST ----
-# blast_res <- furrr::future_map_dfr(asvs_blast, get_blast_results, num_thread = 1, .options = furrr::furrr_options(seed = NULL))
-# blast_res <- furrr::future_map_dfr("CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC", get_blast_results, num_thread = 1, .options = furrr::furrr_options(seed = NULL))
+# blast_res <- furrr::future_map_dfr(asvs_blast, get_blast_results, num_threads = 1, .options = furrr::furrr_options(seed = NULL))
+# blast_res <- furrr::future_map_dfr("CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC", get_blast_results, num_threads = 1, .options = furrr::furrr_options(seed = NULL))
 #
 # #3 - Results ----
 # #3a - save blast res to file ----

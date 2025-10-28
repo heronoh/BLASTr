@@ -106,7 +106,7 @@ future::plan(future::multisession(workers = cores_to_be_used))
 tictoc::tic("Parallel - Furrr 80 threads")
 teste_F80 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
-  num_thread = 80,
+  num_threads = 80,
   .options = furrr::furrr_options(seed = NULL),
   db_path = "/data/databases/nt/nt",
   perc_id = 80,
@@ -121,7 +121,7 @@ tictoc::toc()
 tictoc::tic("Parallel - Furrr 60 threads")
 teste_F60 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
-  num_thread = 60,
+  num_threads = 60,
   .options = furrr::furrr_options(seed = NULL),
   db_path = "/data/databases/nt/nt",
   perc_id = 80,
@@ -136,7 +136,7 @@ tictoc::toc()
 tictoc::tic("Parallel - Furrr 40 threads")
 teste_F40 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
-  num_thread = 40,
+  num_threads = 40,
   .options = furrr::furrr_options(seed = NULL),
   db_path = "/data/databases/nt/nt",
   perc_id = 80,
@@ -151,7 +151,7 @@ tictoc::toc()
 tictoc::tic("Parallel - Furrr 20 threads")
 teste_F20 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
-  num_thread = 20,
+  num_threads = 20,
   .options = furrr::furrr_options(seed = NULL),
   db_path = "/data/databases/nt/nt",
   perc_id = 80,
@@ -166,7 +166,7 @@ tictoc::toc()
 tictoc::tic("Parallel - Furrr 10 threads")
 teste_F10 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
-  num_thread = 10,
+  num_threads = 10,
   .options = furrr::furrr_options(seed = NULL),
   db_path = "/data/databases/nt/nt",
   perc_id = 80,
@@ -181,7 +181,7 @@ tictoc::toc()
 tictoc::tic("Parallel - Furrr 5 threads")
 teste_F5 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
-  num_thread = 5,
+  num_threads = 5,
   .options = furrr::furrr_options(seed = NULL),
   db_path = "/data/databases/nt/nt",
   perc_id = 80,
@@ -196,7 +196,7 @@ tictoc::toc()
 tictoc::tic("Parallel - Furrr 2 threads")
 teste_F2 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
-  num_thread = 2,
+  num_threads = 2,
   .options = furrr::furrr_options(seed = NULL),
   db_path = "/data/databases/nt/nt",
   perc_id = 80,
@@ -205,14 +205,13 @@ teste_F2 <- furrr::future_map_dfr(ASVs_test,
   blast_type = "blastn"
 )
 tictoc::toc()
-
 
 
 # paralela com 1 threads ----
 tictoc::tic("Parallel - Furrr 1 threads")
 teste_F1 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
-  num_thread = 1,
+  num_threads = 1,
   .options = furrr::furrr_options(seed = NULL),
   db_path = "/data/databases/nt/nt",
   perc_id = 80,
@@ -223,16 +222,7 @@ teste_F1 <- furrr::future_map_dfr(ASVs_test,
 tictoc::toc()
 
 
-
-
-
-
-
 base::save.image("~/prjcts/omics/BLASTr/dev/BLASTr_benchmark.RData")
-
-
-
-
 
 
 ASVs_test %>%
@@ -241,10 +231,6 @@ ASVs_test %>%
 ASVs_test[1:6] %>%
   nchar() %>%
   mean()
-
-
-
-
 
 
 # plots ----
@@ -261,7 +247,6 @@ options(pillar.sigfig = 7)
 bench_res <- "/home/heron/prjcts/omics/BLASTr_benchmark/BLASTr_bench_res.csv" |>
   read.csv(sep = ";") |>
   as_tibble()
-
 
 
 bench_plot <- bench_res |>

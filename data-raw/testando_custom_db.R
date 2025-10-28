@@ -18,8 +18,7 @@ ASVs_test <- c(
 )
 
 
-
-# blaste_res_1ASV <- get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",num_thread = 10)
+# blaste_res_1ASV <- get_blast_results(asv = "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",num_threads = 10)
 
 
 future::availableCores()
@@ -45,7 +44,7 @@ blast_res <- BLASTr::parallel_blast(
 #   asv = ASVs_test[3],
 #   db_path = "/data/databases/nt/nt",
 #   perc_id = 80,
-#   num_thread = 1,
+#   num_threads = 1,
 #   perc_qcov_hsp = 80,
 #   num_alignments = 2
 #   # ,
