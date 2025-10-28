@@ -8,6 +8,11 @@ Development Changelog: [dev](https://github.com/heronoh/BLASTr/compare/v0.1.5...
 
 * Support for Windows versions of BLAST CLI.
 
+### Fixed
+
+* Fix hard coded `num_threads = 1L` in `parallel_blast()`.
+  `parallel_blast()` now correctly uses the user provided `num_threads` argument.
+
 ## BLASTr 0.1.5
 
 Release Date: 2025-08-27
@@ -30,6 +35,16 @@ Development Changelog: [0.1.5](https://github.com/heronoh/BLASTr/compare/v0.1.4.
 * Remove of the `furrr` based functions in favor of the new `purrr` native parallel.
 
 * All `options()` based parameters have been removed in favor of explicit arguments in the functions.
+
+## BLASTr 0.1.4
+
+### Changed
+
+* All functions have better defaults and less mandatory arguments.
+
+### Fixed
+
+* Fix progress bars when parallel processing is used.
 
 ## BLASTr 0.1.3
 

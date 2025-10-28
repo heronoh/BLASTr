@@ -11,6 +11,8 @@
 #'   Check your max with *future::availableCores()*.
 #' @param blast_type BLAST+ executable to be used on search.
 #'
+#' @inheritParams rlang::args_dots_empty
+
 #' @return A tibble with the BLAST tabular output.
 #'
 #' @examples
@@ -20,7 +22,8 @@
 #'   db_path = "/data/databases/nt/nt", # path to a formatted blast database
 #'   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
 #'   out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)
-#'   perc_id = 80, # minimum identity percentage cutoff
+#'   perc_id = 80, # minimum identity percentage cutoff,
+#'   total_cores = 1
 #'   perc_qcov_hsp = 80, # minimum percentage coverage of query sequence by subject sequence cutoff
 #'   num_threads = 1, # number of threads/cores to run each blast on
 #'   total_cores = 8, # number of total threads/cores to allocate all blast searches
@@ -33,18 +36,21 @@
 parallel_blast <- function(
     asvs,
     db_path,
+    ...,
     out_file = NULL,
     out_RDS = NULL,
+    total_cores = 1L,
     num_threads = 1L,
     blast_type = "blastn",
-    total_cores = 1L,
     perc_id = 80L,
     perc_qcov_hsp = 80L,
     num_alignments = 4L,
     verbose = "silent",
-    env_name = "blastr-blast-env") {
+  env_name = "blastr-blast-env"
+) {
   rlang::check_required(asvs)
   rlang::check_required(db_path)
+  rlang::check_dots_empty()
 
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
 
@@ -74,7 +80,7 @@ parallel_blast <- function(
           env_name = env_name
         )
       },
-      num_threads = 1L,
+      num_threads = num_threads,
       blast_type = blast_type,
       num_alignments = num_alignments,
       db_path = db_path,
@@ -100,7 +106,7 @@ parallel_blast <- function(
     )
   }
 
-  if (isTRUE(!is.na(out_RDS) && !is.null(out_RDS))) {
+  if (!rlang::is_na(out_RDS) && !rlang::is_null(out_RDS)) {
     readr::write_rds(
       x = blast_res,
       file = out_RDS
