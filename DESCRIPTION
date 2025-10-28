@@ -1,6 +1,6 @@
 Package: BLASTr
 Title: Parallel Taxonomic Classification of Metabarcoding Sequences
-Version: 0.1.5.9005
+Version: 0.1.6
 Authors@R: c(
     person("Lucio", "Queiroz", , "luciorqueiroz@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0002-6090-1834")),

@@ -1,8 +1,8 @@
-## BLASTr 0.1.6 (Development Version)
+## BLASTr 0.1.6
 
-Release Date: Unreleased
+Release Date: 2025-10-28
 
-Development Changelog: [dev](https://github.com/heronoh/BLASTr/compare/v0.1.5...HEAD)
+Development Changelog: [0.1.6](https://github.com/heronoh/BLASTr/compare/v0.1.5...v0.1.6)
 
 ### Fixed
 
