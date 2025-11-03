@@ -1,18 +1,18 @@
-#' @title Run Parallelized BLAST
+#' @title Previous implementation of: `parallel_blast()` - Run Parallelized BLAST
 #'
 #' @description Run parallel BLAST for a set of sequences
 #'
-#' @param query_seqs Character vector with sequences
+#' @inheritParams get_blast_results
+#'
+#' @param asvs Character vector with sequences
+#' @param out_file Complete path to output .csv file on an existing folder.
+#' @param out_RDS Complete path to output RDS file on an existing folder.
 #' @param total_cores Total available cores to run BLAST in parallel.
 #'   Check your max with *future::availableCores()*.
 #' @param blast_type BLAST+ executable to be used on search.
-#' @param retry_times Integer specifying the number of times to retry the
-#' BLAST search if it fails. Defaults to `10`.
 #'
 #' @inheritParams rlang::args_dots_empty
-#'
-#' @inheritParams get_blast_results
-#'
+
 #' @return A tibble with the BLAST tabular output.
 #'
 #' @examples
@@ -27,7 +27,7 @@
 #'   "CTAGCCATAAACTTAAATGAAGCTATACTAA",
 #'   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
 #' )
-#' blast_res <- parallel_blast(
+#' blast_res <- parallel_blast_old(
 #'   query_seqs = asvs_string, # vector of sequences to be searched
 #'   db_path = temp_db_path, # path to a formatted blast database
 #'   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
@@ -41,122 +41,93 @@
 #'   blast_type = "blastn" # blast search engine to use
 #' )
 #' }
-#' @export
-parallel_blast <- function(
-  query_seqs,
+#' @keywords internal
+#' @noRd
+parallel_blast_old <- function(
+  asvs,
   db_path,
   ...,
+  out_file = NULL,
+  out_RDS = NULL,
   total_cores = 1L,
   num_threads = 1L,
   blast_type = "blastn",
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  retry_times = 10L,
-  mt_mode = c("2", "1", "0"),
   verbose = "silent",
   env_name = "blastr-blast-env"
 ) {
-  rlang::check_required(query_seqs)
+  rlang::check_required(asvs)
   rlang::check_required(db_path)
   rlang::check_dots_empty()
-  mt_mode <- rlang::arg_match(mt_mode)
-  .data <- rlang::.data
 
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
 
+  parallel_set <- FALSE
   if (
-    isTRUE(length(query_seqs) > 1L) &&
+    isTRUE(length(asvs) > 1L) &&
       isTRUE(total_cores > 1L) &&
       isTRUE(mirai::status()$connections < total_cores)
   ) {
-    withr::defer(
-      expr = {
-        mirai::daemons(n = 0L)
-      }
-    )
+    # TODO: @luciorq add withr defer instead of stopping daemons at the end
     mirai::daemons(n = total_cores)
+    # NOTE: @luciorq only set to true if daemons were created by this function
+    parallel_set <- TRUE
   }
 
-  par_res <- purrr::map(
-    .x = query_seqs,
+  blast_res <- purrr::map(
+    .x = asvs,
     .f = purrr::in_parallel(
       .f = \(x) {
-        blast_cmd(
-          query_str = x,
+        get_blast_results(
+          asv = x,
           db_path = db_path,
-          num_alignments = num_alignments,
           num_threads = num_threads,
           blast_type = blast_type,
           perc_id = perc_id,
           perc_qcov_hsp = perc_qcov_hsp,
-          mt_mode = mt_mode,
+          num_alignments = num_alignments,
           verbose = verbose,
           env_name = env_name
         )
       },
-      db_path = db_path,
-      num_alignments = num_alignments,
       num_threads = num_threads,
       blast_type = blast_type,
+      num_alignments = num_alignments,
+      db_path = db_path,
       perc_id = perc_id,
       perc_qcov_hsp = perc_qcov_hsp,
-      mt_mode = mt_mode,
       verbose = verbose,
       env_name = env_name,
-      blast_cmd = blast_cmd
+      get_blast_results = get_blast_results,
+      run_blast = run_blast
     )
-  )
+  ) |>
+    purrr::list_rbind()
 
-  blast_res_df <- par_res |>
-    purrr::map(
-      .f = \(x) {
-        x[["stdout"]] |>
-          readr::read_delim(
-            delim = "\t",
-            col_names = c(
-              "query",
-              "subject",
-              "indentity",
-              "length",
-              "mismatches",
-              "gaps",
-              "query start",
-              "query end",
-              "subject start",
-              "subject end",
-              "e-value",
-              "bitscore",
-              "qcovhsp",
-              "staxid",
-              "subject header",
-              "Sequence"
-            ),
-            show_col_types = FALSE,
-            trim_ws = TRUE,
-            comment = "#"
-          ) |>
-          tibble::rowid_to_column(var = "res")
-      }
-    ) |>
-    purrr::list_rbind() |>
-    dplyr::mutate("staxid" = as.character(.data$staxid)) |>
-    dplyr::relocate("subject header", .after = "res")
+  if (identical(class(blast_res), "data.frame")) {
+    class(blast_res) <- c("tbl_df", "tbl", "data.frame")
+  }
 
-  blast_res_df |>
-    tidyr::pivot_wider(
-      names_from = "res",
-      values_from = -dplyr::all_of("Sequence"),
-      names_glue = "{res}_{.value}",
-      values_fn = list
-    ) |>
-    tidyr::unnest(cols = dplyr::everything()) |>
-    dplyr::relocate(dplyr::starts_with("6_")) |>
-    dplyr::relocate(dplyr::starts_with("5_")) |>
-    dplyr::relocate(dplyr::starts_with("4_")) |>
-    dplyr::relocate(dplyr::starts_with("3_")) |>
-    dplyr::relocate(dplyr::starts_with("2_")) |>
-    dplyr::relocate(dplyr::starts_with("1_")) |>
-    dplyr::relocate("Sequence") |>
-    dplyr::select(-dplyr::ends_with(c("_res", "_query")))
+  if (!rlang::is_na(out_file) && !rlang::is_null(out_file)) {
+    readr::write_csv(
+      x = blast_res,
+      file = out_file,
+      append = FALSE
+    )
+  }
+
+  if (!rlang::is_na(out_RDS) && !rlang::is_null(out_RDS)) {
+    readr::write_rds(
+      x = blast_res,
+      file = out_RDS
+    )
+  }
+
+  if (isTRUE(total_cores > 1L) && isTRUE(parallel_set)) {
+    mirai::daemons(n = 0L)
+  }
+
+  return(blast_res)
 }
