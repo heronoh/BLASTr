@@ -34,15 +34,15 @@ Retrieves taxonomy ranks for a list of NCBI Taxonomy Tax IDs using parallel proc
 }
 \examples{
 \dontrun{
-# Retrieve taxonomy for multiple Tax IDs using 4 cores
+# Retrieve taxonomy for multiple Tax IDs using 2 processes
 tax_ids <- c("9606", "10090", "10116") # Human, Mouse, Rat
-tax_info <- parallel_get_tax(tax_ids, total_cores = 4)
+tax_info <- parallel_get_tax(tax_ids, total_cores = 2)
 
 # Retrieve unparsed taxonomy result
 tax_info_unparsed <- parallel_get_tax(tax_ids, parse_result = FALSE)
 
 # Increase the number of retry attempts
-tax_info <- parallel_get_tax(tax_ids, retry_times = 20)
+tax_info <- parallel_get_tax(tax_ids, retry_times = 10)
 
 # Enable verbose output
 tax_info <- parallel_get_tax(tax_ids, verbose = "output")

@@ -28,7 +28,7 @@
 #'   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
 #' )
 #' blast_res <- parallel_blast_old(
-#'   query_seqs = asvs_string, # vector of sequences to be searched
+#'   asvs = asvs_string, # vector of sequences to be searched
 #'   db_path = temp_db_path, # path to a formatted blast database
 #'   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
 #'   out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)

@@ -2,16 +2,25 @@
 #'
 #' @description Run parallel BLAST for a set of sequences
 #'
-#' @param query_seqs Character vector with sequences
-#' @param total_cores Total available cores to run BLAST in parallel.
-#'   Check your max with *future::availableCores()*.
+#' @param query_seqs Character vector with sequences.
+#' @param db_path Path to the formatted BLAST database.
+#' @param total_cores Number of parallel BLAST processes to run.
+#' @param num_threads Number of threads/cores to run each BLAST process on.
 #' @param blast_type BLAST+ executable to be used on search.
-#' @param retry_times Integer specifying the number of times to retry the
-#' BLAST search if it fails. Defaults to `10`.
+#' @param perc_id Lowest identity percentage cutoff.
+#' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff.
+#' @param num_alignments Number of alignments to retrieve results for each query
+#'   sequence. Defaults to `4`.
+#' @param retry_times Number of times to retry failed BLAST jobs.
+#'   Defaults to `10`.
+#' @param mt_mode Multithreading mode to be used by BLAST+.
+#'  One of: `c("2", "1", "0")`. See BLAST+ manual for details.
+#' @param verbose Strategy used for showing outputting internal commands.
+#'   Defaults to "progress".
+#' @param env_name The name of the conda environment used to run
+#'  command-line tools. Defaults to `"blastr-blast-env"`.
 #'
 #' @inheritParams rlang::args_dots_empty
-#'
-#' @inheritParams get_blast_results
 #'
 #' @return A tibble with the BLAST tabular output.
 #'
@@ -28,18 +37,10 @@
 #'   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
 #' )
 #' blast_res <- parallel_blast(
-#'   query_seqs = asvs_string, # vector of sequences to be searched
-#'   db_path = temp_db_path, # path to a formatted blast database
-#'   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
-#'   out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)
-#'   perc_id = 80, # minimum identity percentage cutoff
-#'   total_cores = 1, # Number of BLAST process to start in parallel
-#'   perc_qcov_hsp = 80, # minimum percentage coverage of query sequence by subject sequence cutoff
-#'   num_threads = 1, # number of threads/cores to run each blast on
-#'   # maximum number of alignments/matches to retrieve results for each query sequence
-#'   num_alignments = 3,
-#'   blast_type = "blastn" # blast search engine to use
+#'   query_seqs = asvs_string,
+#'   db_path = temp_db_path
 #' )
+#' blast_res
 #' }
 #' @export
 parallel_blast <- function(
@@ -94,6 +95,7 @@ parallel_blast <- function(
 
   # Implementing retry
   seqs_to_run <- query_seqs
+  query_seqs_final <- query_seqs
   retry_count <- 0L
   par_res_final <- list()
   while (
@@ -132,7 +134,7 @@ parallel_blast <- function(
     )
     error_seqs <- par_res |>
       purrr::map2(
-        .y = query_seqs,
+        .y = seqs_to_run,
         .f = \(x, y) {
           if (x[["status"]] != 0L) {
             return(y)
@@ -152,11 +154,12 @@ parallel_blast <- function(
     #  )
 
     par_res_final <- c(par_res_final, par_res)
+    query_seqs_final <- c(query_seqs_final, seqs_to_run)
   }
 
   blast_res_df <- par_res_final |>
     purrr::map2(
-      .y = query_seqs,
+      .y = query_seqs_final,
       .f = \(x, y) {
         if (identical(x[["stdout"]], "")) {
           return(

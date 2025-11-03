@@ -76,10 +76,14 @@ package_name := 'BLASTr'
 @git-tag:
   #!/usr/bin/env bash
   \builtin set -euxo pipefail;
+  git pull origin --tags || true;
+  git pull upstream --tags || true;
   __r_pkg_version="$(R -q --no-echo --silent -e 'suppressMessages({pkgload::load_all()});cat(as.character(utils::packageVersion("{{ package_name }}")));')";
   \builtin echo -ne "Tagging version: ${__r_pkg_version}\n";
   git tag -a "v${__r_pkg_version}" HEAD -m "Version ${__r_pkg_version} released";
-  git push --tags;
+  # git push --tags;
+  # git pull upstream --tags;
+  # git push upstream --tags;
 
 # Things to run before releasing a new version
 @pre-release:

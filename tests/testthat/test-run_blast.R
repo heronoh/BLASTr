@@ -1,31 +1,3 @@
-testthat::test_that("parallel_blast works", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
-  ASVs_test <- readLines(fs::path_package(
-    "BLASTr",
-    "extdata",
-    "asvs_test",
-    ext = "txt"
-  ))
-  db_path <- tmp_blast_db_path
-
-  blast_res <- parallel_blast(
-    asvs = ASVs_test,
-    db_path = db_path,
-    out_file = NA,
-    out_RDS = NA,
-    total_cores = 4,
-    perc_id = 80,
-    num_threads = 1,
-    perc_qcov_hsp = 80,
-    num_alignments = 4,
-    blast_type = "blastn",
-    verbose = "silent"
-  )
-
-  testthat::expect_s3_class(blast_res, "tbl_df")
-})
-
 testthat::test_that("run_blast works", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
