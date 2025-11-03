@@ -54,14 +54,28 @@ parallel_blast <- function(
   num_alignments = 4L,
   retry_times = 10L,
   mt_mode = c("2", "1", "0"),
-  verbose = "silent",
+  verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env"
 ) {
   rlang::check_required(query_seqs)
   rlang::check_required(db_path)
   rlang::check_dots_empty()
   mt_mode <- rlang::arg_match(mt_mode)
-  .data <- rlang::.data
+  verbose <- rlang::arg_match(verbose)
+  if (
+    rlang::is_interactive() &&
+      isTRUE(verbose %in% c("progress", "full", "output"))
+  ) {
+    progress_var <- TRUE
+  } else {
+    progress_var <- FALSE
+  }
+  if (identical(verbose, "progress")) {
+    verbose <- "silent"
+  }
+
+  # .data <- rlang::.data
+  .env <- rlang::.env
 
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
 
@@ -78,39 +92,88 @@ parallel_blast <- function(
     mirai::daemons(n = total_cores)
   }
 
-  par_res <- purrr::map(
-    .x = query_seqs,
-    .f = purrr::in_parallel(
-      .f = \(x) {
-        blast_cmd(
-          query_str = x,
-          db_path = db_path,
-          num_alignments = num_alignments,
-          num_threads = num_threads,
-          blast_type = blast_type,
-          perc_id = perc_id,
-          perc_qcov_hsp = perc_qcov_hsp,
-          mt_mode = mt_mode,
-          verbose = verbose,
-          env_name = env_name
-        )
-      },
-      db_path = db_path,
-      num_alignments = num_alignments,
-      num_threads = num_threads,
-      blast_type = blast_type,
-      perc_id = perc_id,
-      perc_qcov_hsp = perc_qcov_hsp,
-      mt_mode = mt_mode,
-      verbose = verbose,
-      env_name = env_name,
-      blast_cmd = blast_cmd
+  # Implementing retry
+  seqs_to_run <- query_seqs
+  retry_count <- 0L
+  par_res_final <- list()
+  while (
+    isTRUE(retry_count <= retry_times) &&
+      length(seqs_to_run) > 0L
+  ) {
+    par_res <- purrr::map(
+      .x = seqs_to_run,
+      .f = purrr::in_parallel(
+        .f = \(x) {
+          blast_cmd(
+            query_str = x,
+            db_path = db_path,
+            num_alignments = num_alignments,
+            num_threads = num_threads,
+            blast_type = blast_type,
+            perc_id = perc_id,
+            perc_qcov_hsp = perc_qcov_hsp,
+            mt_mode = mt_mode,
+            verbose = verbose,
+            env_name = env_name
+          )
+        },
+        db_path = db_path,
+        num_alignments = as.character(num_alignments),
+        num_threads = num_threads,
+        blast_type = blast_type,
+        perc_id = perc_id,
+        perc_qcov_hsp = perc_qcov_hsp,
+        mt_mode = mt_mode,
+        verbose = verbose,
+        env_name = env_name,
+        blast_cmd = blast_cmd
+      ),
+      .progress = progress_var
     )
-  )
+    error_seqs <- par_res |>
+      purrr::map2(
+        .y = query_seqs,
+        .f = \(x, y) {
+          if (x[["status"]] != 0L) {
+            return(y)
+          } else {
+            return(character(0L))
+          }
+        }
+      ) |>
+      unlist()
+    seqs_to_run <- error_seqs
+    retry_count <- retry_count + 1L
+    # par_res_final <- par_res |>
+    #  purrr::discard(
+    #    .p = \(x) {
+    #      x[["status"]] != 0L
+    #    }
+    #  )
 
-  blast_res_df <- par_res |>
-    purrr::map(
-      .f = \(x) {
+    par_res_final <- c(par_res_final, par_res)
+  }
+
+  blast_res_df <- par_res_final |>
+    purrr::map2(
+      .y = query_seqs,
+      .f = \(x, y) {
+        if (identical(x[["stdout"]], "")) {
+          return(
+            tibble::tibble(
+              `res` = 1L,
+              `query` = NA_character_,
+              `subject` = NA_character_,
+              # `indentity` = NA_real_,
+              # `length` = NA_integer_,
+              `staxid` = "N/A",
+              `subject header` = NA_character_,
+              `Sequence` = stringr::str_replace_all(y, "\\s", ""),
+              `exit_code` = x[["status"]],
+              `stderr` = x[["stderr"]]
+            )
+          )
+        }
         x[["stdout"]] |>
           readr::read_delim(
             delim = "\t",
@@ -129,24 +192,28 @@ parallel_blast <- function(
               "bitscore",
               "qcovhsp",
               "staxid",
-              "subject header",
-              "Sequence"
+              "subject header"
             ),
             show_col_types = FALSE,
             trim_ws = TRUE,
             comment = "#"
           ) |>
+          dplyr::mutate(
+            `Sequence` = stringr::str_replace_all(.env$y, "\\s", ""),
+            `exit_code` = x[["status"]],
+            `stderr` = x[["stderr"]]
+          ) |>
           tibble::rowid_to_column(var = "res")
       }
     ) |>
     purrr::list_rbind() |>
-    dplyr::mutate("staxid" = as.character(.data$staxid)) |>
+    # dplyr::mutate("staxid" = as.character(.data$staxid)) |>
     dplyr::relocate("subject header", .after = "res")
 
   blast_res_df |>
     tidyr::pivot_wider(
       names_from = "res",
-      values_from = -dplyr::all_of("Sequence"),
+      values_from = -dplyr::all_of(c("Sequence", "exit_code", "stderr")),
       names_glue = "{res}_{.value}",
       values_fn = list
     ) |>
@@ -158,5 +225,8 @@ parallel_blast <- function(
     dplyr::relocate(dplyr::starts_with("2_")) |>
     dplyr::relocate(dplyr::starts_with("1_")) |>
     dplyr::relocate("Sequence") |>
-    dplyr::select(-dplyr::ends_with(c("_res", "_query")))
+    dplyr::select(
+      -dplyr::ends_with(c("_res", "_query")),
+      -dplyr::starts_with("NA_")
+    )
 }

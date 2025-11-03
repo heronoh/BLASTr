@@ -1,4 +1,3 @@
-
 blast_cmd <- function(
   query_str,
   db_path,
@@ -31,7 +30,7 @@ blast_cmd <- function(
     "-query",
     query_path,
     "-outfmt",
-    "6 std qcovhsp staxid stitle qseq",
+    "6 std qcovhsp staxid stitle",
     "-max_hsps",
     "1",
     "-perc_identity",
