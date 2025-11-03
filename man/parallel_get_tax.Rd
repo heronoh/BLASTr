@@ -41,8 +41,8 @@ tax_info <- parallel_get_tax(tax_ids, total_cores = 2)
 # Retrieve unparsed taxonomy result
 tax_info_unparsed <- parallel_get_tax(tax_ids, parse_result = FALSE)
 
-# Increase the number of retry attempts
-tax_info <- parallel_get_tax(tax_ids, retry_times = 10)
+# Change the number of retry attempts
+tax_info <- parallel_get_tax(tax_ids, retry_times = 2)
 
 # Enable verbose output
 tax_info <- parallel_get_tax(tax_ids, verbose = "output")

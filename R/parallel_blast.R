@@ -95,8 +95,8 @@ parallel_blast <- function(
 
   # Implementing retry
   seqs_to_run <- query_seqs
-  query_seqs_final <- query_seqs
   retry_count <- 0L
+  query_seqs_final <- character(0L)
   par_res_final <- list()
   while (
     isTRUE(retry_count <= retry_times) &&
@@ -144,7 +144,6 @@ parallel_blast <- function(
         }
       ) |>
       unlist()
-    seqs_to_run <- error_seqs
     retry_count <- retry_count + 1L
     # par_res_final <- par_res |>
     #  purrr::discard(
@@ -155,11 +154,12 @@ parallel_blast <- function(
 
     par_res_final <- c(par_res_final, par_res)
     query_seqs_final <- c(query_seqs_final, seqs_to_run)
+    seqs_to_run <- error_seqs
   }
 
   blast_res_df <- par_res_final |>
     purrr::map2(
-      .y = query_seqs_final,
+      .y = query_seqs,
       .f = \(x, y) {
         if (identical(x[["stdout"]], "")) {
           return(
