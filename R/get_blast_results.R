@@ -91,7 +91,13 @@ get_blast_results <- function(
   blast_table <- dplyr::relocate(
     blast_table,
     "subject header"
-  )
+  ) |>
+    dplyr::mutate(
+      `subject header` = stringr::str_trim(
+        .data[["subject header"]],
+        side = "both"
+      )
+    )
 
   blast_table <- tibble::rowid_to_column(
     blast_table,
@@ -108,7 +114,7 @@ get_blast_results <- function(
   )
 
   blast_table <- blast_table |>
-    dplyr::mutate(`Sequence` = asv) |>
+    dplyr::mutate(`Sequence` = stringr::str_replace_all(asv, "\\s", "")) |>
     dplyr::relocate(tidyr::starts_with("6_")) |>
     dplyr::relocate(tidyr::starts_with("5_")) |>
     dplyr::relocate(tidyr::starts_with("4_")) |>

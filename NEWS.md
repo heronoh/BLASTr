@@ -1,3 +1,37 @@
+## BLASTr 0.1.7
+
+Release Date: 2025-11-03
+
+Development Changelog: [dev](https://github.com/heronoh/BLASTr/compare/v0.1.6...v0.1.7)
+
+### Added
+
+* New `retry_times` argument in `parallel_blast()` to specify
+  the number of retries for failed BLAST jobs.
+  Defaults to 10 times.
+
+* New `verbose = "progress"` in `parallel_blast()` to show a progress bar
+  for the BLAST jobs.
+
+* New `get_blastr_cache()` for printing the directory used as cache for
+  `BLASTr`.
+
+### Changed
+
+* `parallel_blast()` will not throw errors immediately when a BLAST job fails.
+  Instead, it will log the error and continue with the remaining jobs.
+
+* `parallel_blast()` output has two new columns:
+  * `exit_code`: The exit code of the BLAST command.
+  * `stderr`: The standard error output from the BLAST command.
+
+* `parallel_blast()` will automatically retry failed BLAST jobs up to 10 times
+  before giving up.
+
+* Arguments `out_file` and `out_RDS` in `parallel_blast()` are removed.
+
+* Argument `asvs` is renamed to `query_seqs` in `parallel_blast()`.
+
 ## BLASTr 0.1.6
 
 Release Date: 2025-10-28
@@ -68,4 +102,3 @@ Development Changelog: [0.1.5](https://github.com/heronoh/BLASTr/compare/v0.1.4.
 * New `install_dependencies()` automatically create environments.
 
 * Initial support for `condathis` for managing dependency installation.
-

@@ -5,52 +5,52 @@
 \title{Run Parallelized BLAST}
 \usage{
 parallel_blast(
-  asvs,
+  query_seqs,
   db_path,
   ...,
-  out_file = NULL,
-  out_RDS = NULL,
   total_cores = 1L,
   num_threads = 1L,
   blast_type = "blastn",
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  verbose = "silent",
+  retry_times = 10L,
+  mt_mode = c("2", "1", "0"),
+  verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env"
 )
 }
 \arguments{
-\item{asvs}{Character vector with sequences}
+\item{query_seqs}{Character vector with sequences.}
 
-\item{db_path}{Complete path do formatted BLAST database.}
+\item{db_path}{Path to the formatted BLAST database.}
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{out_file}{Complete path to output .csv file on an existing folder.}
+\item{total_cores}{Number of parallel BLAST processes to run.}
 
-\item{out_RDS}{Complete path to output RDS file on an existing folder.}
-
-\item{total_cores}{Total available cores to run BLAST in parallel.
-Check your max with \emph{future::availableCores()}.}
-
-\item{num_threads}{Number of threads to run BLAST on.
-Passed on to BLAST+ argument \code{-num_threads}.}
+\item{num_threads}{Number of threads/cores to run each BLAST process on.}
 
 \item{blast_type}{BLAST+ executable to be used on search.}
 
-\item{perc_id}{Lowest identity percentage cutoff.
-Passed on to BLAST+ \code{-perc_identity}.}
+\item{perc_id}{Lowest identity percentage cutoff.}
 
-\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.
-Passed on to BLAST+ \code{-qcov_hsp_perc}.}
+\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.}
 
-\item{num_alignments}{Number of alignments to retrieve from BLAST. Max = 6.}
+\item{num_alignments}{Number of alignments to retrieve results for each query
+sequence. Defaults to \code{4}.}
 
-\item{verbose}{Should condathis::run() internal command be shown?}
+\item{retry_times}{Number of times to retry failed BLAST jobs.
+Defaults to \code{10}.}
+
+\item{mt_mode}{Multithreading mode to be used by BLAST+.
+One of: \code{c("2", "1", "0")}. See BLAST+ manual for details.}
+
+\item{verbose}{Strategy used for showing outputting internal commands.
+Defaults to "progress".}
 
 \item{env_name}{The name of the conda environment used to run
-command-line tools (i.e. "blastr-blast-env").}
+command-line tools. Defaults to \code{"blastr-blast-env"}.}
 }
 \value{
 A tibble with the BLAST tabular output.
@@ -71,17 +71,9 @@ asvs_string <- c(
   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
 )
 blast_res <- parallel_blast(
-  asvs = asvs_string, # vector of sequences to be searched
-  db_path = temp_db_path, # path to a formatted blast database
-  out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
-  out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)
-  perc_id = 80, # minimum identity percentage cutoff
-  total_cores = 1, # Number of BLAST process to start in parallel
-  perc_qcov_hsp = 80, # minimum percentage coverage of query sequence by subject sequence cutoff
-  num_threads = 1, # number of threads/cores to run each blast on
-  # maximum number of alignments/matches to retrieve results for each query sequence
-  num_alignments = 3,
-  blast_type = "blastn" # blast search engine to use
+  query_seqs = asvs_string,
+  db_path = temp_db_path
 )
+blast_res
 }
 }

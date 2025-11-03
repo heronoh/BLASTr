@@ -1,5 +1,6 @@
 # As of v0.1.5 - 2025-10-28
 # + Most examples do not really run because the database path is not available.
+# Fixed on v0.1.6
 
 devtools::load_all()
 
@@ -52,42 +53,6 @@ parallel_blast(
   verbose = "full"
 )
 
-# Single Blast process with 10 Threads
-tictoc::tic("Single BLAST process with 10 threads")
-parallel_blast(
-  asv = asvs_string,
-  db_path = temp_db_path,
-  total_cores = 1L,
-  num_threads = 10L,
-  verbose = "full"
-)
-tictoc::toc()
+get_fasta_header()
 
-
-parallel_blast(
-  asv = asvs_string,
-  db_path = temp_db_path,
-  total_cores = 1L,
-  num_thread = 10L,
-  verbose = "silent"
-)
-
-# 10 Blast processes with 2 Threads each
-parallel_blast(
-  asv = asvs_string,
-  db_path = temp_db_path,
-  total_cores = 10L,
-  num_threads = 2L,
-  verbose = "full"
-)
-
-# 10 Blast processes with 2 Threads each
-tictoc::tic("Parallel BLAST 10 processes with 2 threads each")
-parallel_blast(
-  asv = rep(asvs_string, 10),
-  db_path = temp_db_path,
-  total_cores = 10L,
-  num_threads = 2L,
-  verbose = "output"
-)
-tictoc::toc()
+get_fasta_header(id = "AP011979.1", db_path = temp_db_path)

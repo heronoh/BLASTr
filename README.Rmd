@@ -95,7 +95,7 @@ file.exists(paste0(db_path, ".ndb"))
 ```{r}
 # Run BLAST in parallel
 blast_results <- parallel_blast(
-  asvs = asvs,
+  query_seqs = asvs,
   db_path = db_path,
   total_cores = 2 # Number of cores to use
 )

@@ -3,6 +3,7 @@
 ^renv\.lock$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^LICENSE\.txt$
 ^\.Rprofile$
 ^justfile$
 ^data-raw$
@@ -14,6 +15,7 @@
 ^doc$
 ^Meta$
 ^vignettes/*_files$
+^vignettes/data-raw$
 ^README\.Rmd$
 ^README\.qmd$
 ^README\.html$
@@ -26,3 +28,14 @@
 ^\.markdownlint\.jsonc$
 ^\.markdownlint-cli2\.jsonc$
 ^\.markdownlint-cli2\.yaml$
+^Rplots\.pdf$
+^\.Rhistory$
+^\.RData$
+^vignettes$
+^vignettes/\.quarto$
+^vignettes/*_files$
+^vignettes/articles/\.quarto$
+^vignettes/articles/*_files$
+^vignettes/articles$
+^README_files/$
+^readme_cache/$
