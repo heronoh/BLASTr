@@ -53,9 +53,12 @@ run_blast <- function(
 
   query_path <- fs::file_temp("blast_input_", ext = "fasta")
   base::cat(asv, file = query_path)
+
   withr::local_envvar(
     .new = list(
-      BLAST_USAGE_REPORT = "false"
+      BLAST_USAGE_REPORT = "false",
+      NCBI_DONT_USE_NCBIRC = "true",
+      NCBI_DONT_USE_LOCAL_CONFIG = "true"
     ),
     action = "replace"
   )
