@@ -14,7 +14,7 @@ parallel_blast(
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  retry_times = 10L,
+  retry_times = 3L,
   mt_mode = c("2", "1", "0"),
   verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env",
@@ -44,7 +44,7 @@ parallel_blast(
 sequence. Defaults to \code{4}.}
 
 \item{retry_times}{Number of times to retry failed BLAST jobs.
-Defaults to \code{10}.}
+Defaults to \code{3} attempts.}
 
 \item{mt_mode}{Multithreading mode to be used by BLAST+.
 One of: \code{c("2", "1", "0")}. See BLAST+ manual for details.}

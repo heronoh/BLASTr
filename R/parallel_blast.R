@@ -12,7 +12,7 @@
 #' @param num_alignments Number of alignments to retrieve results for each query
 #'   sequence. Defaults to `4`.
 #' @param retry_times Number of times to retry failed BLAST jobs.
-#'   Defaults to `10`.
+#'   Defaults to `3` attempts.
 #' @param mt_mode Multithreading mode to be used by BLAST+.
 #'  One of: `c("2", "1", "0")`. See BLAST+ manual for details.
 #' @param verbose Strategy used for showing outputting internal commands.
