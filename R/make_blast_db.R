@@ -5,10 +5,12 @@
 #' @param fasta_path Path to the input FASTA file.
 #' @param db_path Path to the output BLAST database.
 #' @param db_type Type of database to create, either "nucl" or "prot".
-#' @param taxid_map Optional path to a file mapping sequence IDs to taxonomy IDs.
+#' @param taxid_map Optional path to a file mapping sequence IDs to
+#'  taxonomy IDs.
 #' @param parse_seqids Whether to parse sequence IDs.
 #' @param verbose Should `[condathis::run()]` internal command be shown?
-#' @param env_name The name of the conda environment with the parameter (i.e. "blastr-blast-env")
+#' @param env_name The name of the conda environment with the parameter
+#' (i.e. "blastr-blast-env").
 #' @return The result of the `makeblastdb` command.
 #'
 #' @examples

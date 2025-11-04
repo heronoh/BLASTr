@@ -46,5 +46,5 @@ get_blastr_cache <- function(..., ext = NULL) {
 get_sys_arch <- function() {
   os <- base::Sys.info()["sysname"]
   cpu_arch <- base::Sys.info()["machine"]
-  return(base::paste0(os, "-", cpu_arch))
+  return(base::paste0(os, "-", cpu_arch)) # nolint: return_linter
 }

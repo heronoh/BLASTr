@@ -91,12 +91,12 @@ file.exists(paste0(db_path, ".ndb"))
 ``` r
 # Run BLAST in parallel
 blast_results <- parallel_blast(
-  asvs = asvs,
+  query_seqs = asvs,
   db_path = db_path,
   total_cores = 2 # Number of cores to use
 )
 
-# Extract the taxonomy IDs from the BLAST results
+# Extract the taxonomy IDs from the top BLAST hit for each query sequence.
 tax_ids <- blast_results$`1_staxid`
 
 # Retrieve taxonomic information in parallel
@@ -107,10 +107,8 @@ taxonomic_info <- parallel_get_tax(
 )
 #> retrying 0 of 0
 #> ------------------------> unable to retrieve taxonomy for: N/A   
-#> ------------------------> unable to retrieve taxonomy for: NA    
 #> The following taxIDs could not be retrieved even after 0 attempts:
-#> N/AThe following taxIDs could not be retrieved even after 0 attempts:
-#> NA
+#> N/A
 ```
 
 ``` r
@@ -119,12 +117,12 @@ print(blast_results)
 #> # A tibble: 6 × 57
 #>   Sequence               `1_subject header` `1_subject` `1_indentity` `1_length`
 #>   <chr>                  <chr>              <chr>               <dbl>      <dbl>
-#> 1 CTAGCCATAAACTTAAATGAA… "Gymnotus carapo … AP011979.1           97.0         99
-#> 2 CTAGCCATAAACTTAAATGAA…  <NA>              <NA>                 NA           NA
-#> 3 GCCAAATTTGTGTTTTGTCCT… "Brasilonema octa… CP030121.1           96.2         78
-#> 4 AACATTGTATTTTGTCTTTGG… "Symphoromyia cra… MG967958.1           84.9        179
-#> 5 ACTATACCTATTATTCGGCGC… "Homo sapiens iso… MN849868.1          100          226
-#> 6 TTAGCCATAAACATAAAAGTT… "Hydrochoerus hyd… KX381515.1           99.0         99
+#> 1 CTAGCCATAAACTTAAATGAA… Gymnotus carapo m… AP011979.1           97.0         99
+#> 2 CTAGCCATAAACTTAAATGAA… <NA>               <NA>                 NA           NA
+#> 3 GCCAAATTTGTGTTTTGTCCT… Brasilonema octag… CP030121.1           96.2         78
+#> 4 AACATTGTATTTTGTCTTTGG… Symphoromyia cras… MG967958.1           84.9        179
+#> 5 ACTATACCTATTATTCGGCGC… Homo sapiens isol… MN849868.1          100          226
+#> 6 TTAGCCATAAACATAAAAGTT… Hydrochoerus hydr… KX381515.1           99.0         99
 #> # ℹ 52 more variables: `1_mismatches` <dbl>, `1_gaps` <dbl>,
 #> #   `1_query start` <dbl>, `1_query end` <dbl>, `1_subject start` <dbl>,
 #> #   `1_subject end` <dbl>, `1_e-value` <dbl>, `1_bitscore` <dbl>,
@@ -148,11 +146,10 @@ print(taxonomic_info)
 - `make_blast_db()`: Creates a BLAST database from a FASTA file.
 - `parallel_blast()`: Runs BLAST searches for multiple sequences in
   parallel.
-- `get_blast_results()`: Runs a BLAST search for a single sequence.
+- `exit_codes()`: Retrieve the exit codes and STDERR messages from BLAST
+  searches.
 - `parallel_get_tax()`: Retrieves taxonomic information for multiple
   NCBI Taxonomy IDs in parallel.
-- `get_tax_by_taxID()`: Retrieves taxonomic information for a single
-  NCBI Taxonomy ID.
 - `run_blast()`: A lower-level function to run a BLAST search and return
   the raw output.
 - `parse_fasta()`: Extracts sequences from a FASTA file.
@@ -169,7 +166,7 @@ ensures that you always have the correct versions of the dependencies
 without having to install them manually.
 
 You can control the installation process with the `force` and `verbose`
-arguments in the `install_dependencies()` and `check_cmd()` functions.
+arguments in the `install_dependencies()` function.
 
 ## Contributing
 

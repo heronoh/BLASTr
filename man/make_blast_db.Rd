@@ -21,13 +21,15 @@ make_blast_db(
 
 \item{db_type}{Type of database to create, either "nucl" or "prot".}
 
-\item{taxid_map}{Optional path to a file mapping sequence IDs to taxonomy IDs.}
+\item{taxid_map}{Optional path to a file mapping sequence IDs to
+taxonomy IDs.}
 
 \item{parse_seqids}{Whether to parse sequence IDs.}
 
 \item{verbose}{Should \verb{[condathis::run()]} internal command be shown?}
 
-\item{env_name}{The name of the conda environment with the parameter (i.e. "blastr-blast-env")}
+\item{env_name}{The name of the conda environment with the parameter
+(i.e. "blastr-blast-env").}
 }
 \value{
 The result of the \code{makeblastdb} command.

@@ -26,5 +26,5 @@ exit_codes <- function(blast_res) {
       class = "blastr_missing_exit_codes_error"
     )
   }
-  return(metadata$exit_codes)
+  return(metadata$exit_codes) # nolint: return_linter
 }

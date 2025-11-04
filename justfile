@@ -53,7 +53,7 @@ package_name := 'BLASTr'
   \builtin set -euxo pipefail;
   R -q -e 'devtools::load_all();devtools::document();devtools::run_examples(run_dontrun = TRUE, run_donttest = TRUE);';
 
-@check: test test-all-examples
+@check: test test-all-examples build-readme
   #!/usr/bin/env bash
   \builtin set -euxo pipefail;
   R -q -e 'rcmdcheck::rcmdcheck(args = c("--as-cran"), repos = c(CRAN = "https://cloud.r-project.org"));';

@@ -28,11 +28,11 @@ With `BLASTr`, you can efficiently perform taxonomic classification of your sequ
 
 ## Features
 
-* **Parallel BLAST Searches:** Run multiple BLAST searches concurrently to significantly speed up your analysis.
-* **Automated Dependency Management:** `BLASTr` automatically installs and manages BLAST+ and Entrez Direct dependencies using `condathis`, ensuring a hassle-free setup.
-* **Taxonomic Classification:** Retrieve detailed taxonomic information for your sequences using their NCBI Taxonomy IDs.
-* **Flexible and Easy to Use:** The package provides a set of intuitive functions that simplify the process of running thousands of BLAST searches and handling the results.
-* **Reproducible Research:** By managing dependencies in isolated Conda environments, `BLASTr` helps ensure that your analyses are reproducible.
+- **Parallel BLAST Searches:** Run multiple BLAST searches concurrently to significantly speed up your analysis.
+- **Automated Dependency Management:** `BLASTr` automatically installs and manages BLAST+ and Entrez Direct dependencies using `condathis`, ensuring a hassle-free setup.
+- **Taxonomic Classification:** Retrieve detailed taxonomic information for your sequences using their NCBI Taxonomy IDs.
+- **Flexible and Easy to Use:** The package provides a set of intuitive functions that simplify the process of running thousands of BLAST searches and handling the results.
+- **Reproducible Research:** By managing dependencies in isolated Conda environments, `BLASTr` helps ensure that your analyses are reproducible.
 
 ## Installation
 
@@ -100,7 +100,7 @@ blast_results <- parallel_blast(
   total_cores = 2 # Number of cores to use
 )
 
-# Extract the taxonomy IDs from the BLAST results
+# Extract the taxonomy IDs from the top BLAST hit for each query sequence.
 tax_ids <- blast_results$`1_staxid`
 
 # Retrieve taxonomic information in parallel
@@ -122,9 +122,8 @@ print(taxonomic_info)
 - `install_dependencies()`: Installs BLAST+ and Entrez Direct if they are not found on your system.
 - `make_blast_db()`: Creates a BLAST database from a FASTA file.
 - `parallel_blast()`: Runs BLAST searches for multiple sequences in parallel.
-- `get_blast_results()`: Runs a BLAST search for a single sequence.
+- `exit_codes()`: Retrieve the exit codes and STDERR messages from BLAST searches.
 - `parallel_get_tax()`: Retrieves taxonomic information for multiple NCBI Taxonomy IDs in parallel.
-- `get_tax_by_taxID()`: Retrieves taxonomic information for a single NCBI Taxonomy ID.
 - `run_blast()`: A lower-level function to run a BLAST search and return the raw output.
 - `parse_fasta()`: Extracts sequences from a FASTA file.
 - `get_fasta_header()`: Retrieves the full header of a sequence from a BLAST database.
@@ -132,15 +131,16 @@ print(taxonomic_info)
 ## Dependency Management
 
 `BLASTr` uses the `condathis` package to manage its dependencies (BLAST+ and Entrez Direct).
-When you run a function that requires one of these tools, `BLASTr` will automatically check if it's installed. If not, it will create a Conda environment and install the necessary software.
+When you run a function that requires one of these tools, `BLASTr` will automatically check if it's installed.
+If not, it will create a Conda environment and install the necessary software.
 This ensures that you always have the correct versions of the dependencies without having to install them manually.
 
-You can control the installation process with the `force` and `verbose` arguments in the `install_dependencies()` and `check_cmd()` functions.
+You can control the installation process with the `force` and `verbose` arguments in the `install_dependencies()` function.
 
 ## Contributing
 
-Contributions are welcome! Please see the [contributing guide](.github/CONTRIBUTING.md) for more details.
+Contributions are welcome! Please see the [contributing guide](./.github/CONTRIBUTING.md) for more details.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

@@ -57,9 +57,11 @@ command-line tools. Defaults to \code{"blastr-blast-env"}.}
 
 \item{asvs}{Deprecated. Same as \code{query_seqs}. Use \code{query_seqs} instead.}
 
-\item{out_file}{Deprecated. Path to output \code{.csv} file on an existing directory.}
+\item{out_file}{Deprecated. Path to output \code{.csv} file on an existing
+directory.}
 
-\item{out_RDS}{Deprecated. Path to output \code{RDS} file on an existing directory.}
+\item{out_RDS}{Deprecated. Path to output \code{RDS} file on an existing
+directory.}
 }
 \value{
 A tibble with the BLAST tabular output.

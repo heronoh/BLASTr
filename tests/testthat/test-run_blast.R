@@ -2,7 +2,7 @@ testthat::test_that("run_blast works", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  ASVs_test <- readLines(fs::path_package(
+  asvs_test <- readLines(fs::path_package(
     "BLASTr",
     "extdata",
     "asvs_test",
@@ -11,7 +11,7 @@ testthat::test_that("run_blast works", {
   db_path <- tmp_blast_db_path
 
   blast_res <- run_blast(
-    asv = ASVs_test[1],
+    asv = asvs_test[1],
     db_path = db_path,
     verbose = "silent"
   )
@@ -23,23 +23,21 @@ testthat::test_that("run_blast fails", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  ASVs_test <- readLines(fs::path_package(
+  asvs_test <- readLines(fs::path_package(
     "BLASTr",
     "extdata",
     "asvs_test",
     ext = "txt"
   ))
-  # `tmp_blast_db_path <- fs::file_temp("minimal_db_blast_")`
   db_path <- tmp_blast_db_path
 
   testthat::expect_error(
-    blast_res <- run_blast(
-      asv = ASVs_test[1],
+    run_blast(
+      asv = asvs_test[1],
       db_path = db_path,
       perc_id = "MISSING_VALUE_STRInG",
       verbose = "silent"
     ),
     class = "blastr_error_blast_run"
   )
-  # testthat::expect_equal(blast_res$status, 0)
 })
