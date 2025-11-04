@@ -1,10 +1,16 @@
 ---
-output: github_document
+output: gfm
+default-image-extension: ""
+always_allow_html: true
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, include = FALSE}
+```{r}
+#| label: setup-chunk
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -15,8 +21,10 @@ knitr::opts_chunk$set(
 
 # BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences <a href="https://heronoh.github.io/BLASTr/"><img src="man/figures/logo.png" align="right" height="138" alt="BLASTr website" /></a>
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)
+[![r-cmd-check](https://github.com/heronoh/BLASTr/actions/workflows/r-cmd-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/r-cmd-check.yaml)
 <!-- [![CRAN status](https://www.r-pkg.org/badges/version/BLASTr)](https://CRAN.R-project.org/package=BLASTr) -->
 <!-- badges: end -->
 
@@ -38,7 +46,9 @@ With `BLASTr`, you can efficiently perform taxonomic classification of your sequ
 
 You can install the development version of `BLASTr` from GitHub with:
 
-```{r eval=FALSE}
+```{r}
+#| label: install-instructions
+#| eval: false
 # install.packages("devtools")
 devtools::install_github("heronoh/BLASTr")
 ```
@@ -47,7 +57,10 @@ devtools::install_github("heronoh/BLASTr")
 
 Here's a simple example of how to use `BLASTr` to perform a BLAST search and retrieve taxonomic information:
 
-```{r include=FALSE}
+```{r}
+#| label: setup-blastr
+#| eval: true
+#| include: false
 # Make sure that environments are installed in a temporary directory
 withr::local_envvar(
   .new = list(
@@ -60,6 +73,7 @@ BLASTr::install_dependencies(verbose = "silent", force = FALSE)
 ```
 
 ```{r}
+#| label: make-blast-db
 library(BLASTr)
 
 # First, make sure you have the necessary dependencies installed
@@ -93,13 +107,28 @@ file.exists(paste0(db_path, ".ndb"))
 ```
 
 ```{r}
+#| label: blastr-parallel-blast
 # Run BLAST in parallel
 blast_results <- parallel_blast(
   query_seqs = asvs,
   db_path = db_path,
-  total_cores = 2 # Number of cores to use
+  total_cores = 2 # Number of BLAST processes to use
 )
 
+blast_results
+```
+
+BLASTr keeps track of any errors that may occur during the BLAST searches. You can retrieve the exit codes and STDERR messages using the `exit_codes()` function.
+
+```{r}
+#| label: blastr-exit-codes
+# Check for any errors during BLAST searches
+exit_code_df <- exit_codes(blast_results)
+print(exit_code_df[c("exit_code", "stderr")])
+```
+
+```{r}
+#| label: blastr-get-taxonomy
 # Extract the taxonomy IDs from the top BLAST hit for each query sequence.
 tax_ids <- blast_results$`1_staxid`
 
@@ -109,11 +138,7 @@ taxonomic_info <- parallel_get_tax(
   total_cores = 2,
   retry_times = 0
 )
-```
 
-```{r}
-# View the results
-print(blast_results)
 print(taxonomic_info)
 ```
 

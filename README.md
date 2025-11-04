@@ -1,11 +1,11 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences <a href="https://heronoh.github.io/BLASTr/"><img src="man/figures/logo.png" align="right" height="138" alt="BLASTr website" /></a>
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml)
+[![r-cmd-check](https://github.com/heronoh/BLASTr/actions/workflows/r-cmd-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/r-cmd-check.yaml)
 <!-- [![CRAN status](https://www.r-pkg.org/badges/version/BLASTr)](https://CRAN.R-project.org/package=BLASTr) -->
 <!-- badges: end -->
 
@@ -77,10 +77,10 @@ make_blast_db(
 )
 
 head(readLines(fasta_path))
-#> [1] ">AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"           
+#> [1] ">AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"
 #> [2] "TACAAACTGGGATTAGATACCCCACTATGCCTAGCCATAAACTTAAATGAAACTATACTAAACTCATTCGCCAGAGTACT"
-#> [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"                               
-#> [4] ">CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"                           
+#> [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"
+#> [4] ">CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"
 #> [5] "TAGCTCCCGTCGAGTCTCTGCACCTTCCGCATTAGTCATTTATCATTTGTCGTTAGTCATTTGCTAGTAACAATTAACTA"
 #> [6] "AAAACGAAGGACAAAAGACAAATTTGGC"
 
@@ -93,27 +93,10 @@ file.exists(paste0(db_path, ".ndb"))
 blast_results <- parallel_blast(
   query_seqs = asvs,
   db_path = db_path,
-  total_cores = 2 # Number of cores to use
+  total_cores = 2 # Number of BLAST processes to use
 )
 
-# Extract the taxonomy IDs from the top BLAST hit for each query sequence.
-tax_ids <- blast_results$`1_staxid`
-
-# Retrieve taxonomic information in parallel
-taxonomic_info <- parallel_get_tax(
-  organisms_taxIDs = tax_ids,
-  total_cores = 2,
-  retry_times = 0
-)
-#> retrying 0 of 0
-#> ------------------------> unable to retrieve taxonomy for: N/A   
-#> The following taxIDs could not be retrieved even after 0 attempts:
-#> N/A
-```
-
-``` r
-# View the results
-print(blast_results)
+blast_results
 #> # A tibble: 6 × 57
 #>   Sequence               `1_subject header` `1_subject` `1_indentity` `1_length`
 #>   <chr>                  <chr>              <chr>               <dbl>      <dbl>
@@ -130,6 +113,42 @@ print(blast_results)
 #> #   `2_subject` <chr>, `2_indentity` <dbl>, `2_length` <dbl>,
 #> #   `2_mismatches` <dbl>, `2_gaps` <dbl>, `2_query start` <dbl>,
 #> #   `2_query end` <dbl>, `2_subject start` <dbl>, `2_subject end` <dbl>, …
+```
+
+BLASTr keeps track of any errors that may occur during the BLAST
+searches. You can retrieve the exit codes and STDERR messages using the
+`exit_codes()` function.
+
+``` r
+# Check for any errors during BLAST searches
+exit_code_df <- exit_codes(blast_results)
+print(exit_code_df[c("exit_code", "stderr")])
+#> # A tibble: 6 × 2
+#>   exit_code stderr
+#>       <int> <chr>
+#> 1         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"
+#> 2         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"
+#> 3         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"
+#> 4         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"
+#> 5         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"
+#> 6         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"
+```
+
+``` r
+# Extract the taxonomy IDs from the top BLAST hit for each query sequence.
+tax_ids <- blast_results$`1_staxid`
+
+# Retrieve taxonomic information in parallel
+taxonomic_info <- parallel_get_tax(
+  organisms_taxIDs = tax_ids,
+  total_cores = 2,
+  retry_times = 0
+)
+#> retrying 0 of 0
+#> ------------------------> unable to retrieve taxonomy for: N/A
+#> The following taxIDs could not be retrieved even after 0 attempts:
+#> N/A
+
 print(taxonomic_info)
 #> # A tibble: 0 × 13
 #> # ℹ 13 variables: Sci_name <chr>, query_taxID <chr>, Superkingdom (NCBI) <chr>,

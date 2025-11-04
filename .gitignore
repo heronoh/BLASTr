@@ -1,7 +1,21 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+renv
+renv.lock
+revdep
+.Rprofile
+README.html
+inst/doc
+**/.quarto/
+
 docs
 *.RData
 *.Rhistory
 *.gz
+
 
 .Rproj.user
 .Rhistory
@@ -14,3 +28,5 @@ revdep
 .Rprofile
 README.html
 .Rapp.history
+**/.quarto/
+inst/doc

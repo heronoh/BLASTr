@@ -41,6 +41,7 @@ package_name := 'BLASTr'
   # Lint markdown files
   [[ -f ./README.Rmd ]] && cat ./README.Rmd | rumdl check --stdin || true;
   [[ -f ./README.qmd ]] && cat ./README.qmd | rumdl check --stdin || true;
+  R -q -e 'devtools::install(pkg = ".", build_vignettes = TRUE, dependencies = c("Imports", "Suggests", "Depends"), upgrade = "always");';
   [[ -f ./README.Rmd ]] && R -q -e 'devtools::load_all();if(file.exists("README.Rmd"))rmarkdown::render("README.Rmd", encoding = "UTF-8")' || true;
   [[ -f ./README.qmd ]] && quarto render README.qmd --to gfm || true;
   # Lint Final README.md
