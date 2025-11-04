@@ -68,7 +68,6 @@ parallel_blast <- function(
   out_file = deprecated(),
   out_RDS = deprecated()
 ) {
-
   rlang::check_dots_empty()
 
   if (lifecycle::is_present(asvs)) {
@@ -166,7 +165,10 @@ parallel_blast <- function(
   query_seqs_final <- character(0L)
   par_res_final <- list()
 
-  if (isTRUE(verbose %in% c("progress", "output", "full")) || !isFALSE(progress_var)) {
+  if (
+    isTRUE(verbose %in% c("progress", "output", "full")) ||
+      !isFALSE(progress_var)
+  ) {
     cli::cli_inform(
       c(
         `i` = "Running {.fun parallel_blast} for {length(seqs_to_run)} unique query sequences.",
@@ -229,7 +231,8 @@ parallel_blast <- function(
     if (
       isTRUE(length(seqs_to_run) > 0L) &&
         isTRUE(retry_count <= retry_times) &&
-        (isTRUE(verbose %in% c("progress", "output", "full")) || !isFALSE(progress_var))
+        (isTRUE(verbose %in% c("progress", "output", "full")) ||
+          !isFALSE(progress_var))
     ) {
       cli::cli_inform(
         c(
@@ -328,9 +331,9 @@ parallel_blast <- function(
     perc_qcov_hsp = perc_qcov_hsp,
     blast_type = blast_type,
     exit_codes = tibble::tibble(
-      query_seq = blast_res_df$Sequence,
-      exit_code = blast_res_df$exit_code,
-      stderr = blast_res_df$stderr
+      query_seq = blast_res$Sequence,
+      exit_code = blast_res$exit_code,
+      stderr = blast_res$stderr
     )
   )
 
