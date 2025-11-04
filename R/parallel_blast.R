@@ -60,7 +60,7 @@ parallel_blast <- function(
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  retry_times = 10L,
+  retry_times = 3L,
   mt_mode = c("2", "1", "0"),
   verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env",
@@ -68,6 +68,9 @@ parallel_blast <- function(
   out_file = deprecated(),
   out_RDS = deprecated()
 ) {
+
+  rlang::check_dots_empty()
+
   if (lifecycle::is_present(asvs)) {
     lifecycle::deprecate_warn(
       "0.1.7",
@@ -95,11 +98,11 @@ parallel_blast <- function(
     )
   }
 
-  rlang::check_dots_empty()
-
   rlang::check_required(query_seqs)
   rlang::check_required(db_path)
   mt_mode <- rlang::arg_match(mt_mode)
+
+  # check for verbose
   verbose <- rlang::arg_match(verbose)
   if (
     rlang::is_interactive() &&
@@ -112,6 +115,8 @@ parallel_blast <- function(
   if (identical(verbose, "progress")) {
     verbose <- "silent"
   }
+
+  # Check for query_seqs
   if (
     rlang::is_null(query_seqs) ||
       isTRUE(length(query_seqs) == 0L) ||
@@ -125,6 +130,7 @@ parallel_blast <- function(
     )
   }
 
+  # Check for db_path
   if (
     rlang::is_null(db_path) ||
       isTRUE(length(db_path) == 0L) ||
@@ -137,6 +143,7 @@ parallel_blast <- function(
       class = "blastr_no_db_path_error"
     )
   }
+  .data <- rlang::.data
   .env <- rlang::.env
 
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
@@ -154,11 +161,19 @@ parallel_blast <- function(
     mirai::daemons(n = total_cores)
   }
 
-  # Implementing retry
-  seqs_to_run <- query_seqs
+  seqs_to_run <- base::unique(query_seqs)
   retry_count <- 0L
   query_seqs_final <- character(0L)
   par_res_final <- list()
+
+  if (isTRUE(verbose %in% c("progress", "output", "full")) || !isFALSE(progress_var)) {
+    cli::cli_inform(
+      c(
+        `i` = "Running {.fun parallel_blast} for {length(seqs_to_run)} unique query sequences.",
+        `*` = "Using {total_cores} total processes with {num_threads} threads each."
+      )
+    )
+  }
   while (
     isTRUE(retry_count <= retry_times) &&
       length(seqs_to_run) > 0L
@@ -193,6 +208,7 @@ parallel_blast <- function(
       ),
       .progress = progress_var
     )
+
     error_seqs <- par_res |>
       purrr::map2(
         .y = seqs_to_run,
@@ -205,17 +221,23 @@ parallel_blast <- function(
         }
       ) |>
       unlist()
-    retry_count <- retry_count + 1L
-    # par_res_final <- par_res |>
-    #  purrr::discard(
-    #    .p = \(x) {
-    #      x[["status"]] != 0L
-    #    }
-    #  )
 
+    retry_count <- retry_count + 1L
     par_res_final <- c(par_res_final, par_res)
     query_seqs_final <- c(query_seqs_final, seqs_to_run)
     seqs_to_run <- error_seqs
+    if (
+      isTRUE(length(seqs_to_run) > 0L) &&
+        isTRUE(retry_count <= retry_times) &&
+        (isTRUE(verbose %in% c("progress", "output", "full")) || !isFALSE(progress_var))
+    ) {
+      cli::cli_inform(
+        c(
+          `i` = "Retrying {.fun parallel_blast} for {length(seqs_to_run)} failed query sequences.",
+          `*` = "Retry attempt {retry_count} of {retry_times}."
+        )
+      )
+    }
   }
 
   blast_res_df <- par_res_final |>
@@ -271,8 +293,9 @@ parallel_blast <- function(
       }
     ) |>
     purrr::list_rbind() |>
-    # dplyr::mutate("staxid" = as.character(.data$staxid)) |>
-    dplyr::relocate("subject header", .after = "res")
+    dplyr::mutate("staxid" = as.character(.data$staxid)) |>
+    dplyr::relocate("subject header", .after = "res") |>
+    dplyr::distinct()
 
   if (identical(class(blast_res_df), "data.frame")) {
     class(blast_res_df) <- c("tbl_df", "tbl", "data.frame")
@@ -297,6 +320,22 @@ parallel_blast <- function(
       -dplyr::ends_with(c("_res", "_query")),
       -dplyr::starts_with("NA_")
     )
+
+  attributes(blast_res)$BLASTr_metadata <- list(
+    db_path = db_path,
+    num_alignments = num_alignments,
+    perc_id = perc_id,
+    perc_qcov_hsp = perc_qcov_hsp,
+    blast_type = blast_type,
+    exit_codes = tibble::tibble(
+      query_seq = blast_res_df$Sequence,
+      exit_code = blast_res_df$exit_code,
+      stderr = blast_res_df$stderr
+    )
+  )
+
+  blast_res <- blast_res |>
+    dplyr::select(-dplyr::any_of(c("exit_code", "stderr")))
 
   if (
     !rlang::is_na(out_file) &&
