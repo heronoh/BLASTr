@@ -16,22 +16,28 @@ Development Changelog: [dev](https://github.com/heronoh/BLASTr/compare/v0.1.6...
 * New `get_blastr_cache()` for printing the directory used as cache for
   `BLASTr`.
 
+* The previous version of `parallel_blast()` is now available
+  as `parallel_blast_old()`.
+  It is kept for backward compatibility, but users are encouraged
+  to switch to the new `parallel_blast()` implementation.
+
 ### Changed
 
 * `parallel_blast()` will not throw errors immediately when a BLAST job fails.
   Instead, it will log the error and continue with the remaining jobs.
 
-* `parallel_blast()` output has two new columns:
+* `parallel_blast()` output has a new `attributes` data frame with columns:
+  * `query_seq`: The query sequence that was processed.
   * `exit_code`: The exit code of the BLAST command.
   * `stderr`: The standard error output from the BLAST command.
 
 * `parallel_blast()` will automatically retry failed BLAST jobs up to 10 times
   (or the value of `retry_times`) before giving up.
 
+* Argument `asvs` is renamed to `query_seqs` in `parallel_blast()`.
+
 * Arguments `asvs`, `out_file` and `out_RDS` in `parallel_blast()` are now
   deprecated.
-
-* Argument `asvs` is renamed to `query_seqs` in `parallel_blast()`.
 
 ## BLASTr 0.1.6
 
