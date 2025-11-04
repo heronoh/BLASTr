@@ -17,7 +17,10 @@ parallel_blast(
   retry_times = 10L,
   mt_mode = c("2", "1", "0"),
   verbose = c("progress", "silent", "cmd", "output", "full"),
-  env_name = "blastr-blast-env"
+  env_name = "blastr-blast-env",
+  asvs = deprecated(),
+  out_file = deprecated(),
+  out_RDS = deprecated()
 )
 }
 \arguments{
@@ -51,6 +54,12 @@ Defaults to "progress".}
 
 \item{env_name}{The name of the conda environment used to run
 command-line tools. Defaults to \code{"blastr-blast-env"}.}
+
+\item{asvs}{Deprecated. Same as \code{query_seqs}. Use \code{query_seqs} instead.}
+
+\item{out_file}{Deprecated. Path to output \code{.csv} file on an existing directory.}
+
+\item{out_RDS}{Deprecated. Path to output \code{RDS} file on an existing directory.}
 }
 \value{
 A tibble with the BLAST tabular output.
@@ -76,4 +85,5 @@ blast_res <- parallel_blast(
 )
 blast_res
 }
+
 }

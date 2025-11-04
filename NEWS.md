@@ -1,6 +1,6 @@
 ## BLASTr 0.1.7
 
-Release Date: 2025-11-03
+Release Date: 2025-11-04
 
 Development Changelog: [dev](https://github.com/heronoh/BLASTr/compare/v0.1.6...v0.1.7)
 
@@ -26,9 +26,10 @@ Development Changelog: [dev](https://github.com/heronoh/BLASTr/compare/v0.1.6...
   * `stderr`: The standard error output from the BLAST command.
 
 * `parallel_blast()` will automatically retry failed BLAST jobs up to 10 times
-  before giving up.
+  (or the value of `retry_times`) before giving up.
 
-* Arguments `out_file` and `out_RDS` in `parallel_blast()` are removed.
+* Arguments `asvs`, `out_file` and `out_RDS` in `parallel_blast()` are now
+  deprecated.
 
 * Argument `asvs` is renamed to `query_seqs` in `parallel_blast()`.
 

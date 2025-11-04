@@ -20,6 +20,10 @@
 #' @param env_name The name of the conda environment used to run
 #'  command-line tools. Defaults to `"blastr-blast-env"`.
 #'
+#' @param asvs Deprecated. Same as `query_seqs`. Use `query_seqs` instead.
+#' @param out_file Deprecated. Path to output `.csv` file on an existing directory.
+#' @param out_RDS Deprecated. Path to output `RDS` file on an existing directory.
+#'
 #' @inheritParams rlang::args_dots_empty
 #'
 #' @return A tibble with the BLAST tabular output.
@@ -42,6 +46,9 @@
 #' )
 #' blast_res
 #' }
+#'
+#' @importFrom lifecycle deprecated
+#'
 #' @export
 parallel_blast <- function(
   query_seqs,
@@ -56,11 +63,42 @@ parallel_blast <- function(
   retry_times = 10L,
   mt_mode = c("2", "1", "0"),
   verbose = c("progress", "silent", "cmd", "output", "full"),
-  env_name = "blastr-blast-env"
+  env_name = "blastr-blast-env",
+  asvs = deprecated(),
+  out_file = deprecated(),
+  out_RDS = deprecated()
 ) {
+  if (lifecycle::is_present(asvs)) {
+    lifecycle::deprecate_warn(
+      "0.1.7",
+      "parallel_blast(asvs)",
+      "parallel_blast(query_seqs)"
+    )
+    if (lifecycle::is_present(query_seqs)) {
+      cli::cli_warn(
+        "Both {.arg asvs} and {.arg query_seqs} were provided. Using {.arg query_seqs}."
+      )
+      asvs <- query_seqs
+    }
+    query_seqs <- asvs
+  }
+  if (lifecycle::is_present(out_file)) {
+    lifecycle::deprecate_soft(
+      "0.1.7",
+      "parallel_blast(out_file)"
+    )
+  }
+  if (lifecycle::is_present(out_RDS)) {
+    lifecycle::deprecate_soft(
+      "0.1.7",
+      "parallel_blast(out_RDS)"
+    )
+  }
+
+  rlang::check_dots_empty()
+
   rlang::check_required(query_seqs)
   rlang::check_required(db_path)
-  rlang::check_dots_empty()
   mt_mode <- rlang::arg_match(mt_mode)
   verbose <- rlang::arg_match(verbose)
   if (
@@ -213,7 +251,7 @@ parallel_blast <- function(
     # dplyr::mutate("staxid" = as.character(.data$staxid)) |>
     dplyr::relocate("subject header", .after = "res")
 
-  blast_res_df |>
+  blast_res <- blast_res_df |>
     tidyr::pivot_wider(
       names_from = "res",
       values_from = -dplyr::all_of(c("Sequence", "exit_code", "stderr")),
@@ -232,4 +270,33 @@ parallel_blast <- function(
       -dplyr::ends_with(c("_res", "_query")),
       -dplyr::starts_with("NA_")
     )
+
+  if (identical(class(blast_res), "data.frame")) {
+    class(blast_res) <- c("tbl_df", "tbl", "data.frame")
+  }
+
+  if (
+    !rlang::is_na(out_file) &&
+      !rlang::is_null(out_file) &&
+      !rlang::is_missing(out_file)
+  ) {
+    readr::write_csv(
+      x = blast_res,
+      file = out_file,
+      append = FALSE
+    )
+  }
+
+  if (
+    !rlang::is_na(out_RDS) &&
+      !rlang::is_null(out_RDS) &&
+      !rlang::is_missing(out_RDS)
+  ) {
+    readr::write_rds(
+      x = blast_res,
+      file = out_RDS
+    )
+  }
+
+  return(blast_res)
 }
