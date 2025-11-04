@@ -6,6 +6,7 @@
 <url><loc>https://heronoh.github.io/BLASTr/index.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/news/index.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/BLASTr-package.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/exit_codes.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/get_blast_results.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/get_blastr_cache.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/get_fasta_header.html</loc></url>
@@ -14,6 +15,7 @@
 <url><loc>https://heronoh.github.io/BLASTr/reference/install_dependencies.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/make_blast_db.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/parallel_blast.html</loc></url>
+<url><loc>https://heronoh.github.io/BLASTr/reference/parallel_blast_old.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/parallel_get_tax.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/parse_fasta.html</loc></url>
 <url><loc>https://heronoh.github.io/BLASTr/reference/run_blast.html</loc></url>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BLASTr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,27 +33,31 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.7" id="blastr-017">BLASTr 0.1.7<a class="anchor" aria-label="anchor" href="#blastr-017"></a></h2>
-<p>Release Date: 2025-11-03</p>
+<p>Release Date: 2025-11-04</p>
 <p>Development Changelog: <a href="https://github.com/heronoh/BLASTr/compare/v0.1.6...v0.1.7" class="external-link">dev</a></p>
 <div class="section level3">
 <h3 id="added-0-1-7">Added<a class="anchor" aria-label="anchor" href="#added-0-1-7"></a></h3>
 <ul><li><p>New <code>retry_times</code> argument in <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> to specify the number of retries for failed BLAST jobs. Defaults to 10 times.</p></li>
 <li><p>New <code>verbose = "progress"</code> in <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> to show a progress bar for the BLAST jobs.</p></li>
 <li><p>New <code><a href="../reference/get_blastr_cache.html">get_blastr_cache()</a></code> for printing the directory used as cache for <code>BLASTr</code>.</p></li>
+<li><p>The previous version of <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> is now available as <code><a href="../reference/parallel_blast_old.html">parallel_blast_old()</a></code>. It is kept for backward compatibility, but users are encouraged to switch to the new <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> implementation.</p></li>
+<li><p>New <code>exit_codes</code> function to extract exit codes and error message from internal BLAST runs.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="changed-0-1-7">Changed<a class="anchor" aria-label="anchor" href="#changed-0-1-7"></a></h3>
 <ul><li><p><code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> will not throw errors immediately when a BLAST job fails. Instead, it will log the error and continue with the remaining jobs.</p></li>
 <li>
-<p><code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> output has two new columns:</p>
+<p><code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> output has a new attributes data frame with columns:</p>
 <ul><li>
+<code>query_seq</code>: The query sequence that was processed.</li>
+<li>
 <code>exit_code</code>: The exit code of the BLAST command.</li>
 <li>
 <code>stderr</code>: The standard error output from the BLAST command.</li>
 </ul></li>
-<li><p><code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> will automatically retry failed BLAST jobs up to 10 times before giving up.</p></li>
-<li><p>Arguments <code>out_file</code> and <code>out_RDS</code> in <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> are removed.</p></li>
+<li><p><code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> will automatically retry failed BLAST jobs up to 3 times (or the value of <code>retry_times</code>) before giving up.</p></li>
 <li><p>Argument <code>asvs</code> is renamed to <code>query_seqs</code> in <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code>.</p></li>
+<li><p>Arguments <code>asvs</code>, <code>out_file</code> and <code>out_RDS</code> in <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> are now deprecated.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
