@@ -171,9 +171,9 @@ arguments in the `install_dependencies()` function.
 ## Contributing
 
 Contributions are welcome! Please see the [contributing
-guide](.github/CONTRIBUTING.md) for more details.
+guide](./.github/CONTRIBUTING.md) for more details.
 
 ## License
 
 This project is licensed under the MIT License - see the
-[LICENSE](LICENSE) file for details.
+[LICENSE.md](./LICENSE.md) file for details.
