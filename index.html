@@ -32,7 +32,14 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="articles/BLASTr.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/BLASTr-intro.html">BLASTr-intro</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -53,6 +60,7 @@
 <a class="anchor" aria-label="anchor" href="#blastr-parallel-taxonomic-classification-of-metabarcoding-sequences-"></a>
 </h1>
 </div>
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
 <div class="section level2">
@@ -117,10 +125,10 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">fasta_path</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "&gt;AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"           </span></span>
+<span><span class="co">#&gt; [1] "&gt;AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"</span></span>
 <span><span class="co">#&gt; [2] "TACAAACTGGGATTAGATACCCCACTATGCCTAGCCATAAACTTAAATGAAACTATACTAAACTCATTCGCCAGAGTACT"</span></span>
-<span><span class="co">#&gt; [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"                               </span></span>
-<span><span class="co">#&gt; [4] "&gt;CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"                           </span></span>
+<span><span class="co">#&gt; [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"</span></span>
+<span><span class="co">#&gt; [4] "&gt;CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"</span></span>
 <span><span class="co">#&gt; [5] "TAGCTCCCGTCGAGTCTCTGCACCTTCCGCATTAGTCATTTATCATTTGTCGTTAGTCATTTGCTAGTAACAATTAACTA"</span></span>
 <span><span class="co">#&gt; [6] "AAAACGAAGGACAAAAGACAAATTTGGC"</span></span>
 <span></span>
@@ -131,25 +139,10 @@
 <span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span></span>
 <span>  query_seqs <span class="op">=</span> <span class="va">asvs</span>,</span>
 <span>  db_path <span class="op">=</span> <span class="va">db_path</span>,</span>
-<span>  total_cores <span class="op">=</span> <span class="fl">2</span> <span class="co"># Number of cores to use</span></span>
+<span>  total_cores <span class="op">=</span> <span class="fl">2</span> <span class="co"># Number of BLAST processes to use</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Extract the taxonomy IDs from the top BLAST hit for each query sequence.</span></span>
-<span><span class="va">tax_ids</span> <span class="op">&lt;-</span> <span class="va">blast_results</span><span class="op">$</span><span class="va">`1_staxid`</span></span>
-<span></span>
-<span><span class="co"># Retrieve taxonomic information in parallel</span></span>
-<span><span class="va">taxonomic_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_get_tax.html">parallel_get_tax</a></span><span class="op">(</span></span>
-<span>  organisms_taxIDs <span class="op">=</span> <span class="va">tax_ids</span>,</span>
-<span>  total_cores <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  retry_times <span class="op">=</span> <span class="fl">0</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; retrying 0 of 0</span></span>
-<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: N/A   </span></span>
-<span><span class="co">#&gt; The following taxIDs could not be retrieved even after 0 attempts:</span></span>
-<span><span class="co">#&gt; N/A</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># View the results</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
+<span><span class="va">blast_results</span></span>
 <span><span class="co">#&gt; # A tibble: 6 × 57</span></span>
 <span><span class="co">#&gt;   Sequence               `1_subject header` `1_subject` `1_indentity` `1_length`</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;                  &lt;chr&gt;              &lt;chr&gt;               &lt;dbl&gt;      &lt;dbl&gt;</span></span>
@@ -165,7 +158,36 @@
 <span><span class="co">#&gt; #   `1_qcovhsp` &lt;dbl&gt;, `1_staxid` &lt;chr&gt;, `2_subject header` &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   `2_subject` &lt;chr&gt;, `2_indentity` &lt;dbl&gt;, `2_length` &lt;dbl&gt;,</span></span>
 <span><span class="co">#&gt; #   `2_mismatches` &lt;dbl&gt;, `2_gaps` &lt;dbl&gt;, `2_query start` &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   `2_query end` &lt;dbl&gt;, `2_subject start` &lt;dbl&gt;, `2_subject end` &lt;dbl&gt;, …</span></span>
+<span><span class="co">#&gt; #   `2_query end` &lt;dbl&gt;, `2_subject start` &lt;dbl&gt;, `2_subject end` &lt;dbl&gt;, …</span></span></code></pre></div>
+<p>BLASTr keeps track of any errors that may occur during the BLAST searches. You can retrieve the exit codes and STDERR messages using the <code><a href="reference/exit_codes.html">exit_codes()</a></code> function.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Check for any errors during BLAST searches</span></span>
+<span><span class="va">exit_code_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/exit_codes.html">exit_codes</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">exit_code_df</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exit_code"</span>, <span class="st">"stderr"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 2</span></span>
+<span><span class="co">#&gt;   exit_code stderr</span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
+<span><span class="co">#&gt; 2         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
+<span><span class="co">#&gt; 3         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
+<span><span class="co">#&gt; 4         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
+<span><span class="co">#&gt; 5         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
+<span><span class="co">#&gt; 6         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Extract the taxonomy IDs from the top BLAST hit for each query sequence.</span></span>
+<span><span class="va">tax_ids</span> <span class="op">&lt;-</span> <span class="va">blast_results</span><span class="op">$</span><span class="va">`1_staxid`</span></span>
+<span></span>
+<span><span class="co"># Retrieve taxonomic information in parallel</span></span>
+<span><span class="va">taxonomic_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_get_tax.html">parallel_get_tax</a></span><span class="op">(</span></span>
+<span>  organisms_taxIDs <span class="op">=</span> <span class="va">tax_ids</span>,</span>
+<span>  total_cores <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  retry_times <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; retrying 0 of 0</span></span>
+<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: N/A</span></span>
+<span><span class="co">#&gt; The following taxIDs could not be retrieved even after 0 attempts:</span></span>
+<span><span class="co">#&gt; N/A</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">taxonomic_info</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 0 × 13</span></span>
 <span><span class="co">#&gt; # ℹ 13 variables: Sci_name &lt;chr&gt;, query_taxID &lt;chr&gt;, Superkingdom (NCBI) &lt;chr&gt;,</span></span>
@@ -255,7 +277,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/heronoh/BLASTr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/heronoh/BLASTr/actions/workflows/r-cmd-check.yaml" class="external-link"><img src="https://github.com/heronoh/BLASTr/actions/workflows/r-cmd-check.yaml/badge.svg" alt="r-cmd-check"></a></li>
 </ul>
 </div>
 
