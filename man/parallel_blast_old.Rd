@@ -52,6 +52,9 @@ Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{env_name}{The name of the conda environment used to run
 command-line tools (i.e. "blastr-blast-env").}
+
+\item{query_seqs}{the same as \code{asvs} (to provide API compatibility
+with \code{\link[=parallel_blast]{parallel_blast()}}).}
 }
 \value{
 A tibble with the BLAST tabular output.

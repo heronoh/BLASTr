@@ -18,6 +18,8 @@
 #' @param total_cores Total available cores to run BLAST in parallel.
 #'   Check your max with *future::availableCores()*.
 #' @param blast_type BLAST+ executable to be used on search.
+#' @param query_seqs the same as `asvs` (to provide API compatibility
+#'   with [parallel_blast()]).
 #'
 #' @inheritParams rlang::args_dots_empty
 
