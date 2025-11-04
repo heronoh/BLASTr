@@ -1,6 +1,14 @@
-#' @title Previous implementation of: `parallel_blast()` - Run Parallelized BLAST
+#' @title Run parallel BLAST for a set of sequences.
 #'
-#' @description Run parallel BLAST for a set of sequences
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This functions was depreacated in version 0.1.7.
+#' The recommended function to use is [parallel_blast()].
+#'
+#' The new implementation is more resilient to internal errors in BLAST
+#' execution.
+#'
 #'
 #' @inheritParams get_blast_results
 #'
@@ -41,8 +49,7 @@
 #'   blast_type = "blastn" # blast search engine to use
 #' )
 #' }
-#' @keywords internal
-#' @noRd
+#' @export
 parallel_blast_old <- function(
   asvs,
   db_path,
@@ -56,11 +63,22 @@ parallel_blast_old <- function(
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
   verbose = "silent",
-  env_name = "blastr-blast-env"
+  env_name = "blastr-blast-env",
+  query_seqs = NULL
 ) {
+  lifecycle::deprecate_warn("0.1.7", "parallel_blast_old()", "parallel_blast()")
+
+  rlang::check_dots_empty()
+
+  if (
+    !rlang::is_null(query_seqs) &&
+      !rlang::is_missing(query_seqs) &&
+      rlang::is_missing(asvs)
+  ) {
+    asvs <- query_seqs
+  }
   rlang::check_required(asvs)
   rlang::check_required(db_path)
-  rlang::check_dots_empty()
 
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
 

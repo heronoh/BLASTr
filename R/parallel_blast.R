@@ -112,8 +112,31 @@ parallel_blast <- function(
   if (identical(verbose, "progress")) {
     verbose <- "silent"
   }
+  if (
+    rlang::is_null(query_seqs) ||
+      isTRUE(length(query_seqs) == 0L) ||
+      rlang::is_na(query_seqs)
+  ) {
+    cli::cli_abort(
+      c(
+        `x` = "No query sequences were provided to {.fun parallel_blast}."
+      ),
+      class = "blastr_no_query_seqs_error"
+    )
+  }
 
-  # .data <- rlang::.data
+  if (
+    rlang::is_null(db_path) ||
+      isTRUE(length(db_path) == 0L) ||
+      rlang::is_na(db_path)
+  ) {
+    cli::cli_abort(
+      c(
+        `x` = "{.pkg BLASTr}: No database path was provided to {.fun parallel_blast}."
+      ),
+      class = "blastr_no_db_path_error"
+    )
+  }
   .env <- rlang::.env
 
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
@@ -197,7 +220,7 @@ parallel_blast <- function(
 
   blast_res_df <- par_res_final |>
     purrr::map2(
-      .y = query_seqs,
+      .y = query_seqs_final,
       .f = \(x, y) {
         if (identical(x[["stdout"]], "")) {
           return(
@@ -251,6 +274,10 @@ parallel_blast <- function(
     # dplyr::mutate("staxid" = as.character(.data$staxid)) |>
     dplyr::relocate("subject header", .after = "res")
 
+  if (identical(class(blast_res_df), "data.frame")) {
+    class(blast_res_df) <- c("tbl_df", "tbl", "data.frame")
+  }
+
   blast_res <- blast_res_df |>
     tidyr::pivot_wider(
       names_from = "res",
@@ -270,10 +297,6 @@ parallel_blast <- function(
       -dplyr::ends_with(c("_res", "_query")),
       -dplyr::starts_with("NA_")
     )
-
-  if (identical(class(blast_res), "data.frame")) {
-    class(blast_res) <- c("tbl_df", "tbl", "data.frame")
-  }
 
   if (
     !rlang::is_na(out_file) &&
