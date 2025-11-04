@@ -14,10 +14,13 @@ parallel_blast(
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  retry_times = 10L,
+  retry_times = 3L,
   mt_mode = c("2", "1", "0"),
   verbose = c("progress", "silent", "cmd", "output", "full"),
-  env_name = "blastr-blast-env"
+  env_name = "blastr-blast-env",
+  asvs = deprecated(),
+  out_file = deprecated(),
+  out_RDS = deprecated()
 )
 }
 \arguments{
@@ -41,7 +44,7 @@ parallel_blast(
 sequence. Defaults to \code{4}.}
 
 \item{retry_times}{Number of times to retry failed BLAST jobs.
-Defaults to \code{10}.}
+Defaults to \code{3} attempts.}
 
 \item{mt_mode}{Multithreading mode to be used by BLAST+.
 One of: \code{c("2", "1", "0")}. See BLAST+ manual for details.}
@@ -51,6 +54,12 @@ Defaults to "progress".}
 
 \item{env_name}{The name of the conda environment used to run
 command-line tools. Defaults to \code{"blastr-blast-env"}.}
+
+\item{asvs}{Deprecated. Same as \code{query_seqs}. Use \code{query_seqs} instead.}
+
+\item{out_file}{Deprecated. Path to output \code{.csv} file on an existing directory.}
+
+\item{out_RDS}{Deprecated. Path to output \code{RDS} file on an existing directory.}
 }
 \value{
 A tibble with the BLAST tabular output.
@@ -76,4 +85,5 @@ blast_res <- parallel_blast(
 )
 blast_res
 }
+
 }

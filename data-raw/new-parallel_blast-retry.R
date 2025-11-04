@@ -4,6 +4,7 @@ devtools::load_all()
 
 dna_fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
 temp_db_path <- fs::path_temp("minimal_db_blast")
+db_path <- temp_db_path
 make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
 
 asvs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
@@ -250,4 +251,94 @@ par_res <- parallel_blast(
   total_cores = 4L,
   num_threads = 1L,
   num_alignments = 10L
+)
+
+# Generate random combinations of letters A, T, C, G
+
+random_seqs <- function(num = 100L) {
+  set.seed(123)
+  base::sapply(base::seq_len(num), function(x) {
+    paste0(sample(c("A", "T", "C", "G"), size = 50, replace = TRUE), collapse = "")
+  })
+}
+
+
+no_match_query_seq <- "AGAGTACTACAAGTGCTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
+error_header_seq <- ">XAVADADAA"
+error_char_seq <- "ZZZaaaa1345!!!@@@"
+
+par_res <- parallel_blast(
+  query_seqs = rep(c(asvs_string, no_match_query_seq, error_header_seq, error_char_seq), 2L),
+  db_path = temp_db_path,
+  total_cores = 1L,
+  num_threads = 1L,
+  num_alignments = 10L,
+  retry_times = 3L,
+  verbose = "progress"
+)
+
+par_res <- parallel_blast(
+  query_seqs = random_seqs(10000L),
+  db_path = temp_db_path,
+  total_cores = 1L,
+  num_threads = 1L,
+  num_alignments = 10L,
+  retry_times = 3L,
+  verbose = "progress"
+)
+
+par_res <- parallel_blast(
+  query_seqs = random_seqs(100L),
+  db_path = temp_db_path,
+  total_cores = 1L,
+  num_threads = 1L,
+  num_alignments = 10L,
+  retry_times = 3L,
+  verbose = "output"
+)
+
+par_res <- parallel_blast(
+  query_seqs = random_seqs(100L),
+  db_path = temp_db_path,
+  total_cores = 1L,
+  num_threads = 1L,
+  num_alignments = 10L,
+  retry_times = 3L,
+  verbose = "output"
+)
+
+par_res <- parallel_blast(
+  query_seqs = random_seqs(100L),
+  db_path = temp_db_path,
+  total_cores = 1L,
+  num_threads = 1L,
+  num_alignments = 10L,
+  retry_times = 3L,
+  verbose = "cmd"
+)
+
+
+attributes(par_res)
+
+# This should error
+par_old_res <- parallel_blast_old(
+  asvs = rep(c(asvs_string, no_match_query_seq, error_header_seq, error_char_seq), 2L),
+  db_path = temp_db_path,
+  total_cores = 4L,
+  num_threads = 1L,
+  num_alignments = 10L,
+  verbose = "full"
+)
+
+blast_cmd(
+  query_str = no_match_query_seq,
+  db_path = temp_db_path
+)
+blast_cmd(
+  query_str = error_header_seq,
+  db_path = temp_db_path
+)
+blast_cmd(
+  query_str = error_char_seq,
+  db_path = temp_db_path
 )

@@ -12,13 +12,17 @@
 #' @param num_alignments Number of alignments to retrieve results for each query
 #'   sequence. Defaults to `4`.
 #' @param retry_times Number of times to retry failed BLAST jobs.
-#'   Defaults to `10`.
+#'   Defaults to `3` attempts.
 #' @param mt_mode Multithreading mode to be used by BLAST+.
 #'  One of: `c("2", "1", "0")`. See BLAST+ manual for details.
 #' @param verbose Strategy used for showing outputting internal commands.
 #'   Defaults to "progress".
 #' @param env_name The name of the conda environment used to run
 #'  command-line tools. Defaults to `"blastr-blast-env"`.
+#'
+#' @param asvs Deprecated. Same as `query_seqs`. Use `query_seqs` instead.
+#' @param out_file Deprecated. Path to output `.csv` file on an existing directory.
+#' @param out_RDS Deprecated. Path to output `RDS` file on an existing directory.
 #'
 #' @inheritParams rlang::args_dots_empty
 #'
@@ -42,6 +46,9 @@
 #' )
 #' blast_res
 #' }
+#'
+#' @importFrom lifecycle deprecated
+#'
 #' @export
 parallel_blast <- function(
   query_seqs,
@@ -53,15 +60,48 @@ parallel_blast <- function(
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
-  retry_times = 10L,
+  retry_times = 3L,
   mt_mode = c("2", "1", "0"),
   verbose = c("progress", "silent", "cmd", "output", "full"),
-  env_name = "blastr-blast-env"
+  env_name = "blastr-blast-env",
+  asvs = deprecated(),
+  out_file = deprecated(),
+  out_RDS = deprecated()
 ) {
+  rlang::check_dots_empty()
+
+  if (lifecycle::is_present(asvs)) {
+    lifecycle::deprecate_warn(
+      "0.1.7",
+      "parallel_blast(asvs)",
+      "parallel_blast(query_seqs)"
+    )
+    if (lifecycle::is_present(query_seqs)) {
+      cli::cli_warn(
+        "Both {.arg asvs} and {.arg query_seqs} were provided. Using {.arg query_seqs}."
+      )
+      asvs <- query_seqs
+    }
+    query_seqs <- asvs
+  }
+  if (lifecycle::is_present(out_file)) {
+    lifecycle::deprecate_soft(
+      "0.1.7",
+      "parallel_blast(out_file)"
+    )
+  }
+  if (lifecycle::is_present(out_RDS)) {
+    lifecycle::deprecate_soft(
+      "0.1.7",
+      "parallel_blast(out_RDS)"
+    )
+  }
+
   rlang::check_required(query_seqs)
   rlang::check_required(db_path)
-  rlang::check_dots_empty()
   mt_mode <- rlang::arg_match(mt_mode)
+
+  # check for verbose
   verbose <- rlang::arg_match(verbose)
   if (
     rlang::is_interactive() &&
@@ -75,7 +115,34 @@ parallel_blast <- function(
     verbose <- "silent"
   }
 
-  # .data <- rlang::.data
+  # Check for query_seqs
+  if (
+    rlang::is_null(query_seqs) ||
+      isTRUE(length(query_seqs) == 0L) ||
+      rlang::is_na(query_seqs)
+  ) {
+    cli::cli_abort(
+      c(
+        `x` = "No query sequences were provided to {.fun parallel_blast}."
+      ),
+      class = "blastr_no_query_seqs_error"
+    )
+  }
+
+  # Check for db_path
+  if (
+    rlang::is_null(db_path) ||
+      isTRUE(length(db_path) == 0L) ||
+      rlang::is_na(db_path)
+  ) {
+    cli::cli_abort(
+      c(
+        `x` = "{.pkg BLASTr}: No database path was provided to {.fun parallel_blast}."
+      ),
+      class = "blastr_no_db_path_error"
+    )
+  }
+  .data <- rlang::.data
   .env <- rlang::.env
 
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
@@ -93,11 +160,22 @@ parallel_blast <- function(
     mirai::daemons(n = total_cores)
   }
 
-  # Implementing retry
-  seqs_to_run <- query_seqs
+  seqs_to_run <- base::unique(query_seqs)
   retry_count <- 0L
   query_seqs_final <- character(0L)
   par_res_final <- list()
+
+  if (
+    isTRUE(verbose %in% c("progress", "output", "full")) ||
+      !isFALSE(progress_var)
+  ) {
+    cli::cli_inform(
+      c(
+        `i` = "Running {.fun parallel_blast} for {length(seqs_to_run)} unique query sequences.",
+        `*` = "Using {total_cores} total processes with {num_threads} threads each."
+      )
+    )
+  }
   while (
     isTRUE(retry_count <= retry_times) &&
       length(seqs_to_run) > 0L
@@ -132,6 +210,7 @@ parallel_blast <- function(
       ),
       .progress = progress_var
     )
+
     error_seqs <- par_res |>
       purrr::map2(
         .y = seqs_to_run,
@@ -144,22 +223,29 @@ parallel_blast <- function(
         }
       ) |>
       unlist()
-    retry_count <- retry_count + 1L
-    # par_res_final <- par_res |>
-    #  purrr::discard(
-    #    .p = \(x) {
-    #      x[["status"]] != 0L
-    #    }
-    #  )
 
+    retry_count <- retry_count + 1L
     par_res_final <- c(par_res_final, par_res)
     query_seqs_final <- c(query_seqs_final, seqs_to_run)
     seqs_to_run <- error_seqs
+    if (
+      isTRUE(length(seqs_to_run) > 0L) &&
+        isTRUE(retry_count <= retry_times) &&
+        (isTRUE(verbose %in% c("progress", "output", "full")) ||
+          !isFALSE(progress_var))
+    ) {
+      cli::cli_inform(
+        c(
+          `i` = "Retrying {.fun parallel_blast} for {length(seqs_to_run)} failed query sequences.",
+          `*` = "Retry attempt {retry_count} of {retry_times}."
+        )
+      )
+    }
   }
 
   blast_res_df <- par_res_final |>
     purrr::map2(
-      .y = query_seqs,
+      .y = query_seqs_final,
       .f = \(x, y) {
         if (identical(x[["stdout"]], "")) {
           return(
@@ -210,10 +296,15 @@ parallel_blast <- function(
       }
     ) |>
     purrr::list_rbind() |>
-    # dplyr::mutate("staxid" = as.character(.data$staxid)) |>
-    dplyr::relocate("subject header", .after = "res")
+    dplyr::mutate("staxid" = as.character(.data$staxid)) |>
+    dplyr::relocate("subject header", .after = "res") |>
+    dplyr::distinct()
 
-  blast_res_df |>
+  if (identical(class(blast_res_df), "data.frame")) {
+    class(blast_res_df) <- c("tbl_df", "tbl", "data.frame")
+  }
+
+  blast_res <- blast_res_df |>
     tidyr::pivot_wider(
       names_from = "res",
       values_from = -dplyr::all_of(c("Sequence", "exit_code", "stderr")),
@@ -232,4 +323,45 @@ parallel_blast <- function(
       -dplyr::ends_with(c("_res", "_query")),
       -dplyr::starts_with("NA_")
     )
+
+  attributes(blast_res)$BLASTr_metadata <- list(
+    db_path = db_path,
+    num_alignments = num_alignments,
+    perc_id = perc_id,
+    perc_qcov_hsp = perc_qcov_hsp,
+    blast_type = blast_type,
+    exit_codes = tibble::tibble(
+      query_seq = blast_res$Sequence,
+      exit_code = blast_res$exit_code,
+      stderr = blast_res$stderr
+    )
+  )
+
+  blast_res <- blast_res |>
+    dplyr::select(-dplyr::any_of(c("exit_code", "stderr")))
+
+  if (
+    !rlang::is_na(out_file) &&
+      !rlang::is_null(out_file) &&
+      !rlang::is_missing(out_file)
+  ) {
+    readr::write_csv(
+      x = blast_res,
+      file = out_file,
+      append = FALSE
+    )
+  }
+
+  if (
+    !rlang::is_na(out_RDS) &&
+      !rlang::is_null(out_RDS) &&
+      !rlang::is_missing(out_RDS)
+  ) {
+    readr::write_rds(
+      x = blast_res,
+      file = out_RDS
+    )
+  }
+
+  return(blast_res)
 }
