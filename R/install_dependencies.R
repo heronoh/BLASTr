@@ -24,6 +24,7 @@ install_dependencies <- function(
   verbose = c("silent", "cmd", "output", "full"),
   force = FALSE
 ) {
+  verbose <- rlang::arg_match(verbose)
   check_cmd(
     cmd = "blastn",
     env_name = "blastr-blast-env",
