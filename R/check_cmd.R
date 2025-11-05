@@ -40,6 +40,7 @@ check_cmd <- function(
   verbose = c("silent", "cmd", "output", "full"),
   force = FALSE
 ) {
+  verbose <- rlang::arg_match(verbose)
   packages_to_install <- NULL
   # supported_archs <- names(conda_packages_list)
   # Check if operational system is in the included list of available systems
