@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   BLASTr-intro: BLASTr-intro.html
   articles/BLASTr: BLASTr.html
-last_built: 2025-11-05T13:01Z
+last_built: 2025-11-05T13:03Z
 urls:
   reference: https://heronoh.github.io/BLASTr/reference
   article: https://heronoh.github.io/BLASTr/articles
