@@ -35,6 +35,7 @@ parallel_get_tax <- function(
   verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-entrez-env"
 ) {
+  verbose <- rlang::arg_match(verbose)
   organisms_taxIDs <- unique(organisms_taxIDs)
 
   check_cmd(cmd = "efetch", env_name = env_name)
