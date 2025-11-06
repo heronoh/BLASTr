@@ -49,6 +49,7 @@ run_blast <- function(
 ) {
   rlang::check_required(asv)
   rlang::check_required(db_path)
+  verbose <- rlang::arg_match(verbose)
   check_cmd(cmd = blast_type, env_name = env_name, verbose = verbose)
 
   query_path <- fs::file_temp("blast_input_", ext = "fasta")

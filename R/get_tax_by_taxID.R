@@ -34,6 +34,7 @@ get_tax_by_taxID <- function(
   .data <- rlang::.data
 
   organisms_taxIDs <- as.character(organisms_taxIDs)
+  verbose <- rlang::arg_match(verbose)
 
   check_cmd("efetch", env_name = env_name)
 

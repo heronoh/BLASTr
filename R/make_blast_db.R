@@ -39,7 +39,7 @@ make_blast_db <- function(
   rlang::check_required(fasta_path)
   rlang::check_required(db_path)
   check_cmd(cmd = "makeblastdb", env_name = env_name, verbose = verbose)
-
+  verbose <- rlang::arg_match(verbose)
   args <- c(
     "-in",
     fasta_path,

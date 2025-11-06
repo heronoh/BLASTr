@@ -35,6 +35,7 @@ get_blast_results <- function(
   env_name = "blastr-blast-env"
 ) {
   .data <- rlang::.data
+  verbose <- rlang::arg_match(verbose)
 
   blast_res <- run_blast(
     asv = asv,
