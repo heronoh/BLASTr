@@ -9,4 +9,4 @@
 library(testthat)
 library(BLASTr)
 
-test_check("BLASTr")
+testthat::test_check("BLASTr")

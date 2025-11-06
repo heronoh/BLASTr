@@ -4,7 +4,7 @@
 #'
 #' @inheritParams run_blast
 #'
-#' @return A `tibble` with the results of BLASTn for each sequence.
+#' @returns A `tibble` with the results of BLASTn for each sequence.
 #'
 #' @examples
 #' \dontrun{

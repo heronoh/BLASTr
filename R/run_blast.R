@@ -18,7 +18,7 @@
 #' @param env_name The name of the conda environment used to run
 #'   command-line tools (i.e. "blastr-blast-env").
 #'
-#' @return Unformatted BLAST results.
+#' @returns Unformatted BLAST results.
 #'   For results formatted as tibble, please use `[get_blast_results()]`
 #'
 #' @examples

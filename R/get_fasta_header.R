@@ -7,7 +7,7 @@
 #'
 #' @param id SubjectID from BLAST results or any NCBI Nucleotide identifier.
 #'
-#' @return Complete identifier for the SubjectID as is on the database.
+#' @returns Complete identifier for the SubjectID as is on the database.
 #'
 #' @examples
 #' \dontrun{

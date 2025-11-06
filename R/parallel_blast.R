@@ -28,7 +28,7 @@
 #'
 #' @inheritParams rlang::args_dots_empty
 #'
-#' @return A tibble with the BLAST tabular output.
+#' @returns A tibble with the BLAST tabular output.
 #'
 #' @examples
 #' \dontrun{

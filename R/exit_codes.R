@@ -5,7 +5,7 @@
 #' results of a BLAST search performed using the [parallel_blast()] function.
 #'
 #' @param blast_res A data frame containing the results of a BLAST search.
-#' @return A data frame with the exit codes and standard error messages.
+#' @returns A data frame with the exit codes and standard error messages.
 #' @export
 exit_codes <- function(blast_res) {
   if (isFALSE("BLASTr_metadata" %in% names(attributes(blast_res)))) {

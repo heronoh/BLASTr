@@ -7,7 +7,7 @@
 #' @param verbose Character indicating whether to print verbose messages during the process. Default is `"silent"`.
 #' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"blastr-entrez-env"`.
 #'
-#' @return A tibble containing the taxonomic ranks for the given Tax IDs.
+#' @returns A tibble containing the taxonomic ranks for the given Tax IDs.
 #'
 #' @examples
 #' \dontrun{

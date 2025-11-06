@@ -4,7 +4,7 @@
 #'
 #' @param file_path Path to FASTA file.
 #'
-#' @return vector containing the sequences.
+#' @returns vector containing the sequences.
 #'
 #' @examples
 #' fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")

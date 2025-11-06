@@ -6,7 +6,7 @@
 #'   Options include `"silent"`, `"cmd"`, `"output"`, or `"full"`. Default is `"silent"`.
 #' @param force A logical value indicating whether to force the re-creation of the Conda environments even if they already exist. Default is `FALSE`.
 #'
-#' @return Invisibly returns `TRUE` after attempting to install the dependencies.
+#' @returns Invisibly returns `TRUE` after attempting to install the dependencies.
 #'
 #' @examples
 #' \dontrun{

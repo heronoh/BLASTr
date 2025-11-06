@@ -17,7 +17,7 @@
 #'   conda environment even if it exists.
 #'   Default is `FALSE`.
 #'
-#' @return Invisibly returns `TRUE` if the command is available
+#' @returns Invisibly returns `TRUE` if the command is available
 #'   or successfully installed.
 #'
 #' @examples

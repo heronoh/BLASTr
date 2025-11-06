@@ -11,7 +11,8 @@
 #' @param verbose Should `[condathis::run()]` internal command be shown?
 #' @param env_name The name of the conda environment with the parameter
 #' (i.e. "blastr-blast-env").
-#' @return The result of the `makeblastdb` command.
+#'
+#' @returns The result of the `makeblastdb` command.
 #'
 #' @examples
 #' \dontrun{

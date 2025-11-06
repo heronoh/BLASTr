@@ -25,6 +25,7 @@ package_name := 'BLASTr'
   R -q -e 'devtools::load_all();styler::style_pkg();';
   air format ./R/ || true;
   air format ./tests/ || true;
+  find ./R/ -type f -name "*.R" -exec sed -i -e "s|^#' \@return |#' \@returns |g" {} +
   just document;
   \builtin echo "Linting done!";
 
