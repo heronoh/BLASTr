@@ -7,7 +7,7 @@
 get_tax_by_taxID(
   organisms_taxIDs,
   parse_result = TRUE,
-  verbose = "silent",
+  verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-entrez-env"
 )
 }

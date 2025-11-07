@@ -28,7 +28,7 @@
 get_tax_by_taxID <- function(
   organisms_taxIDs,
   parse_result = TRUE,
-  verbose = "silent",
+  verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-entrez-env"
 ) {
   .data <- rlang::.data

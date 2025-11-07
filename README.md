@@ -1,10 +1,8 @@
-
 # BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences <a href="https://heronoh.github.io/BLASTr/"><img src="man/figures/logo.png" align="right" height="138" alt="BLASTr website" /></a>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 <!-- badges: start -->
-
 [![r-cmd-check](https://github.com/heronoh/BLASTr/actions/workflows/r-cmd-check.yaml/badge.svg)](https://github.com/heronoh/BLASTr/actions/workflows/r-cmd-check.yaml)
 <!-- [![CRAN status](https://www.r-pkg.org/badges/version/BLASTr)](https://CRAN.R-project.org/package=BLASTr) -->
 <!-- badges: end -->

@@ -24,7 +24,7 @@ get_fasta_header <- function(
   id,
   db_path,
   env_name = "blastr-blast-env",
-  verbose = "silent"
+  verbose = c("silent", "cmd", "output", "full")
 ) {
   rlang::check_required(id)
   rlang::check_required(db_path)
@@ -34,6 +34,7 @@ get_fasta_header <- function(
       class = "blastr_missing_blast_db"
     )
   }
+  verbose <- rlang::arg_match(verbose)
 
   withr::local_envvar(
     .new = list(

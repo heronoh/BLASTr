@@ -44,7 +44,7 @@ run_blast <- function(
   blast_type = "blastn",
   perc_id = 80L,
   perc_qcov_hsp = 80L,
-  verbose = "silent",
+  verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env"
 ) {
   rlang::check_required(asv)

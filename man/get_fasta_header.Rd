@@ -8,7 +8,7 @@ get_fasta_header(
   id,
   db_path,
   env_name = "blastr-blast-env",
-  verbose = "silent"
+  verbose = c("silent", "cmd", "output", "full")
 )
 }
 \arguments{

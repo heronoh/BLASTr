@@ -10,7 +10,7 @@ make_blast_db(
   db_type = "nucl",
   taxid_map = NULL,
   parse_seqids = TRUE,
-  verbose = "silent",
+  verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env"
 )
 }

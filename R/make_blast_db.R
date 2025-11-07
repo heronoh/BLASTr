@@ -33,7 +33,7 @@ make_blast_db <- function(
   db_type = "nucl",
   taxid_map = NULL,
   parse_seqids = TRUE,
-  verbose = "silent",
+  verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env"
 ) {
   rlang::check_required(fasta_path)
