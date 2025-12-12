@@ -65,7 +65,7 @@ search_primers_on_fq <- function(primer_seqs, fastq_paths) {
       percentage <- if (total_reads > 0) (primer_matches / total_reads) * 100 else 0
 
       # Append results
-      results <- append(results, list(tibble(
+      results <- append(results, list(tibble::tibble(
         file_name = fastq_path,
         primer_name = primer_name,
         primer_sequence = primer_seq,

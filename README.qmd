@@ -72,6 +72,28 @@ withr::local_envvar(
 BLASTr::install_dependencies(verbose = "silent", force = FALSE)
 ```
 
+
+To obtain complet NCBI blast formated databases, procees as follows
+```{bash}
+
+#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.
+#          tmux: https://tmuxcheatsheet.com/
+#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
+
+# download volumes and md5 check files 
+seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz -t 0 --show-progress
+seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 -t 0 --show-progress
+     # where 000 is the first volume and 150, the last (up to now).
+     
+ls *5 | parallel md5sum -c {} >> check.txt
+sort check.txt > check_sort.txt
+
+ls *tar.gz | parallel tar -xvzf {} 
+
+
+
+```
+
 ```{r}
 #| label: make-blast-db
 library(BLASTr)
