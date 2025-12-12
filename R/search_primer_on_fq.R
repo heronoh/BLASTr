@@ -12,6 +12,7 @@ search_primers_on_fq <- function(primer_seqs, fastq_paths) {
     N = "[ACGT]"
   )
 
+
   # Convert each DNA sequence into a parsed regular expression
   parsed_primers <- sapply(primer_seqs, function(primer) {
     paste0(sapply(strsplit(primer, NULL)[[1]],

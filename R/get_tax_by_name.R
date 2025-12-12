@@ -39,7 +39,6 @@ get_tax_by_name <- function(organisms_names,
     error = "continue" # necessary for the function not to break when a taxID is wrong!
   )
 
-
   xml2::read_xml(x = organism_intermed$stdout)
   # run entrez command
   organism_xml <- condathis::run(
