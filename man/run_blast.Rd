@@ -37,8 +37,16 @@ Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{verbose}{Should condathis::run() internal command be shown?}
 
+<<<<<<< HEAD
 \item{env_name}{The name of the conda environment used to run
 command-line tools (i.e. "blastr-blast-env").}
+=======
+\item{env_name}{The name of the conda environment with the parameter (i.e. "blast-env")}
+
+\item{gapopen}{Gap open penalty (default  = 5 for blastn, = 11 for other blast)}
+
+\item{gapextend}{Gap extend penalty (default  = 2 for blastn, = 1 for other blast)}
+>>>>>>> local update to lucio's version
 }
 \value{
 Unformatted BLAST results.
