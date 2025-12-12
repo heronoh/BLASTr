@@ -77,7 +77,8 @@ get_blast_results <- function(
         "e-value",
         "bitscore",
         "qcovhsp",
-        "staxid"
+        "staxid",
+        "ssciname"
       ),
       show_col_types = FALSE,
       trim_ws = TRUE,
