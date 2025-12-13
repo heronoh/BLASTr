@@ -3,10 +3,10 @@
 #' @description Create a BLAST database from a FASTA file.
 #'
 #' @param fasta_path Path to the input FASTA file.
-#' @param db_path Path to the output BLAST database.
+#' @param db_path Path to the output BLAST database.#REMOVIDO
 #' @param db_type Type of database to create, either "nucl" or "prot".
 #' @param taxid_map Optional path to a file mapping sequence IDs to
-#'  taxonomy IDs.
+#'  taxonomy IDs. Must have the same radical name than the .fasta db file
 #' @param parse_seqids Whether to parse sequence IDs.
 #' @param verbose Should `[condathis::run()]` internal command be shown?
 #' @param env_name The name of the conda environment with the parameter
@@ -29,7 +29,7 @@
 #' @export
 make_blast_db <- function(
   fasta_path,
-  db_path,
+  # db_path,
   db_type = "nucl",
   taxid_map = NULL,
   parse_seqids = TRUE,
@@ -37,16 +37,18 @@ make_blast_db <- function(
   env_name = "blastr-blast-env"
 ) {
   rlang::check_required(fasta_path)
-  rlang::check_required(db_path)
+  # rlang::check_required(db_path)
   check_cmd(cmd = "makeblastdb", env_name = env_name, verbose = verbose)
   verbose <- rlang::arg_match(verbose)
   args <- c(
     "-in",
     fasta_path,
     "-dbtype",
-    db_type,
-    "-out",
-    db_path
+    db_type
+    # ,
+    # "-out"
+    # ,
+    # db_path
   )
 
   if (isTRUE(parse_seqids)) {
@@ -54,8 +56,16 @@ make_blast_db <- function(
   }
 
   if (!is.null(taxid_map)) {
+#
+#     #check .fasta & .txt compatibility
+    if (tools::file_path_sans_ext(fasta_path) != tools::file_path_sans_ext(taxid_map)) {
+      stop("taxid_map file and DB fasta file names' radical do not match!")
+    }
+
     args <- c(args, "-taxid_map", taxid_map)
   }
+
+  print(args)
   # NOTE: attemp to remove phone home in blast
   withr::local_envvar(
     .new = list(
@@ -70,6 +80,8 @@ make_blast_db <- function(
     verbose = verbose,
     error = "continue"
   )
+
+  message("Command used:\n\t","makeblastdb ", paste0(args,collapse = " "))
 
   if (isTRUE(blast_db_res$status != 0L)) {
     error_msg_list <- stringr::str_extract_all(blast_db_res$stderr, "Error:.*")
