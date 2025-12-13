@@ -59,7 +59,7 @@ Here's a simple example of how to use `BLASTr` to perform a BLAST search and ret
 
 ```{r}
 #| label: setup-blastr
-#| eval: true
+#| eval: false
 #| include: false
 # Make sure that environments are installed in a temporary directory
 withr::local_envvar(
@@ -72,17 +72,22 @@ withr::local_envvar(
 BLASTr::install_dependencies(verbose = "silent", force = FALSE)
 ```
 
+## Obtain NCBI databases
 
 To obtain complet NCBI blast formated databases, procees as follows
 ```{bash}
+#| eval: false
 
 #suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.
 #          tmux: https://tmuxcheatsheet.com/
 #          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
 
 # download volumes and md5 check files 
-seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz -t 0 --show-progress
-seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 -t 0 --show-progress
+seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz -t 0 --show-progress;
+seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 -t 0 --show-progress;
+wget https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz -t 0 --show-progress;
+wget https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz.md5 -t 0 --show-progress;
+wget https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb-metadata.json -t 0 --show-progress;
      # where 000 is the first volume and 150, the last (up to now).
      
 ls *5 | parallel md5sum -c {} >> check.txt
@@ -92,10 +97,19 @@ ls *tar.gz | parallel tar -xvzf {} 
 
 
 
+  
+
 ```
+
+## Making local custom databeses
+
+You can turn any _.fasta_ file with unique headers into a BLAST+ formated database using the _*BLASTr*_ function _make_blast_db_. It is recomended that the unique identifier of each sequence do not contain *.*. You may provide a _.txt_ with the same name as the DB's _.fasta_ file, formated _lcl|_<SequenceId> <TaxonomyId><newline>.
+
+If you want to retrieve _subject Scientific name_  on the results, you can download and extract the *taxdb* files from NCBI, as mentioned above. 
 
 ```{r}
 #| label: make-blast-db
+#| eval: false
 library(BLASTr)
 
 # First, make sure you have the necessary dependencies installed
@@ -113,23 +127,39 @@ asvs <- c(
 
 # Path to your local FASTA database
 fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
-
+# Path to your local Tax ID map file
+taxid_map <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "txt")
 # Path to database
 db_path <- fs::path_temp("minimal_db_blast")
 
+
+# BLAST+ requires that the taxid_map file is composede of two columns, separated
+#  by a space. The 1st is a unique ID (no . allowed), the first word of the header.
+#  It must be preceeded by "lcl|".
+#  THe 2nd is the taxID.
+
 make_blast_db(
   fasta_path = fasta_path,
-  db_path = db_path,
+  taxid_map = taxid_map
   db_type = "nucl"
 )
 
 head(readLines(fasta_path))
 
 file.exists(paste0(db_path, ".ndb"))
+
+# pra o ssciname funcionar tem que exportar a variavel 
+# 
+# tem que exportar essa variavel pra funcionar!!!!!
+# export BLASTDB=/data/databases/core_nt:/data/databases/core_nt:$BLASTDB
+
+
+
 ```
 
 ```{r}
 #| label: blastr-parallel-blast
+#| eval: false
 # Run BLAST in parallel
 blast_results <- parallel_blast(
   query_seqs = asvs,
@@ -144,6 +174,7 @@ BLASTr keeps track of any errors that may occur during the BLAST searches. You c
 
 ```{r}
 #| label: blastr-exit-codes
+#| eval: false
 # Check for any errors during BLAST searches
 exit_code_df <- exit_codes(blast_results)
 print(exit_code_df[c("exit_code", "stderr")])
@@ -151,6 +182,7 @@ print(exit_code_df[c("exit_code", "stderr")])
 
 ```{r}
 #| label: blastr-get-taxonomy
+#| eval: false
 # Extract the taxonomy IDs from the top BLAST hit for each query sequence.
 tax_ids <- blast_results$`1_staxid`
 
