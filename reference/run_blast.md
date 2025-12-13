@@ -57,29 +57,10 @@ run_blast(
 
   Should condathis::run() internal command be shown?
 
-\<\<\<\<\<\<\< HEAD
-
 - env_name:
 
   The name of the conda environment used to run command-line tools (i.e.
   "blastr-blast-env").
-
-=======
-
-- env_name:
-
-  The name of the conda environment with the parameter (i.e.
-  "blast-env")
-
-- gapopen:
-
-  Gap open penalty (default = 5 for blastn, = 11 for other blast)
-
-- gapextend:
-
-  Gap extend penalty (default = 2 for blastn, = 1 for other blast)
-
-\>\>\>\>\>\>\> local update to lucio's version
 
 ## Value
 
