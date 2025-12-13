@@ -293,6 +293,7 @@ parallel_blast <- function(
           ) |>
           dplyr::mutate(
             `Sequence` = stringr::str_replace_all(.env$y, "\\s", ""),
+            `staxid` = as.character(.data$staxid),
             `exit_code` = x[["status"]],
             `stderr` = x[["stderr"]]
           ) |>
@@ -300,7 +301,7 @@ parallel_blast <- function(
       }
     ) |>
     purrr::list_rbind() |>
-    dplyr::mutate("staxid" = as.character(.data$staxid)) |>
+    # dplyr::mutate("staxid" = as.character(.data$staxid)) |>
     dplyr::relocate("subject header", .after = "res") |>
     dplyr::distinct()
 
