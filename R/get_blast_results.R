@@ -84,7 +84,9 @@ get_blast_results <- function(
       trim_ws = TRUE,
       comment = "#"
     ) |>
-    dplyr::mutate("staxid" = as.character(.data$staxid))
+    dplyr::mutate("staxid" = as.character(.data$staxid)) |>
+    dplyr::mutate("ssciname" = as.character(.data$ssciname))
+
 
   blast_table$`subject header` <- purrr::map_chr(
     .x = blast_table$subject,
