@@ -257,8 +257,9 @@ parallel_blast <- function(
               `subject` = NA_character_,
               # `indentity` = NA_real_,
               # `length` = NA_integer_,
-              `staxid` = "N/A",
+              `staxid` = NA_character_,
               `subject header` = NA_character_,
+              `ssciname` = NA_character_,
               `Sequence` = stringr::str_replace_all(y, "\\s", ""),
               `exit_code` = x[["status"]],
               `stderr` = x[["stderr"]]
@@ -283,7 +284,8 @@ parallel_blast <- function(
               "bitscore",
               "qcovhsp",
               "staxid",
-              "subject header"
+              "subject header",
+              "ssciname"
             ),
             show_col_types = FALSE,
             trim_ws = TRUE,
