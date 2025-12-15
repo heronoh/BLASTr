@@ -20,7 +20,6 @@
 #' @param env_name The name of the conda environment used to run
 #'  command-line tools. Defaults to `"blastr-blast-env"`.
 #'
-#' @param asvs Deprecated. Same as `query_seqs`. Use `query_seqs` instead.
 #' @param out_file Deprecated. Path to output `.csv` file on an existing
 #' directory.
 #' @param out_RDS Deprecated. Path to output `RDS` file on an existing
@@ -38,12 +37,12 @@
 #' )
 #' temp_db_path <- fs::path_temp("minimal_db_blast")
 #' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-#' asvs_string <- c(
+#' query_seqs_string <- c(
 #'   "CTAGCCATAAACTTAAATGAAGCTATACTAA",
 #'   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
 #' )
 #' blast_res <- parallel_blast(
-#'   query_seqs = asvs_string,
+#'   query_seqs = query_seqs_string,
 #'   db_path = temp_db_path
 #' )
 #' blast_res
@@ -66,26 +65,11 @@ parallel_blast <- function(
   mt_mode = c("2", "1", "0"),
   verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env",
-  asvs = deprecated(), # nolint: object_name_linter
   out_file = deprecated(), # nolint: object_name_linter
   out_RDS = deprecated() # nolint: object_name_linter
 ) {
   rlang::check_dots_empty()
 
-  if (lifecycle::is_present(asvs)) {
-    lifecycle::deprecate_warn(
-      "0.1.7",
-      "parallel_blast(asvs)",
-      "parallel_blast(query_seqs)"
-    )
-    if (lifecycle::is_present(query_seqs)) {
-      cli::cli_warn(
-        "Both {.arg asvs} and {.arg query_seqs} were provided. Using {.arg query_seqs}." # nolint: line_length_linter
-      )
-      asvs <- query_seqs
-    }
-    query_seqs <- asvs
-  }
   if (lifecycle::is_present(out_file)) {
     lifecycle::deprecate_soft(
       "0.1.7",

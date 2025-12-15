@@ -1,6 +1,6 @@
 #' @title Run BLASTn
 #'
-#' @description Retrieve BLAST results from a given ASV
+#' @description Retrieve BLAST results from a given query sequence
 #'
 #' @inheritParams run_blast
 #'
@@ -14,14 +14,14 @@
 #' )
 #' temp_db_path <- fs::path_temp("minimal_db_blast")
 #' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-#' asvs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
+#' query_seqs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
 #' AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
 #'
-#' get_blast_results(asv = asvs_string, db_path = temp_db_path)
+#' get_blast_results(query_seqs = query_seqs_string, db_path = temp_db_path)
 #' }
 #' @export
 get_blast_results <- function(
-  asv,
+  query_seqs,
   db_path,
   num_threads = 1L,
   blast_type = "blastn",
@@ -38,7 +38,7 @@ get_blast_results <- function(
   verbose <- rlang::arg_match(verbose)
 
   blast_res <- run_blast(
-    asv = asv,
+    query_seqs = query_seqs,
     blast_type = blast_type,
     num_threads = num_threads,
     db_path = db_path,
@@ -56,7 +56,7 @@ get_blast_results <- function(
     )
   }
   if (blast_res$stdout == "") {
-    df_to_return <- tibble::tibble(`Sequence` = asv)
+    df_to_return <- tibble::tibble(`Sequence` = query_seqs)
     return(df_to_return)
   }
 
@@ -123,7 +123,7 @@ get_blast_results <- function(
   )
 
   blast_table <- blast_table |>
-    dplyr::mutate(`Sequence` = stringr::str_replace_all(asv, "\\s", "")) |>
+    dplyr::mutate(`Sequence` = stringr::str_replace_all(query_seqs, "\\s", "")) |>
     dplyr::relocate(tidyr::starts_with("10_")) |>
     dplyr::relocate(tidyr::starts_with("9_")) |>
     dplyr::relocate(tidyr::starts_with("8_")) |>

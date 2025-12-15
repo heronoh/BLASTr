@@ -3,7 +3,7 @@
 #' @description Run BLAST for a single sequence and return raw results.
 #'   For formatted results, use the function `[BLASTr::get_blastn_results()]`.
 #'
-#' @param asv Vector of sequences to be BLASTed.
+#' @param query_seqs Vector of sequences to be BLASTed.
 #' @param db_path Complete path do formatted BLAST database.
 #' @param num_threads Number of threads to run BLAST on.
 #'   Passed on to BLAST+ argument `-num_threads`.
@@ -27,17 +27,17 @@
 #' dna_fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
 #' temp_db_path <- fs::path_temp("minimal_db_blast")
 #' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-#' asvs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
+#' query_seqs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
 #' AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
 #' blast_res <- run_blast(
-#'   asv = asvs_string,
+#'   query_seqs = query_seqs_string,
 #'   db_path = temp_db_path
 #' )
 #' }
 #'
 #' @export
 run_blast <- function(
-  asv,
+  query_seqs,
   db_path,
   num_alignments = 4L,
   num_threads = 1L,
@@ -47,13 +47,13 @@ run_blast <- function(
   verbose = c("silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env"
 ) {
-  rlang::check_required(asv)
+  rlang::check_required(query_seqs)
   rlang::check_required(db_path)
   verbose <- rlang::arg_match(verbose)
   check_cmd(cmd = blast_type, env_name = env_name, verbose = verbose)
 
   query_path <- fs::file_temp("blast_input_", ext = "fasta")
-  base::cat(asv, file = query_path)
+  base::cat(query_seqs, file = query_path)
 
   withr::local_envvar(
     .new = list(
