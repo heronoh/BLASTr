@@ -77,15 +77,17 @@ get_blast_results <- function(
         "e-value",
         "bitscore",
         "qcovhsp",
-        "staxid",
-        "ssciname"
+        "staxid"
+        # ,
+        # "ssciname"
       ),
       show_col_types = FALSE,
       trim_ws = TRUE,
       comment = "#"
     ) |>
-    dplyr::mutate("staxid" = as.character(.data$staxid)) |>
-    dplyr::mutate("ssciname" = as.character(.data$ssciname))
+    dplyr::mutate("staxid" = as.character(.data$staxid))
+  # | >
+  #   dplyr::mutate("ssciname" = as.character(.data$ssciname))
 
 
   blast_table$`subject header` <- purrr::map_chr(
@@ -122,6 +124,10 @@ get_blast_results <- function(
 
   blast_table <- blast_table |>
     dplyr::mutate(`Sequence` = stringr::str_replace_all(asv, "\\s", "")) |>
+    dplyr::relocate(tidyr::starts_with("10_")) |>
+    dplyr::relocate(tidyr::starts_with("9_")) |>
+    dplyr::relocate(tidyr::starts_with("8_")) |>
+    dplyr::relocate(tidyr::starts_with("7_")) |>
     dplyr::relocate(tidyr::starts_with("6_")) |>
     dplyr::relocate(tidyr::starts_with("5_")) |>
     dplyr::relocate(tidyr::starts_with("4_")) |>
