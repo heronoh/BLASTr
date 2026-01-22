@@ -257,7 +257,7 @@ parallel_blast <- function(
               `subject` = NA_character_,
               # `indentity` = NA_real_,
               # `length` = NA_integer_,
-              `staxid` = "N/A",
+              `staxid` = NA_character_,
               `subject header` = NA_character_,
               `Sequence` = stringr::str_replace_all(y, "\\s", ""),
               `exit_code` = x[["status"]],
