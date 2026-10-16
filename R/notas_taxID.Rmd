@@ -1,0 +1,102 @@
+# BLASTr — Recuperação de ranks taxonômicos a partir de um taxID
+
+Notas de desenvolvimento sobre a função de recuperação de taxonomia (NCBI Entrez `efetch`) no pacote BLASTr.
+
+---
+
+## Problema
+
+A função `get_tax_by_taxID` recuperava corretamente os ranks **superiores** de um táxon, mas nunca o rank do **próprio taxID consultado**. Exemplo: para o gênero *Acanthodoras* (taxID `238642`), retornava Family (`Doradidae`) e tudo acima, mas a coluna `Genus (NCBI)` vinha vazia.
+
+## Causa
+
+No XML retornado pelo `efetch -db taxonomy`, a informação fica em dois lugares distintos:
+
+- **Nó raiz** `<Taxon>` (primeiro nível): contém o rank do **próprio táxon consultado**.
+  ```xml
+  <TaxId>238642</TaxId>
+  <ScientificName>Acanthodoras</ScientificName>
+  <Rank>genus</Rank>
+  ```
+- **`<LineageEx>`**: contém **apenas os ancestrais**. Vai de "cellular organisms" até a Family e **para antes** do táxon consultado. O próprio ID nunca aparece aqui.
+
+O parser iterava somente sobre `<LineageEx>/<Taxon>`, então — por construção — sempre perdia o rank do ID buscado. Isso vale para qualquer nível, não só gênero (uma consulta por espécie perderia o rank `species` da mesma forma).
+
+## Solução
+
+Como o parsing usa `pivot_wider` com `names_from = "Rank"`, cada táxon já vai automaticamente para a coluna do seu próprio rank. Não é preciso tratar o gênero como caso especial — basta **anexar o nó raiz** à tabela de ranks com o rank que ele próprio declara, e o pivot o encaixa na coluna correta (`genus`, `family`, `subfamily`, etc.).
+
+Alteração no `for` de parsing dentro de `get_tax_by_taxID`:
+
+```r
+for (i in seq_along(organism_list$TaxaSet)) {
+  taxon_i <- organism_list$TaxaSet[i]$Taxon
+
+  # ancestrais (LineageEx)
+  lineage_tbl <- purrr::list_rbind(purrr::map(unname(taxon_i$LineageEx),
+    function(x) {
+      tibble::tibble(Rank = x$Rank[[1]], ScientificName = x$ScientificName[[1]])
+    }))
+
+  # nó raiz: o próprio táxon consultado, com o SEU rank
+  self_tbl <- tibble::tibble(
+    Rank = taxon_i$Rank[[1]],
+    ScientificName = taxon_i$ScientificName[[1]]
+  )
+
+  organism_tbl_list[[i]] <- dplyr::mutate(
+    dplyr::mutate(
+      dplyr::bind_rows(lineage_tbl, self_tbl),   # <- anexa o nó raiz
+      query_taxID = organisms_taxIDs[i]
+    ),
+    Sci_name = unlist(taxon_i$ScientificName)
+  )
+}
+```
+
+A única mudança real é o `bind_rows(lineage_tbl, self_tbl)`. O resto da função (filtro de ranks, `pivot_wider`, `relocate`, `rename`) continua igual.
+
+**Status: testado e funcionando.**
+
+---
+
+## Ranks do NCBI Taxonomy
+
+### Mudança recente importante (março/2025)
+
+O NCBI **descontinuou o `superkingdom`**. O nível mais alto agora é:
+- `domain` — para organismos celulares (Archaea, Bacteria, Eukaryota)
+- `realm` — para vírus
+
+No XML atual, Eukaryota aparece como `<Rank>domain</Rank>`, **não** mais `superkingdom`. Por isso a coluna `Superkingdom (NCBI)` tende a vir vazia em consultas novas — vale adicionar `domain` (e opcionalmente `realm`) ao vetor de ranks e ao tibble de saída.
+
+### Os sete ranks padrão
+
+Aplicados universalmente onde possível: kingdom, phylum, class, order, family, genus, species.
+
+### Lista de ranks (extraída do `nodes.dmp`, ~2020)
+
+biotype, clade, class, cohort, family, forma, forma specialis, genotype, genus, infraclass, infraorder, isolate, kingdom, morph, no rank, order, parvorder, pathogroup, phylum, section, series, serogroup, serotype, species, species group, species subgroup, strain, subclass, subcohort, subfamily, subgenus, subkingdom, suborder, subphylum, subsection, subspecies, subtribe, subvariety, superclass, superfamily, superkingdom, superorder, superphylum, tribe, varietas.
+
+> Esta lista é de ~2020: **não** inclui `domain` e `realm` (adicionados depois) e ainda inclui `superkingdom` (agora descontinuado). Para o quadro atual: some `domain`/`realm` e considere `superkingdom` como legado.
+
+### Ranks "sem informação" de posição
+
+`no rank` e `clade` podem aparecer em qualquer ponto da linhagem e não indicam posição hierárquica — por isso são (corretamente) filtrados. **Atenção:** se o nó raiz consultado for `clade` ou `no rank`, ele será descartado pelo filtro e o organismo pode sumir do resultado.
+
+---
+
+## TODO / próximos passos
+
+- [ ] **Incluir rank de espécie** (e possivelmente `subspecies`, `subgenus`, etc.) na saída. Requer ajuste em quatro pontos:
+  - `temp_names_tbl` (adicionar coluna)
+  - vetor de ranks permitidos no `filter`
+  - `relocate`
+  - `rename`
+- [ ] **Adicionar `domain`/`realm`** ao conjunto de ranks (substituindo/complementando `superkingdom`).
+- [ ] **Gerar a lista de ranks programaticamente** a partir do `new_taxdump`:
+  - baixar de `ftp.ncbi.nih.gov/pub/taxonomy/`
+  - ler `nodes.dmp`
+  - extrair os valores únicos da coluna de rank
+
+  Assim a lista nunca envelhece, já que o NCBI adiciona/aposenta ranks periodicamente (como mostra o caso `superkingdom` → `domain`).

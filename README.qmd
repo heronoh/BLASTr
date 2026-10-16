@@ -140,7 +140,7 @@ db_path <- fs::path_temp("minimal_db_blast")
 
 make_blast_db(
   fasta_path = fasta_path,
-  taxid_map = taxid_map
+  taxid_map = taxid_map,
   db_type = "nucl"
 )
 

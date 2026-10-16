@@ -112,20 +112,44 @@ get_tax_by_taxID <- function(
   )
 
   organism_tbl_list <- list()
+  # for (i in seq_along(organism_list$TaxaSet)) {
+  #   organism_tbl_list[[i]] <- organism_list$TaxaSet[i]$Taxon$LineageEx |>
+  #     unname() |>
+  #     purrr::map(function(x) {
+  #       tibble::tibble(
+  #         Rank = x$Rank[[1]],
+  #         ScientificName = x$ScientificName[[1]]
+  #       )
+  #     }) |>
+  #     purrr::list_rbind() |>
+  #     dplyr::mutate("query_taxID" = organisms_taxIDs[i]) |>
+  #     dplyr::mutate(
+  #       "Sci_name" = unlist(organism_list$TaxaSet[i]$Taxon$ScientificName)
+  #     )
+  # }
+
   for (i in seq_along(organism_list$TaxaSet)) {
-    organism_tbl_list[[i]] <- organism_list$TaxaSet[i]$Taxon$LineageEx |>
-      unname() |>
-      purrr::map(function(x) {
-        tibble::tibble(
-          Rank = x$Rank[[1]],
-          ScientificName = x$ScientificName[[1]]
-        )
-      }) |>
-      purrr::list_rbind() |>
-      dplyr::mutate("query_taxID" = organisms_taxIDs[i]) |>
+    taxon_i <- organism_list$TaxaSet[i]$Taxon
+
+    # ancestrais (LineageEx)
+    lineage_tbl <- purrr::list_rbind(purrr::map(unname(taxon_i$LineageEx),
+                                                function(x) {
+                                                  tibble::tibble(Rank = x$Rank[[1]], ScientificName = x$ScientificName[[1]])
+                                                }))
+
+    # nó raiz: o próprio táxon consultado, com o SEU rank
+    self_tbl <- tibble::tibble(
+      Rank = taxon_i$Rank[[1]],
+      ScientificName = taxon_i$ScientificName[[1]]
+    )
+
+    organism_tbl_list[[i]] <- dplyr::mutate(
       dplyr::mutate(
-        "Sci_name" = unlist(organism_list$TaxaSet[i]$Taxon$ScientificName)
-      )
+        dplyr::bind_rows(lineage_tbl, self_tbl),
+        query_taxID = organisms_taxIDs[i]
+      ),
+      Sci_name = unlist(taxon_i$ScientificName)
+    )
   }
   organism_tbl <- organism_tbl_list |>
     purrr::list_rbind()
