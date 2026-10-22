@@ -19,7 +19,6 @@ parallel_blast(
   mt_mode = c("2", "1", "0"),
   verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env",
-  asvs = deprecated(),
   out_file = deprecated(),
   out_RDS = deprecated()
 )
@@ -83,10 +82,6 @@ parallel_blast(
   The name of the conda environment used to run command-line tools.
   Defaults to `"blastr-blast-env"`.
 
-- asvs:
-
-  Deprecated. Same as `query_seqs`. Use `query_seqs` instead.
-
 - out_file:
 
   Deprecated. Path to output `.csv` file on an existing directory.
@@ -109,12 +104,12 @@ dna_fasta_path <- fs::path_package(
 )
 temp_db_path <- fs::path_temp("minimal_db_blast")
 make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-asvs_string <- c(
+query_seqs_string <- c(
   "CTAGCCATAAACTTAAATGAAGCTATACTAA",
   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
 )
 blast_res <- parallel_blast(
-  query_seqs = asvs_string,
+  query_seqs = query_seqs_string,
   db_path = temp_db_path
 )
 blast_res

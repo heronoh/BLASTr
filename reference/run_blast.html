@@ -53,7 +53,7 @@ For formatted results, use the function <code>[BLASTr::get_blastn_results()]</co
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_blast</span><span class="op">(</span></span>
-<span>  <span class="va">asv</span>,</span>
+<span>  <span class="va">query_seqs</span>,</span>
 <span>  <span class="va">db_path</span>,</span>
 <span>  num_alignments <span class="op">=</span> <span class="fl">4L</span>,</span>
 <span>  num_threads <span class="op">=</span> <span class="fl">1L</span>,</span>
@@ -69,7 +69,7 @@ For formatted results, use the function <code>[BLASTr::get_blastn_results()]</co
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-asv">asv<a class="anchor" aria-label="anchor" href="#arg-asv"></a></dt>
+<dl><dt id="arg-query-seqs">query_seqs<a class="anchor" aria-label="anchor" href="#arg-query-seqs"></a></dt>
 <dd><p>Vector of sequences to be BLASTed.</p></dd>
 
 
@@ -123,10 +123,10 @@ For results formatted as tibble, please use <code>[get_blast_results()]</code></
 <span class="r-in"><span><span class="va">dna_fasta_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path_package.html" class="external-link">path_package</a></span><span class="op">(</span><span class="st">"BLASTr"</span>, <span class="st">"extdata"</span>, <span class="st">"minimal_db_blast"</span>, ext <span class="op">=</span> <span class="st">"fasta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">temp_db_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_temp.html" class="external-link">path_temp</a></span><span class="op">(</span><span class="st">"minimal_db_blast"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="make_blast_db.html">make_blast_db</a></span><span class="op">(</span>fasta_path <span class="op">=</span> <span class="va">dna_fasta_path</span>, db_path <span class="op">=</span> <span class="va">temp_db_path</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">asvs_string</span> <span class="op">&lt;-</span> <span class="st">"CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG</span></span></span>
+<span class="r-in"><span><span class="va">query_seqs_string</span> <span class="op">&lt;-</span> <span class="st">"CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG</span></span></span>
 <span class="r-in"><span><span class="st">AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"</span></span></span>
 <span class="r-in"><span><span class="va">blast_res</span> <span class="op">&lt;-</span> <span class="fu">run_blast</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  asv <span class="op">=</span> <span class="va">asvs_string</span>,</span></span>
+<span class="r-in"><span>  query_seqs <span class="op">=</span> <span class="va">query_seqs_string</span>,</span></span>
 <span class="r-in"><span>  db_path <span class="op">=</span> <span class="va">temp_db_path</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>

@@ -7,7 +7,7 @@ Create a BLAST database from a FASTA file.
 ``` r
 make_blast_db(
   fasta_path,
-  db_path,
+  db_path = NULL,
   db_type = "nucl",
   taxid_map = NULL,
   parse_seqids = TRUE,
@@ -24,7 +24,8 @@ make_blast_db(
 
 - db_path:
 
-  Path to the output BLAST database.
+  Path to write DB files. Will be the same as the fasta_path if not
+  provided.
 
 - db_type:
 
@@ -32,7 +33,8 @@ make_blast_db(
 
 - taxid_map:
 
-  Optional path to a file mapping sequence IDs to taxonomy IDs.
+  Optional path to a file mapping sequence IDs to taxonomy IDs. Must
+  have the same radical name than the .fasta db file
 
 - parse_seqids:
 
@@ -59,9 +61,6 @@ make_blast_db(
   fasta_path = fs::path_package(
     "BLASTr", "extdata", "minimal_db_blast",
     ext = "fasta"
-  ),
-  db_path = fs::path_temp("minimal_db_blast"),
-  db_type = "nucl"
-)
+  ))
 } # }
 ```

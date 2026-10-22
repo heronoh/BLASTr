@@ -1,12 +1,12 @@
 # Run BLASTn
 
-Retrieve BLAST results from a given ASV
+Retrieve BLAST results from a given query sequence
 
 ## Usage
 
 ``` r
 get_blast_results(
-  asv,
+  query_seqs,
   db_path,
   num_threads = 1L,
   blast_type = "blastn",
@@ -20,7 +20,7 @@ get_blast_results(
 
 ## Arguments
 
-- asv:
+- query_seqs:
 
   Vector of sequences to be BLASTed.
 
@@ -75,9 +75,9 @@ dna_fasta_path <- fs::path_package(
 )
 temp_db_path <- fs::path_temp("minimal_db_blast")
 make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-asvs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
+query_seqs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
 AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
 
-get_blast_results(asv = asvs_string, db_path = temp_db_path)
+get_blast_results(query_seqs = query_seqs_string, db_path = temp_db_path)
 } # }
 ```
