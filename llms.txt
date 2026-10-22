@@ -30,6 +30,7 @@ processing and automated dependency management.
 You can install the development version of `BLASTr` from GitHub with:
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("heronoh/BLASTr")
 ```
@@ -40,6 +41,7 @@ Here’s a simple example of how to use `BLASTr` to perform a BLAST search
 and retrieve taxonomic information:
 
 ``` r
+
 library(BLASTr)
 
 # First, make sure you have the necessary dependencies installed
@@ -80,6 +82,7 @@ file.exists(paste0(db_path, ".ndb"))
 ```
 
 ``` r
+
 # Run BLAST in parallel
 blast_results <- parallel_blast(
   query_seqs = asvs,
@@ -112,6 +115,7 @@ searches. You can retrieve the exit codes and STDERR messages using the
 function.
 
 ``` r
+
 # Check for any errors during BLAST searches
 exit_code_df <- exit_codes(blast_results)
 print(exit_code_df[c("exit_code", "stderr")])
@@ -127,6 +131,7 @@ print(exit_code_df[c("exit_code", "stderr")])
 ```
 
 ``` r
+
 # Extract the taxonomy IDs from the top BLAST hit for each query sequence.
 tax_ids <- blast_results$`1_staxid`
 

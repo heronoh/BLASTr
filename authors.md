@@ -12,14 +12,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/heronoh/BLASTr/blob/main/DESCRIPTION)
 
-Queiroz L, Hilario H (2025). *BLASTr: Parallel Taxonomic Classification
+Queiroz L, Hilario H (2026). *BLASTr: Parallel Taxonomic Classification
 of Metabarcoding Sequences*. R package version 0.1.7,
 <https://github.com/heronoh/BLASTr>.
 
     @Manual{,
       title = {BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences},
       author = {Lucio Queiroz and Heron Hilario},
-      year = {2025},
+      year = {2026},
       note = {R package version 0.1.7},
       url = {https://github.com/heronoh/BLASTr},
     }
