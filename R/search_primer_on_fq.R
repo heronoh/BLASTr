@@ -1,5 +1,3 @@
-library(tibble)
-
 search_primers_on_fq <- function(primer_seqs, fastq_paths) {
   # Define IUPAC codes as a named list
   iupac_codes <- list(
@@ -12,10 +10,6 @@ search_primers_on_fq <- function(primer_seqs, fastq_paths) {
     N = "[ACGT]"
   )
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 96eacb54dc0e55db8c80659250001ea205527dd7
   # Convert each DNA sequence into a parsed regular expression
   parsed_primers <- sapply(primer_seqs, function(primer) {
     paste0(sapply(strsplit(primer, NULL)[[1]],
@@ -68,11 +62,7 @@ search_primers_on_fq <- function(primer_seqs, fastq_paths) {
       percentage <- if (total_reads > 0) (primer_matches / total_reads) * 100 else 0
 
       # Append results
-<<<<<<< HEAD
-      results <- append(results, list(tibble(
-=======
       results <- append(results, list(tibble::tibble(
->>>>>>> 96eacb54dc0e55db8c80659250001ea205527dd7
         file_name = fastq_path,
         primer_name = primer_name,
         primer_sequence = primer_seq,
@@ -85,7 +75,7 @@ search_primers_on_fq <- function(primer_seqs, fastq_paths) {
   }
 
   # Combine all results into a single tibble
-  result_tibble <- bind_rows(results)
+  result_tibble <- dplyr::bind_rows(results)
 
   return(result_tibble)
 }
