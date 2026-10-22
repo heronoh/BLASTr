@@ -6,7 +6,7 @@
 \usage{
 make_blast_db(
   fasta_path,
-  db_path,
+  db_path = NULL,
   db_type = "nucl",
   taxid_map = NULL,
   parse_seqids = TRUE,
@@ -17,12 +17,12 @@ make_blast_db(
 \arguments{
 \item{fasta_path}{Path to the input FASTA file.}
 
-\item{db_path}{Path to the output BLAST database.}
+\item{db_path}{Path to write DB files. Will be the same as the fasta_path if not provided.}
 
 \item{db_type}{Type of database to create, either "nucl" or "prot".}
 
 \item{taxid_map}{Optional path to a file mapping sequence IDs to
-taxonomy IDs.}
+taxonomy IDs. Must have the same radical name than the .fasta db file}
 
 \item{parse_seqids}{Whether to parse sequence IDs.}
 
@@ -43,10 +43,7 @@ make_blast_db(
   fasta_path = fs::path_package(
     "BLASTr", "extdata", "minimal_db_blast",
     ext = "fasta"
-  ),
-  db_path = fs::path_temp("minimal_db_blast"),
-  db_type = "nucl"
-)
+  ))
 }
 
 }

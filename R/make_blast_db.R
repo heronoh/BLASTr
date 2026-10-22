@@ -3,7 +3,7 @@
 #' @description Create a BLAST database from a FASTA file.
 #'
 #' @param fasta_path Path to the input FASTA file.
-#' @param db_path Path to the output BLAST database.#REMOVIDO
+#' @param db_path Path to write DB files. Will be the same as the fasta_path if not provided.
 #' @param db_type Type of database to create, either "nucl" or "prot".
 #' @param taxid_map Optional path to a file mapping sequence IDs to
 #'  taxonomy IDs. Must have the same radical name than the .fasta db file
@@ -20,16 +20,13 @@
 #'   fasta_path = fs::path_package(
 #'     "BLASTr", "extdata", "minimal_db_blast",
 #'     ext = "fasta"
-#'   ),
-#'   db_path = fs::path_temp("minimal_db_blast"),
-#'   db_type = "nucl"
-#' )
+#'   ))
 #' }
 #'
 #' @export
 make_blast_db <- function(
   fasta_path,
-  # db_path,
+  db_path = NULL,
   db_type = "nucl",
   taxid_map = NULL,
   parse_seqids = TRUE,
@@ -37,7 +34,6 @@ make_blast_db <- function(
   env_name = "blastr-blast-env"
 ) {
   rlang::check_required(fasta_path)
-  # rlang::check_required(db_path)
   check_cmd(cmd = "makeblastdb", env_name = env_name, verbose = verbose)
   verbose <- rlang::arg_match(verbose)
   args <- c(
@@ -45,14 +41,14 @@ make_blast_db <- function(
     fasta_path,
     "-dbtype",
     db_type
-    # ,
-    # "-out"
-    # ,
-    # db_path
   )
 
   if (isTRUE(parse_seqids)) {
     args <- c(args, "-parse_seqids")
+  }
+
+  if (!is.null(db_path)) {
+    args <- c(args, "-out", db_path)
   }
 
   if (!is.null(taxid_map)) {

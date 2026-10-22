@@ -5,7 +5,7 @@
 \title{Run BLAST}
 \usage{
 run_blast(
-  asv,
+  query_seqs,
   db_path,
   num_alignments = 4L,
   num_threads = 1L,
@@ -17,7 +17,7 @@ run_blast(
 )
 }
 \arguments{
-\item{asv}{Vector of sequences to be BLASTed.}
+\item{query_seqs}{Vector of sequences to be BLASTed.}
 
 \item{db_path}{Complete path do formatted BLAST database.}
 
@@ -54,10 +54,10 @@ For formatted results, use the function \verb{[BLASTr::get_blastn_results()]}.
 dna_fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
 temp_db_path <- fs::path_temp("minimal_db_blast")
 make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-asvs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
+query_seqs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
 AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
 blast_res <- run_blast(
-  asv = asvs_string,
+  query_seqs = query_seqs_string,
   db_path = temp_db_path
 )
 }

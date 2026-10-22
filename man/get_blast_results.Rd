@@ -5,7 +5,7 @@
 \title{Run BLASTn}
 \usage{
 get_blast_results(
-  asv,
+  query_seqs,
   db_path,
   num_threads = 1L,
   blast_type = "blastn",
@@ -17,7 +17,7 @@ get_blast_results(
 )
 }
 \arguments{
-\item{asv}{Vector of sequences to be BLASTed.}
+\item{query_seqs}{Vector of sequences to be BLASTed.}
 
 \item{db_path}{Complete path do formatted BLAST database.}
 
@@ -44,7 +44,7 @@ command-line tools (i.e. "blastr-blast-env").}
 A \code{tibble} with the results of BLASTn for each sequence.
 }
 \description{
-Retrieve BLAST results from a given ASV
+Retrieve BLAST results from a given query sequence
 }
 \examples{
 \dontrun{
@@ -54,9 +54,9 @@ dna_fasta_path <- fs::path_package(
 )
 temp_db_path <- fs::path_temp("minimal_db_blast")
 make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-asvs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
+query_seqs_string <- "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAG
 AGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
 
-get_blast_results(asv = asvs_string, db_path = temp_db_path)
+get_blast_results(query_seqs = query_seqs_string, db_path = temp_db_path)
 }
 }
