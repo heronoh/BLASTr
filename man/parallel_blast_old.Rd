@@ -5,7 +5,7 @@
 \title{Run parallel BLAST for a set of sequences.}
 \usage{
 parallel_blast_old(
-  asvs,
+  query_seqs,
   db_path,
   ...,
   out_file = NULL,
@@ -17,12 +17,11 @@ parallel_blast_old(
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
   verbose = "silent",
-  env_name = "blastr-blast-env",
-  query_seqs = NULL
+  env_name = "blastr-blast-env"
 )
 }
 \arguments{
-\item{asvs}{Character vector with sequences}
+\item{query_seqs}{Character vector with sequences.}
 
 \item{db_path}{Complete path do formatted BLAST database.}
 
@@ -52,9 +51,6 @@ Passed on to BLAST+ \code{-qcov_hsp_perc}.}
 
 \item{env_name}{The name of the conda environment used to run
 command-line tools (i.e. "blastr-blast-env").}
-
-\item{query_seqs}{the same as \code{asvs} (to provide API compatibility
-with \code{\link[=parallel_blast]{parallel_blast()}}).}
 }
 \value{
 A tibble with the BLAST tabular output.
@@ -76,12 +72,12 @@ dna_fasta_path <- fs::path_package(
 )
 temp_db_path <- fs::path_temp("minimal_db_blast")
 make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-asvs_string <- c(
+query_seqs_string <- c(
   "CTAGCCATAAACTTAAATGAAGCTATACTAA",
   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
 )
 blast_res <- parallel_blast_old(
-  asvs = asvs_string, # vector of sequences to be searched
+  query_seqs = query_seqs_string, # vector of sequences to be searched
   db_path = temp_db_path, # path to a formatted blast database
   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
   out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)

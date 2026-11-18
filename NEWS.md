@@ -1,3 +1,15 @@
+## BLASTr (development version)
+
+### Breaking changes
+
+* The term "ASV" was dropped from the package API and documentation, since
+  it denotes a sequence type specific to some pipelines. Sequences are now
+  referred to only as `seqs`.
+* `parallel_blast_old()` lost its `asvs` argument; use `query_seqs`.
+  This also fixes `parallel_blast_old()`, which still called
+  `get_blast_results()` with the removed `asv` argument.
+* Example data `inst/extdata/asvs_test.txt` was renamed to `seqs_test.txt`.
+
 ## BLASTr 0.1.7
 
 Release Date: 2025-11-04

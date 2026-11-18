@@ -17,7 +17,11 @@ make_blast_db(
 \arguments{
 \item{fasta_path}{Path to the input FASTA file.}
 
-\item{db_path}{Path to write DB files. Will be the same as the fasta_path if not provided.}
+\item{db_path}{Path (prefix) of the output BLAST database.
+Defaults to \code{fasta_path}, i.e. the database files are written next to the
+FASTA file (\verb{<fasta_path>.nsq}, \verb{<fasta_path>.nin}, ...).
+The function stops with an error if the directory of \code{db_path} does not
+exist or cannot be written to.}
 
 \item{db_type}{Type of database to create, either "nucl" or "prot".}
 
@@ -43,7 +47,18 @@ make_blast_db(
   fasta_path = fs::path_package(
     "BLASTr", "extdata", "minimal_db_blast",
     ext = "fasta"
-  ))
+  ),
+  db_path = fs::path_temp("minimal_db_blast"),
+  db_type = "nucl"
+)
+
+# Without `db_path`, the database is written next to the FASTA file:
+fasta_copy <- fs::path_temp("my_db", ext = "fasta")
+fs::file_copy(
+  fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta"),
+  fasta_copy
+)
+make_blast_db(fasta_path = fasta_copy)
 }
 
 }

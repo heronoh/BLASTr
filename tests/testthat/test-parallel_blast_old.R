@@ -4,17 +4,17 @@ testthat::test_that("new parallel_blast generates same output as old", {
 
   withr::local_options(list(lifecycle_verbosity = "quiet"))
 
-  ASVs_test <- readLines(fs::path_package(
+  seqs_test <- readLines(fs::path_package(
     "BLASTr",
     "extdata",
-    "asvs_test",
+    "seqs_test",
     ext = "txt"
   ))
 
   db_path <- tmp_blast_db_path
 
   blast_res_new <- parallel_blast(
-    query_seqs = ASVs_test,
+    query_seqs = seqs_test,
     db_path = db_path,
     total_cores = 1,
     perc_id = 80,
@@ -29,7 +29,7 @@ testthat::test_that("new parallel_blast generates same output as old", {
   attributes(blast_res_new)$BLASTr_metadata <- NULL
 
   blast_res_old <- parallel_blast_old(
-    asvs = ASVs_test,
+    query_seqs = seqs_test,
     db_path = db_path,
     out_file = NA,
     out_RDS = NA,
@@ -94,14 +94,14 @@ testthat::test_that("OLD - parallel blast - single thread", {
 
   withr::local_options(list(lifecycle_verbosity = "quiet"))
 
-  asvs_test <- readLines(
-    fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt")
+  seqs_test <- readLines(
+    fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt")
   )
 
   db_path <- tmp_blast_db_path
 
   blast_res <- parallel_blast_old(
-    asvs = asvs_test,
+    query_seqs = seqs_test,
     db_path = db_path,
     num_threads = 1,
     total_cores = 1
@@ -109,7 +109,7 @@ testthat::test_that("OLD - parallel blast - single thread", {
 
   testthat::expect_s3_class(blast_res, "data.frame")
   testthat::expect_s3_class(blast_res, "tbl_df")
-  testthat::expect_equal(nrow(blast_res), length(asvs_test))
+  testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
   testthat::expect_equal(ncol(blast_res), 57L)
 })
@@ -120,7 +120,7 @@ testthat::test_that("OLD - parallel blast - empty args", {
   withr::local_options(list(lifecycle_verbosity = "warning"))
 
   testthat::expect_warning(
-    blast_res <- parallel_blast_old(asvs = NULL, db_path = NULL)
+    blast_res <- parallel_blast_old(query_seqs = NULL, db_path = NULL)
   )
 
   testthat::expect_s3_class(blast_res, "data.frame")

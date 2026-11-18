@@ -12,14 +12,12 @@
 #'
 #' @inheritParams get_blast_results
 #'
-#' @param asvs Character vector with sequences
+#' @param query_seqs Character vector with sequences.
 #' @param out_file Complete path to output .csv file on an existing folder.
 #' @param out_RDS Complete path to output RDS file on an existing folder.
 #' @param total_cores Total available cores to run BLAST in parallel.
 #'   Check your max with *future::availableCores()*.
 #' @param blast_type BLAST+ executable to be used on search.
-#' @param query_seqs the same as `asvs` (to provide API compatibility
-#'   with [parallel_blast()]).
 #'
 #' @inheritParams rlang::args_dots_empty
 
@@ -33,12 +31,12 @@
 #' )
 #' temp_db_path <- fs::path_temp("minimal_db_blast")
 #' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-#' asvs_string <- c(
+#' query_seqs_string <- c(
 #'   "CTAGCCATAAACTTAAATGAAGCTATACTAA",
 #'   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
 #' )
 #' blast_res <- parallel_blast_old(
-#'   asvs = asvs_string, # vector of sequences to be searched
+#'   query_seqs = query_seqs_string, # vector of sequences to be searched
 #'   db_path = temp_db_path, # path to a formatted blast database
 #'   out_file = NULL, # path to a .csv file to be created with results (on an existing folder)
 #'   out_RDS = NULL, # path to a .RDS file to be created with results (on an existing folder)
@@ -53,7 +51,7 @@
 #' }
 #' @export
 parallel_blast_old <- function(
-  asvs,
+  query_seqs,
   db_path,
   ...,
   out_file = NULL,
@@ -65,28 +63,20 @@ parallel_blast_old <- function(
   perc_qcov_hsp = 80L,
   num_alignments = 4L,
   verbose = "silent",
-  env_name = "blastr-blast-env",
-  query_seqs = NULL
+  env_name = "blastr-blast-env"
 ) {
   lifecycle::deprecate_warn("0.1.7", "parallel_blast_old()", "parallel_blast()")
 
   rlang::check_dots_empty()
 
-  if (
-    !rlang::is_null(query_seqs) &&
-      !rlang::is_missing(query_seqs) &&
-      rlang::is_missing(asvs)
-  ) {
-    asvs <- query_seqs
-  }
-  rlang::check_required(asvs)
+  rlang::check_required(query_seqs)
   rlang::check_required(db_path)
 
   check_cmd(blast_type, env_name = env_name, verbose = verbose)
 
   parallel_set <- FALSE
   if (
-    isTRUE(length(asvs) > 1L) &&
+    isTRUE(length(query_seqs) > 1L) &&
       isTRUE(total_cores > 1L) &&
       isTRUE(mirai::status()$connections < total_cores)
   ) {
@@ -97,11 +87,11 @@ parallel_blast_old <- function(
   }
 
   blast_res <- purrr::map(
-    .x = asvs,
+    .x = query_seqs,
     .f = purrr::in_parallel(
       .f = \(x) {
         get_blast_results(
-          asv = x,
+          query_seqs = x,
           db_path = db_path,
           num_threads = num_threads,
           blast_type = blast_type,

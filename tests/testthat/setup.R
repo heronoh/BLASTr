@@ -55,7 +55,9 @@ withr::local_envvar(
 )
 
 # `tmp_blast_db_path` is used in the actual tests.
-tmp_blast_db_path <- fs::path(tmp_wd_path, "minimal_db_blast")
+# `make_blast_db()` writes the database next to the FASTA file,
+# so the FASTA is copied to the temporary directory first.
+tmp_blast_db_path <- fs::path(tmp_wd_path, "minimal_db_blast", ext = "fasta")
 base::rm(tmp_home_path)
 base::rm(tmp_data_path)
 base::rm(tmp_cache_path)
@@ -78,14 +80,18 @@ if (!(!interactive() && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false"))))) {
 
   # For local testing use:
   # + `tmp_blast_db_path <- fs::file_temp("minimal_db_blast_")`
-  make_blast_db(
-    fasta_path = fs::path_package(
+  fs::file_copy(
+    path = fs::path_package(
       "BLASTr",
       "extdata",
       "minimal_db_blast",
       ext = "fasta"
     ),
-    db_path = tmp_blast_db_path,
+    new_path = tmp_blast_db_path,
+    overwrite = TRUE
+  )
+  make_blast_db(
+    fasta_path = tmp_blast_db_path,
     db_type = "nucl",
     verbose = "silent"
   )

@@ -1,90 +1,111 @@
-
-
+# Objetivo: dar taxid ao banco BLAST minimo do pacote
+# (data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta), para que
+# parallel_blast()/run_blast() retornem `staxid` tambem no banco de teste.
+#
+# Fluxo:
+#   1. ler o FASTA minimo
+#   2. buscar cada sequencia no core_nt para descobrir o taxid do melhor hit
+#   3. escrever o taxid map (lcl|<ID> <taxid>)
+#   4. recriar o banco minimo com -taxid_map
+#   5. validar: BLAST contra o banco minimo deve trazer staxid
+#
+# Comandos de referencia (shell):
 # echo -e 'GAGGCCCCGCTACGAAAGTAACTTTATCACCTCCGACCCCACGAAAGCTAAGAAACAAACTGGGATTAGATACCCCACTATGCTTAGCCCTAAACCTAGATATTTATTCTACAAAAAATATCCGCCAGGGAACTACGAGCGCTAGCTTAAAACCCAAAGGACTTGACGGTGTCTCAGACCCACCTAGAGGAGCCTGTTCTAGAACCGATAATCCACGTTTAACCTCACCACCCCTTGTTTTCCCCGCCTATATACCGCCGTCGCAAGCTTACCCTGTGA' | blastn -db '/home/gabriel/projetos/db-LGC/old/database/blastr/LGC12Sdb_complete_noGaps-2024-09-20.fasta' -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
 # echo -e 'GAGGCCCCGCTACGAAAGTAACTTTATCACCTCCGACCCCACGAAAGCTAAGAAACAAACTGGGATTAGATACCCCACTATGCTTAGCCCTAAACCTAGATATTTATTCTACAAAAAATATCCGCCAGGGAACTACGAGCGCTAGCTTAAAACCCAAAGGACTTGACGGTGTCTCAGACCCACCTAGAGGAGCCTGTTCTAGAACCGATAATCCACGTTTAACCTCACCACCCCTTGTTTTCCCCGCCTATATACCGCCGTCGCAAGCTTACCCTGTGA' | blastn -db '/data/databases/core_nt/core_nt' -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
-#
-#
-#
 
+devtools::load_all(path = "/home/noreh/prjcts/BLASTr")
 
-seqs <- Biostrings::readDNAStringSet(filepath = "data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta")
+core_nt_path <- "/data/databases/core_nt/core_nt"
+minimal_db_fasta <- "data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta"
+taxid_map_path <- "data-raw/minimal_db/shortest_minimal_db_BLASTr.txt"
 
+# O BLAST precisa achar o taxdb (taxdb.btd/.bti) do core_nt.
+# Equivale a: export BLASTDB=/data/databases/core_nt:$BLASTDB
+Sys.setenv(
+  BLASTDB = paste(
+    c(dirname(core_nt_path), Sys.getenv("BLASTDB")),
+    collapse = ":"
+  ) |>
+    sub(pattern = ":$", replacement = "")
+)
 
-seqs_tbl <- tibble::tibble("names" = stringr::str_replace_all(names(seqs),pattern = "\\.",
-                                                              replacement = "_"),
-                           "Sequence" = as.character(seqs))
+# 1. Ler o FASTA minimo ------------------------------------------------------
 
-# tem que exportar essa variavel pra funcionar!!!!!
-# export BLASTDB=/data/databases/core_nt:/data/databases/core_nt:$BLASTDB
+ref_seqs <- Biostrings::readDNAStringSet(filepath = minimal_db_fasta)
 
+seqs_tbl <- tibble::tibble(
+  "names" = stringr::str_replace_all(names(ref_seqs), pattern = "\\.", replacement = "_"),
+  "Sequence" = as.character(ref_seqs)
+)
 
-"/data/databases/core_nt/core_nt"
+# nomes nao podem repetir (viram IDs no makeblastdb -parse_seqids)
+stopifnot(!any(duplicated(seqs_tbl$names)))
 
-devtools::load_all(path = "/home/noreh/prjcts/BLASTr/R")
+# sequencias usadas como query nos passos seguintes
+seqs <- as.character(ref_seqs) |> unname()
 
-#----
+# 2. Descobrir o taxid de cada sequencia no core_nt --------------------------
 
+blast_res_test <- parallel_blast(
+  db_path = core_nt_path,
+  query_seqs = seqs,
+  total_cores = 60,
+  perc_id = 80,
+  num_threads = 2,
+  perc_qcov_hsp = 80,
+  num_alignments = 3,
+  blast_type = "blastn"
+)
 
-
-# blast_res_test <- parallel_blast(
-#   db_path = "/data/databases/core_nt/core_nt",
-#   query_seqs = as.character(seqs),
-#   # asvs = asvs_blast_all,
-#   # asvs = asvs_blast_all_new,
-#   # out_file = paste0(blast_path,"/blast_out_res_1.csv"),
-#   # out_RDS = paste0(blast_path,"/blast_out_res_1.RDS"),
-#   total_cores = 60,
-#   perc_id = 80,
-#   num_threads = 2,
-#   perc_qcov_hsp = 80,
-#   num_alignments = 3,
-#   blast_type = "blastn"
-# )
-
-
-seqs_tbl$names
-
-seqs_tbl$names |> duplicated()
-
+# 3. Escrever o taxid map ----------------------------------------------------
 
 seqs_tbl <- seqs_tbl |>
-  dplyr::left_join(blast_res_test,
-                   by = "Sequence",
-                   relationship = "one-to-one"
-                   ) |>
+  dplyr::left_join(
+    blast_res_test,
+    by = "Sequence",
+    relationship = "one-to-one"
+  ) |>
   dplyr::mutate("IDs" = stringr::str_remove_all(names, pattern = " .*$"))
-  # dplyr::mutate("IDs" = names)
 
-paste0("lcl|",seqs_tbl$IDs," ",seqs_tbl$`1_staxid`) |>
-  cbind() |>
+paste0("lcl|", seqs_tbl$IDs, " ", seqs_tbl$`1_staxid`) |>
+  write(taxid_map_path)
 
-    write("data-raw/minimal_db/shortest_minimal_db_BLASTr.txt")
+# 4. Recriar o banco minimo com taxid ----------------------------------------
+# Equivale a:
+# makeblastdb -in shortest_minimal_db_BLASTr.fasta -parse_seqids -blastdb_version 5 -taxid_map shortest_minimal_db_BLASTr.txt -dbtype nucl -hash_index
 
+make_blast_db(
+  fasta_path = minimal_db_fasta,
+  verbose = "full",
+  db_type = "nucl",
+  taxid_map = taxid_map_path
+)
 
-# makeblastdb -in shortest_minimal_db_BLASTr.fasta -parse_seqids -blastdb_version 5 -taxid_map shortest_minimal_db_BLASTr.fasta.txt -dbtype nucl -hash_index
-
-
-
+# 5. Validar -----------------------------------------------------------------
+# Referencia em shell:
 # echo -e 'AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT' | blastn -db '/home/noreh/prjcts/BLASTr/data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta' -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
-#
-
-condathis::run()
-# ----
-
-make_blast_db(fasta_path = "data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta",
-
-              verbose = "full",
-              db_type = "nucl",
-              taxid_map = "data-raw/minimal_db/shortest_minimal_db_BLASTr.txt")
-
-
 
 blast_results <- parallel_blast(
-  query_seqs = asvs,
-  db_path = "data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta",
+  query_seqs = seqs,
+  db_path = minimal_db_fasta,
+  # db_path = core_nt_path, # para comparar com o core_nt
   num_alignments = 3,
   total_cores = 2 # Number of BLAST processes to use
 )
 
 blast_results
 
+# todas as sequencias deveriam ter staxid no banco minimo
+stopifnot(!anyNA(blast_results$`1_staxid`))
+
+# run_blast() escreve `query_seqs` com cat(): um vetor de varias sequencias
+# vira UMA query concatenada por espacos. Para buscar mais de uma, passar
+# um FASTA ja formatado em uma unica string:
+query_fasta <- paste0(">q", 3:4, "\n", seqs[3:4], collapse = "\n")
+
+run_blast(
+  query_seqs = query_fasta,
+  db_path = minimal_db_fasta,
+  # db_path = core_nt_path,
+  num_alignments = 3
+)

@@ -2,17 +2,17 @@ testthat::test_that("parallel_blast works", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  asvs_test <- readLines(fs::path_package(
+  seqs_test <- readLines(fs::path_package(
     "BLASTr",
     "extdata",
-    "asvs_test",
+    "seqs_test",
     ext = "txt"
   ))
 
   db_path <- tmp_blast_db_path
 
   blast_res <- parallel_blast(
-    query_seqs = asvs_test,
+    query_seqs = seqs_test,
     db_path = db_path,
     total_cores = 1,
     perc_id = 80,
@@ -25,7 +25,7 @@ testthat::test_that("parallel_blast works", {
   )
 
   testthat::expect_s3_class(blast_res, "tbl_df")
-  testthat::expect_equal(nrow(blast_res), length(asvs_test))
+  testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
   testthat::expect_equal(ncol(blast_res), 57L)
 
@@ -110,17 +110,17 @@ testthat::test_that("parallel_blast - 2 threads works", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  asvs_test <- readLines(fs::path_package(
+  seqs_test <- readLines(fs::path_package(
     "BLASTr",
     "extdata",
-    "asvs_test",
+    "seqs_test",
     ext = "txt"
   ))
 
   db_path <- tmp_blast_db_path
 
   blast_res <- parallel_blast(
-    query_seqs = asvs_test,
+    query_seqs = seqs_test,
     db_path = db_path,
     total_cores = 2,
     perc_id = 80,
@@ -139,14 +139,14 @@ testthat::test_that("parallel_blast - single thread", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
 
-  asvs_test <- readLines(
-    fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt")
+  seqs_test <- readLines(
+    fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt")
   )
 
   db_path <- tmp_blast_db_path
 
   blast_res <- parallel_blast(
-    query_seqs = asvs_test,
+    query_seqs = seqs_test,
     db_path = db_path,
     num_threads = 1,
     total_cores = 1,
@@ -155,7 +155,7 @@ testthat::test_that("parallel_blast - single thread", {
 
   testthat::expect_s3_class(blast_res, "data.frame")
   testthat::expect_s3_class(blast_res, "tbl_df")
-  testthat::expect_equal(nrow(blast_res), length(asvs_test))
+  testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
   testthat::expect_equal(ncol(blast_res), 57L)
 })
@@ -179,8 +179,8 @@ testthat::test_that("parallel_blast - depracated arguments", {
 
   withr::local_options(list(lifecycle_verbosity = "warning"))
 
-  asvs_test <- readLines(
-    fs::path_package("BLASTr", "extdata", "asvs_test", ext = "txt")
+  seqs_test <- readLines(
+    fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt")
   )
 
   db_path <- tmp_blast_db_path
@@ -188,17 +188,18 @@ testthat::test_that("parallel_blast - depracated arguments", {
   testthat::expect_warning(
     object = {
       blast_res <- parallel_blast(
-        asvs = asvs_test,
+        query_seqs = seqs_test,
         db_path = db_path,
         num_threads = 1,
-        verbose = "silent"
+        verbose = "silent",
+        out_file = withr::local_tempfile(fileext = ".csv")
       )
     }
   )
 
   testthat::expect_s3_class(blast_res, "data.frame")
   testthat::expect_s3_class(blast_res, "tbl_df")
-  testthat::expect_equal(nrow(blast_res), length(asvs_test))
+  testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
   testthat::expect_equal(ncol(blast_res), 57L)
 })

@@ -11,8 +11,7 @@
 
 `BLASTr` is an R package that seamlessly integrates BLAST+ searches into
 your R workflow. It is specifically designed for the analysis of
-Amplicon Sequence Variants (ASVs) from metabarcoding and metagenomic
-studies. With `BLASTr`, you can efficiently perform taxonomic
+amplicon sequences from metabarcoding and metagenomic studies. With `BLASTr`, you can efficiently perform taxonomic
 classification of your sequences by leveraging the power of parallel
 processing and automated dependency management.
 
@@ -52,8 +51,8 @@ library(BLASTr)
 # First, make sure you have the necessary dependencies installed
 install_dependencies()
 
-# A vector of ASV sequences
-asvs <- c(
+# A vector of query sequences
+seqs <- c(
   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGCGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
   "CTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAGAGTACTACAAGTGAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC",
   "GCCAAATTTGTGTTTTGTCCTTCGTTTTTAGTTAATTGTTACTGGCAAATGACTAACGACAAATGATAAATTACTAATAC",
@@ -89,7 +88,7 @@ file.exists(paste0(db_path, ".ndb"))
 ``` r
 # Run BLAST in parallel
 blast_results <- parallel_blast(
-  query_seqs = asvs,
+  query_seqs = seqs,
   db_path = db_path,
   total_cores = 2 # Number of BLAST processes to use
 )
