@@ -1,0 +1,5 @@
+# data derived from client projects and raw run outputs stay local until
+# publication of the seqs is approved
+data/
+results/
+db/
