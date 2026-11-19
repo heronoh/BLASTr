@@ -66,7 +66,7 @@ get_blast_results <- function(
       col_names = c(
         "query",
         "subject",
-        "indentity",
+        "identity",
         "length",
         "mismatches",
         "gaps",

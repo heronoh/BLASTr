@@ -1,22 +1,46 @@
 #' @title Run Parallelized BLAST
 #'
-#' @description Run parallel BLAST for a set of sequences
+#' @description
+#' Search a set of sequences against one or more BLAST databases, using the
+#' cores and RAM given. The search strategy is chosen automatically (see
+#' [blast_strategy()]): the sequences are grouped in batches, and each
+#' `blastn` process searches a whole batch, so the database is read once per
+#' batch instead of once per sequence.
+#'
+#' The progress bar shows the estimated time left (ETA), computed from the
+#' batches already finished. With `background = TRUE` the search runs in a
+#' separate process and the function returns at once; see [blast_job()].
 #'
 #' @param query_seqs Character vector with sequences.
-#' @param db_path Path to the formatted BLAST database.
-#' @param total_cores Number of parallel BLAST processes to run.
-#' @param num_threads Number of threads/cores to run each BLAST process on.
-#' @param blast_type BLAST+ executable to be used on search.
+#' @param db_path Path(s) to the formatted BLAST database(s). Several
+#'   databases (a vector, or one string separated by spaces) are searched
+#'   together, the smallest first.
+#' @param total_cores Number of CPU cores (threads) to use in total.
+#' @param ram_gb RAM available for the search, in GB. Used to decide whether
+#'   the database fits in memory. `NULL` uses the total RAM of the machine.
+#' @param num_alignments Number of hits to keep for each sequence.
+#'   Defaults to `10`.
 #' @param perc_id Lowest identity percentage cutoff.
 #' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff.
-#' @param num_alignments Number of alignments to retrieve results for each query
-#'   sequence. Defaults to `4`.
+#' @param check_n Number of best hits compared by `Check ID`
+#'   (see [check_hits()]). Defaults to `3`.
+#' @param check_tolerance Identity difference (percentage points) under which
+#'   two hits are considered tied by `Check ID`. Defaults to `0.5`.
+#' @param num_threads,batch_size,mt_mode Override the automatic strategy:
+#'   threads per `blastn` process, sequences per batch and BLAST+
+#'   multithreading mode (`0`, `1` or `2`). `NULL` (default) chooses
+#'   automatically.
+#' @param background If `TRUE`, start the search in the background and return
+#'   a job (see [blast_job()]) instead of the results.
+#' @param job_dir Directory for the job files. Defaults to a temporary
+#'   directory (removed at the end) in the foreground, and to a new directory
+#'   in the BLASTr cache in the background.
 #' @param retry_times Number of times to retry failed BLAST jobs.
 #'   Defaults to `3` attempts.
-#' @param mt_mode Multithreading mode to be used by BLAST+.
-#'  One of: `c("2", "1", "0")`. See BLAST+ manual for details.
-#' @param verbose Strategy used for showing outputting internal commands.
-#'   Defaults to "progress".
+#' @param blast_type BLAST+ executable to be used on search.
+#' @param verbose `"progress"` (default) shows the progress and ETA;
+#'   `"silent"` shows nothing. `"cmd"`, `"output"` and `"full"` also show the
+#'   chosen strategy.
 #' @param env_name The name of the conda environment used to run
 #'  command-line tools. Defaults to `"blastr-blast-env"`.
 #'
@@ -27,7 +51,16 @@
 #'
 #' @inheritParams rlang::args_dots_empty
 #'
-#' @returns A tibble with the BLAST tabular output.
+#' @returns A tibble with one row per unique sequence: `Sequence`, the hit
+#'   summary (`Check ID`, `N hits`, `N taxids`, `N hits same taxid as 1st`,
+#'   `N taxids at best identity`; see [check_hits()]) and, for each hit `k`
+#'   from 1 to `num_alignments`, the columns `k_subject header`,
+#'   `k_Similarity score` (see [similarity_score()]), `k_subject`,
+#'   `k_identity`, `k_length`, `k_mismatches`, `k_gaps`, `k_query start`,
+#'   `k_query end`, `k_subject start`, `k_subject end`, `k_e-value`,
+#'   `k_bitscore`, `k_qcovhsp` and `k_staxid`. The attribute
+#'   `BLASTr_metadata` keeps the parameters, the strategy and the exit codes
+#'   (see [exit_codes()]). With `background = TRUE`, a `blastr_job`.
 #'
 #' @examples
 #' \dontrun{
@@ -46,6 +79,11 @@
 #'   db_path = temp_db_path
 #' )
 #' blast_res
+#'
+#' # in the background
+#' job <- parallel_blast(query_seqs_string, temp_db_path, background = TRUE)
+#' blast_job_status(job)
+#' blast_res <- blast_job_result(job)
 #' }
 #'
 #' @importFrom lifecycle deprecated
@@ -56,13 +94,19 @@ parallel_blast <- function(
   db_path,
   ...,
   total_cores = 1L,
-  num_threads = 1L,
-  blast_type = "blastn",
+  ram_gb = NULL,
+  num_alignments = 10L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
-  num_alignments = 4L,
+  check_n = 3L,
+  check_tolerance = 0.5,
+  num_threads = NULL,
+  batch_size = NULL,
+  mt_mode = NULL,
+  background = FALSE,
+  job_dir = NULL,
   retry_times = 3L,
-  mt_mode = c("2", "1", "0"),
+  blast_type = "blastn",
   verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env",
   out_file = deprecated(), # nolint: object_name_linter
@@ -71,287 +115,137 @@ parallel_blast <- function(
   rlang::check_dots_empty()
 
   if (lifecycle::is_present(out_file)) {
-    lifecycle::deprecate_soft(
-      "0.1.7",
-      "parallel_blast(out_file)"
-    )
+    lifecycle::deprecate_soft("0.1.7", "parallel_blast(out_file)")
   }
   if (lifecycle::is_present(out_RDS)) {
-    lifecycle::deprecate_soft(
-      "0.1.7",
-      "parallel_blast(out_RDS)"
-    )
+    lifecycle::deprecate_soft("0.1.7", "parallel_blast(out_RDS)")
   }
 
   rlang::check_required(query_seqs)
   rlang::check_required(db_path)
-  mt_mode <- rlang::arg_match(mt_mode)
-
-  # check for verbose
   verbose <- rlang::arg_match(verbose)
-  if (
-    rlang::is_interactive() &&
-      isTRUE(verbose %in% c("progress", "full", "output"))
-  ) {
-    progress_var <- TRUE
-  } else {
-    progress_var <- FALSE
-  }
-  if (identical(verbose, "progress")) {
-    verbose <- "silent"
+  if (!is.null(mt_mode)) {
+    mt_mode <- rlang::arg_match(as.character(mt_mode), c("0", "1", "2"))
   }
 
-  # Check for query_seqs
   if (
     rlang::is_null(query_seqs) ||
       isTRUE(length(query_seqs) == 0L) ||
-      rlang::is_na(query_seqs)
+      all(is.na(query_seqs))
   ) {
     cli::cli_abort(
-      c(
-        `x` = "No query sequences were provided to {.fun parallel_blast}."
-      ),
+      c(`x` = "No query sequences were provided to {.fun parallel_blast}."),
       class = "blastr_no_query_seqs_error"
     )
   }
-
-  # Check for db_path
   if (
     rlang::is_null(db_path) ||
       isTRUE(length(db_path) == 0L) ||
-      rlang::is_na(db_path)
+      all(is.na(db_path))
   ) {
     cli::cli_abort(
-      c(
-        `x` = "{.pkg BLASTr}: No database path was provided to {.fun parallel_blast}." # nolint: line_length_linter
-      ),
+      c(`x` = "{.pkg BLASTr}: No database path was provided to {.fun parallel_blast}."), # nolint: line_length_linter
       class = "blastr_no_db_path_error"
     )
   }
-  .data <- rlang::.data
-  .env <- rlang::.env
 
-  check_cmd(blast_type, env_name = env_name, verbose = verbose)
+  check_cmd(blast_type, env_name = env_name, verbose = "silent")
 
-  if (
-    isTRUE(length(query_seqs) > 1L) &&
-      isTRUE(total_cores > 1L) &&
-      isTRUE(mirai::status()$connections < total_cores)
-  ) {
-    withr::defer(
-      expr = {
-        mirai::daemons(n = 0L)
-      }
-    )
-    mirai::daemons(n = total_cores)
-  }
+  seqs <- unique(stringr::str_replace_all(query_seqs[!is.na(query_seqs)], "\\s", ""))
 
-  seqs_to_run <- base::unique(query_seqs)
-  retry_count <- 0L
-  query_seqs_final <- character(0L)
-  par_res_final <- list()
-
-  if (
-    isTRUE(verbose %in% c("progress", "output", "full")) ||
-      !isFALSE(progress_var)
-  ) {
-    cli::cli_inform(
-      c(
-        `i` = "Running {.fun parallel_blast} for {length(seqs_to_run)} unique query sequences.", # nolint: line_length_linter
-        `*` = "Using {total_cores} total processes with {num_threads} threads each." # nolint: line_length_linter
-      )
-    )
-  }
-  while (
-    isTRUE(retry_count <= retry_times) &&
-      length(seqs_to_run) > 0L
-  ) {
-    par_res <- purrr::map(
-      .x = seqs_to_run,
-      .f = purrr::in_parallel(
-        .f = \(x) {
-          blast_cmd(
-            query_str = x,
-            db_path = db_path,
-            num_alignments = num_alignments,
-            num_threads = num_threads,
-            blast_type = blast_type,
-            perc_id = perc_id,
-            perc_qcov_hsp = perc_qcov_hsp,
-            mt_mode = mt_mode,
-            verbose = verbose,
-            env_name = env_name
-          )
-        },
-        db_path = db_path,
-        num_alignments = as.character(num_alignments),
-        num_threads = num_threads,
-        blast_type = blast_type,
-        perc_id = perc_id,
-        perc_qcov_hsp = perc_qcov_hsp,
-        mt_mode = mt_mode,
-        verbose = verbose,
-        env_name = env_name,
-        blast_cmd = blast_cmd
-      ),
-      .progress = progress_var
-    )
-
-    error_seqs <- par_res |>
-      purrr::map2(
-        .y = seqs_to_run,
-        .f = \(x, y) {
-          if (x[["status"]] != 0L) {
-            return(y) # nolint: return_linter
-          } else {
-            return(character(0L)) # nolint: return_linter
-          }
-        }
-      ) |>
-      unlist()
-
-    retry_count <- retry_count + 1L
-    par_res_final <- c(par_res_final, par_res)
-    query_seqs_final <- c(query_seqs_final, seqs_to_run)
-    seqs_to_run <- error_seqs
-    if (
-      isTRUE(length(seqs_to_run) > 0L) &&
-        isTRUE(retry_count <= retry_times) &&
-        (isTRUE(verbose %in% c("progress", "output", "full")) ||
-          !isFALSE(progress_var))
-    ) {
-      cli::cli_inform(
-        c(
-          `i` = "Retrying {.fun parallel_blast} for {length(seqs_to_run)} failed query sequences.", # nolint: line_length_linter
-          `*` = "Retry attempt {retry_count} of {retry_times}."
-        )
-      )
+  strategy <- blast_strategy(
+    n_seqs = length(seqs),
+    db_path = db_path,
+    total_cores = total_cores,
+    ram_gb = ram_gb,
+    num_threads = num_threads,
+    batch_size = batch_size,
+    mt_mode = mt_mode
+  )
+  if (!identical(verbose, "silent")) {
+    cli::cli_inform(c(`i` = "Running {.fun parallel_blast} for {length(seqs)} unique query sequences."))
+    print(strategy)
+    if (!isTRUE(strategy$fits_ram)) {
+      cli::cli_warn(c(
+        `!` = "The database ({round(strategy$db_gb)} GB) is larger than the RAM ({round(strategy$ram_gb)} GB).",
+        `i` = "Each batch will read it from the disk; the search can be slow."
+      ))
     }
   }
 
-  blast_res_df <- par_res_final |>
-    purrr::map2(
-      .y = query_seqs_final,
-      .f = \(x, y) {
-        if (identical(x[["stdout"]], "")) {
-          return(
-            tibble::tibble(
-              `res` = 1L,
-              `query` = NA_character_,
-              `subject` = NA_character_,
-              # `indentity` = NA_real_,
-              # `length` = NA_integer_,
-              `staxid` = NA_character_,
-              `subject header` = NA_character_,
-              # `ssciname` = NA_character_,
-              `Sequence` = stringr::str_replace_all(y, "\\s", ""),
-              `exit_code` = x[["status"]],
-              `stderr` = x[["stderr"]]
-            )
-          )
-        }
-        x[["stdout"]] |>
-          readr::read_delim(
-            delim = "\t",
-            col_names = c(
-              "query",
-              "subject",
-              "indentity",
-              "length",
-              "mismatches",
-              "gaps",
-              "query start",
-              "query end",
-              "subject start",
-              "subject end",
-              "e-value",
-              "bitscore",
-              "qcovhsp",
-              "staxid",
-              "subject header"
-              # ,
-              # "ssciname"
-            ),
-            show_col_types = FALSE,
-            trim_ws = TRUE,
-            comment = "#"
-          ) |>
-          dplyr::mutate(
-            `Sequence` = stringr::str_replace_all(.env$y, "\\s", ""),
-            `staxid` = as.character(.data$staxid),
-            `exit_code` = x[["status"]],
-            `stderr` = x[["stderr"]]
-          ) |>
-          tibble::rowid_to_column(var = "res")
-      }
-    ) |>
-    purrr::list_rbind() |>
-    # dplyr::mutate("staxid" = as.character(.data$staxid)) |>
-    dplyr::relocate("subject header", .after = "res") |>
-    dplyr::distinct()
-
-  if (identical(class(blast_res_df), "data.frame")) {
-    class(blast_res_df) <- c("tbl_df", "tbl", "data.frame")
-  }
-
-  blast_res <- blast_res_df |>
-    tidyr::pivot_wider(
-      names_from = "res",
-      values_from = -dplyr::all_of(c("Sequence", "exit_code", "stderr")),
-      names_glue = "{res}_{.value}",
-      values_fn = list
-    ) |>
-    tidyr::unnest(cols = dplyr::everything()) |>
-    dplyr::relocate(dplyr::starts_with("6_")) |>
-    dplyr::relocate(dplyr::starts_with("5_")) |>
-    dplyr::relocate(dplyr::starts_with("4_")) |>
-    dplyr::relocate(dplyr::starts_with("3_")) |>
-    dplyr::relocate(dplyr::starts_with("2_")) |>
-    dplyr::relocate(dplyr::starts_with("1_")) |>
-    dplyr::relocate("Sequence") |>
-    dplyr::select(
-      -dplyr::ends_with(c("_res", "_query")),
-      -dplyr::starts_with("NA_")
-    )
-
-  attributes(blast_res)$BLASTr_metadata <- list(
-    db_path = db_path,
-    num_alignments = num_alignments,
+  blast_args <- c(
+    "-db", db_arg(strategy$db_path),
+    "-outfmt", blast_outfmt(),
+    "-max_hsps", "1",
+    "-perc_identity", as.character(perc_id),
+    "-qcov_hsp_perc", as.character(perc_qcov_hsp),
+    "-num_alignments", as.character(num_alignments),
+    "-mt_mode", as.character(strategy$mt_mode)
+  )
+  meta <- list(
+    db_path = strategy$db_path,
+    num_alignments = as.integer(num_alignments),
     perc_id = perc_id,
     perc_qcov_hsp = perc_qcov_hsp,
     blast_type = blast_type,
-    exit_codes = tibble::tibble(
-      query_seq = blast_res$Sequence,
-      exit_code = blast_res$exit_code,
-      stderr = blast_res$stderr
-    )
+    check_n = as.integer(check_n),
+    check_tolerance = check_tolerance
   )
 
-  blast_res <- blast_res |>
-    dplyr::select(-dplyr::any_of(c("exit_code", "stderr")))
+  if (is.null(job_dir)) {
+    job_dir <- if (isTRUE(background)) {
+      get_blastr_cache("jobs", format(Sys.time(), "%Y%m%d-%H%M%S"))
+    } else {
+      fs::file_temp(pattern = "blastr_job_")
+    }
+    if (!isTRUE(background)) {
+      withr::defer(fs::dir_delete(job_dir))
+    }
+  }
+  job <- new_blast_job(
+    seqs = seqs,
+    strategy = strategy,
+    blast_type = blast_type,
+    blast_args = blast_args,
+    retry_times = retry_times,
+    env_name = env_name,
+    job_dir = job_dir,
+    meta = meta
+  )
 
-  if (
-    !rlang::is_na(out_file) &&
-      !rlang::is_null(out_file) &&
-      !rlang::is_missing(out_file)
-  ) {
-    readr::write_csv(
-      x = blast_res,
-      file = out_file,
-      append = FALSE
-    )
+  if (isTRUE(background)) {
+    launch_scheduler_bg(job)
+    if (!identical(verbose, "silent")) {
+      cli::cli_inform(c(
+        `v` = "BLAST started in the background: {.path {job$dir}}",
+        `i` = "Follow it with {.code blast_job_status(job)}; get the results with {.code blast_job_result(job)}."
+      ))
+    }
+    return(job)
   }
 
+  bar <- new_progress(
+    job_progress(read_batches(job)),
+    show = !identical(verbose, "silent")
+  )
+  blastr_scheduler(job$dir, on_progress = bar$update)
+  bar$done()
+  blast_res <- collect_blast_job(job)
+
   if (
-    !rlang::is_na(out_RDS) &&
-      !rlang::is_null(out_RDS) &&
-      !rlang::is_missing(out_RDS)
+    lifecycle::is_present(out_file) &&
+      !rlang::is_na(out_file) &&
+      !rlang::is_null(out_file)
   ) {
-    readr::write_rds(
-      x = blast_res,
-      file = out_RDS
-    )
+    readr::write_csv(x = blast_res, file = out_file, append = FALSE)
+  }
+  if (
+    lifecycle::is_present(out_RDS) &&
+      !rlang::is_na(out_RDS) &&
+      !rlang::is_null(out_RDS)
+  ) {
+    readr::write_rds(x = blast_res, file = out_RDS)
   }
 
-  return(blast_res)
+  blast_res
 }

@@ -27,7 +27,7 @@ testthat::test_that("parallel_blast works", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 57L)
+  testthat::expect_equal(ncol(blast_res), 1L + 5L + 4L * 15L)
 
   exit_codes_df <- exit_codes(blast_res)
   testthat::expect_s3_class(exit_codes_df, "data.frame")
@@ -150,6 +150,7 @@ testthat::test_that("parallel_blast - single thread", {
     db_path = db_path,
     num_threads = 1,
     total_cores = 1,
+    num_alignments = 4,
     verbose = "silent"
   )
 
@@ -157,7 +158,7 @@ testthat::test_that("parallel_blast - single thread", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 57L)
+  testthat::expect_equal(ncol(blast_res), 1L + 5L + 4L * 15L)
 })
 
 testthat::test_that("parallel blast - empty args", {
@@ -191,6 +192,7 @@ testthat::test_that("parallel_blast - depracated arguments", {
         query_seqs = seqs_test,
         db_path = db_path,
         num_threads = 1,
+        num_alignments = 4,
         verbose = "silent",
         out_file = withr::local_tempfile(fileext = ".csv")
       )
@@ -201,5 +203,5 @@ testthat::test_that("parallel_blast - depracated arguments", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 57L)
+  testthat::expect_equal(ncol(blast_res), 1L + 5L + 4L * 15L)
 })

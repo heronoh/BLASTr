@@ -9,13 +9,19 @@ parallel_blast(
   db_path,
   ...,
   total_cores = 1L,
-  num_threads = 1L,
-  blast_type = "blastn",
+  ram_gb = NULL,
+  num_alignments = 10L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
-  num_alignments = 4L,
+  check_n = 3L,
+  check_tolerance = 0.5,
+  num_threads = NULL,
+  batch_size = NULL,
+  mt_mode = NULL,
+  background = FALSE,
+  job_dir = NULL,
   retry_times = 3L,
-  mt_mode = c("2", "1", "0"),
+  blast_type = "blastn",
   verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env",
   out_file = deprecated(),
@@ -25,31 +31,50 @@ parallel_blast(
 \arguments{
 \item{query_seqs}{Character vector with sequences.}
 
-\item{db_path}{Path to the formatted BLAST database.}
+\item{db_path}{Path(s) to the formatted BLAST database(s). Several
+databases (a vector, or one string separated by spaces) are searched
+together, the smallest first.}
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{total_cores}{Number of parallel BLAST processes to run.}
+\item{total_cores}{Number of CPU cores (threads) to use in total.}
 
-\item{num_threads}{Number of threads/cores to run each BLAST process on.}
+\item{ram_gb}{RAM available for the search, in GB. Used to decide whether
+the database fits in memory. \code{NULL} uses the total RAM of the machine.}
 
-\item{blast_type}{BLAST+ executable to be used on search.}
+\item{num_alignments}{Number of hits to keep for each sequence.
+Defaults to \code{10}.}
 
 \item{perc_id}{Lowest identity percentage cutoff.}
 
 \item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.}
 
-\item{num_alignments}{Number of alignments to retrieve results for each query
-sequence. Defaults to \code{4}.}
+\item{check_n}{Number of best hits compared by \verb{Check ID}
+(see \code{\link[=check_hits]{check_hits()}}). Defaults to \code{3}.}
+
+\item{check_tolerance}{Identity difference (percentage points) under which
+two hits are considered tied by \verb{Check ID}. Defaults to \code{0.5}.}
+
+\item{num_threads, batch_size, mt_mode}{Override the automatic strategy:
+threads per \code{blastn} process, sequences per batch and BLAST+
+multithreading mode (\code{0}, \code{1} or \code{2}). \code{NULL} (default) chooses
+automatically.}
+
+\item{background}{If \code{TRUE}, start the search in the background and return
+a job (see \code{\link[=blast_job]{blast_job()}}) instead of the results.}
+
+\item{job_dir}{Directory for the job files. Defaults to a temporary
+directory (removed at the end) in the foreground, and to a new directory
+in the BLASTr cache in the background.}
 
 \item{retry_times}{Number of times to retry failed BLAST jobs.
 Defaults to \code{3} attempts.}
 
-\item{mt_mode}{Multithreading mode to be used by BLAST+.
-One of: \code{c("2", "1", "0")}. See BLAST+ manual for details.}
+\item{blast_type}{BLAST+ executable to be used on search.}
 
-\item{verbose}{Strategy used for showing outputting internal commands.
-Defaults to "progress".}
+\item{verbose}{\code{"progress"} (default) shows the progress and ETA;
+\code{"silent"} shows nothing. \code{"cmd"}, \code{"output"} and \code{"full"} also show the
+chosen strategy.}
 
 \item{env_name}{The name of the conda environment used to run
 command-line tools. Defaults to \code{"blastr-blast-env"}.}
@@ -61,10 +86,27 @@ directory.}
 directory.}
 }
 \value{
-A tibble with the BLAST tabular output.
+A tibble with one row per unique sequence: \code{Sequence}, the hit
+summary (\verb{Check ID}, \verb{N hits}, \verb{N taxids}, \verb{N hits same taxid as 1st},
+\verb{N taxids at best identity}; see \code{\link[=check_hits]{check_hits()}}) and, for each hit \code{k}
+from 1 to \code{num_alignments}, the columns \verb{k_subject header},
+\verb{k_Similarity score} (see \code{\link[=similarity_score]{similarity_score()}}), \code{k_subject},
+\code{k_identity}, \code{k_length}, \code{k_mismatches}, \code{k_gaps}, \verb{k_query start},
+\verb{k_query end}, \verb{k_subject start}, \verb{k_subject end}, \code{k_e-value},
+\code{k_bitscore}, \code{k_qcovhsp} and \code{k_staxid}. The attribute
+\code{BLASTr_metadata} keeps the parameters, the strategy and the exit codes
+(see \code{\link[=exit_codes]{exit_codes()}}). With \code{background = TRUE}, a \code{blastr_job}.
 }
 \description{
-Run parallel BLAST for a set of sequences
+Search a set of sequences against one or more BLAST databases, using the
+cores and RAM given. The search strategy is chosen automatically (see
+\code{\link[=blast_strategy]{blast_strategy()}}): the sequences are grouped in batches, and each
+\code{blastn} process searches a whole batch, so the database is read once per
+batch instead of once per sequence.
+
+The progress bar shows the estimated time left (ETA), computed from the
+batches already finished. With \code{background = TRUE} the search runs in a
+separate process and the function returns at once; see \code{\link[=blast_job]{blast_job()}}.
 }
 \examples{
 \dontrun{
@@ -83,6 +125,11 @@ blast_res <- parallel_blast(
   db_path = temp_db_path
 )
 blast_res
+
+# in the background
+job <- parallel_blast(query_seqs_string, temp_db_path, background = TRUE)
+blast_job_status(job)
+blast_res <- blast_job_result(job)
 }
 
 }

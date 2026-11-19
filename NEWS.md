@@ -9,6 +9,44 @@
   This also fixes `parallel_blast_old()`, which still called
   `get_blast_results()` with the removed `asv` argument.
 * Example data `inst/extdata/asvs_test.txt` was renamed to `seqs_test.txt`.
+* `parallel_blast()` was rewritten. Instead of one `blastn` per sequence,
+  the sequences are grouped in batches and each `blastn` searches a whole
+  batch, so the database is read once per batch (in the benchmark on
+  `core_nt`, 100 sequences took 79 s instead of 944 s, with the same hits):
+  * `total_cores` is now the total number of threads to use. The number of
+    processes, threads per process, batch size and `mt_mode` are chosen
+    automatically from `total_cores`, the new `ram_gb`, the size of the
+    database(s) and the number of sequences (see the new
+    `blast_strategy()`). `num_threads`, `batch_size` and `mt_mode` (now
+    `NULL` by default) only override the automatic choice.
+  * `num_alignments` now defaults to `10` (was `4`). With few alignments,
+    BLAST cuts the hit list before the `perc_qcov_hsp` filter and valid
+    hits can be lost.
+  * Hit column `k_indentity` was renamed to `k_identity` (typo).
+  * Subjects are reported by accession (`saccver`), as before.
+
+### New features
+
+* `parallel_blast()` results have a hit summary after `Sequence`:
+  `Check ID` ("best ID" / "check ID", agreement of the taxids of the best
+  `check_n` hits, comparing only hits within `check_tolerance` identity
+  points of the best one), `N hits`, `N taxids`, `N hits same taxid as 1st`
+  and `N taxids at best identity` (see `check_hits()`).
+* New `k_Similarity score` column for each hit,
+  `(10 * identity + qcovhsp) / 11` (formerly "BLASTn pseudo-score"; see
+  `similarity_score()`).
+* Progress bar with the estimated time left (ETA), computed from the
+  finished batches. In non-interactive sessions, one line per batch.
+* `parallel_blast(background = TRUE)` starts the search in a separate
+  process and returns a job at once; `blast_job_status()`,
+  `blast_job_result()`, `blast_job_cancel()` and `blast_job_resume()`
+  follow it. The job lives in a directory (`job_dir`), so it survives the
+  end of the R session and can be opened again with `blast_job()`.
+* Several databases (a vector or a space-separated string in `db_path`)
+  are searched together, smallest first; their sizes are added when
+  choosing the strategy.
+* A sequence that makes BLAST fail is retried alone, so the others in its
+  batch are not affected.
 
 ## BLASTr 0.1.7
 

@@ -25,19 +25,21 @@ Imports:
     fs,
     lifecycle,
     mirai (>= 2.4.1),
+    processx (>= 3.8.0),
+    ps (>= 1.7.0),
     purrr (>= 1.1.0),
     readr,
     rlang,
     stringr,
     tibble,
     tidyr,
+    withr,
     xml2
 Suggests:
     curl,
     knitr,
     quarto,
-    testthat (>= 3.0.0),
-    withr
+    testthat (>= 3.0.0)
 VignetteBuilder:
     quarto
 Config/Needs/website: quarto
