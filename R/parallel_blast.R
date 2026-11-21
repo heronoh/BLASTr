@@ -35,6 +35,11 @@
 #' @param job_dir Directory for the job files. Defaults to a temporary
 #'   directory (removed at the end) in the foreground, and to a new directory
 #'   in the BLASTr cache in the background.
+#' @param log_dir Directory where a `BLASTr_logs` folder keeps a log of the
+#'   searches (number and lengths of the sequences, database size, strategy,
+#'   time, CPU time and percentage of identifications). `NULL` uses the
+#'   option `BLASTr.log_dir` or the environment variable `BLASTR_LOG_DIR`;
+#'   with none set, nothing is logged. See [blast_log_path()].
 #' @param retry_times Number of times to retry failed BLAST jobs.
 #'   Defaults to `3` attempts.
 #' @param blast_type BLAST+ executable to be used on search.
@@ -105,6 +110,7 @@ parallel_blast <- function(
   mt_mode = NULL,
   background = FALSE,
   job_dir = NULL,
+  log_dir = NULL,
   retry_times = 3L,
   blast_type = "blastn",
   verbose = c("progress", "silent", "cmd", "output", "full"),
@@ -189,7 +195,11 @@ parallel_blast <- function(
     perc_qcov_hsp = perc_qcov_hsp,
     blast_type = blast_type,
     check_n = as.integer(check_n),
-    check_tolerance = check_tolerance
+    check_tolerance = check_tolerance,
+    n_input = length(query_seqs),
+    total_cores = as.integer(total_cores),
+    background = isTRUE(background),
+    log_dir = resolve_log_dir(log_dir)
   )
 
   if (is.null(job_dir)) {

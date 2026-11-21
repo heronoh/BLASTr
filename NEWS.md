@@ -47,6 +47,12 @@
   choosing the strategy.
 * A sequence that makes BLAST fail is retried alone, so the others in its
   batch are not affected.
+* Optional log of the searches: with `log_dir` (or the option
+  `BLASTr.log_dir` / the environment variable `BLASTR_LOG_DIR`), each
+  search adds a line to `BLASTr_logs/blastr_runs.tsv` with the number and
+  lengths of the sequences, database size, strategy, time, CPU time and
+  percentage of identifications. See `blast_log_path()` and
+  `read_blast_log()`.
 
 ## BLASTr 0.1.7
 

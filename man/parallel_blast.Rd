@@ -20,6 +20,7 @@ parallel_blast(
   mt_mode = NULL,
   background = FALSE,
   job_dir = NULL,
+  log_dir = NULL,
   retry_times = 3L,
   blast_type = "blastn",
   verbose = c("progress", "silent", "cmd", "output", "full"),
@@ -66,6 +67,12 @@ a job (see \code{\link[=blast_job]{blast_job()}}) instead of the results.}
 \item{job_dir}{Directory for the job files. Defaults to a temporary
 directory (removed at the end) in the foreground, and to a new directory
 in the BLASTr cache in the background.}
+
+\item{log_dir}{Directory where a \code{BLASTr_logs} folder keeps a log of the
+searches (number and lengths of the sequences, database size, strategy,
+time, CPU time and percentage of identifications). \code{NULL} uses the
+option \code{BLASTr.log_dir} or the environment variable \code{BLASTR_LOG_DIR};
+with none set, nothing is logged. See \code{\link[=blast_log_path]{blast_log_path()}}.}
 
 \item{retry_times}{Number of times to retry failed BLAST jobs.
 Defaults to \code{3} attempts.}

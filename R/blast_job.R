@@ -131,10 +131,24 @@ blastr_scheduler <- function(job_dir, on_progress = NULL) {
   write_b(b)
   writeLines(as.character(Sys.getpid()), file.path(job_dir, "scheduler.pid"))
   running <- list()
+  # CPU time of the finished child processes (blastn), for the run log
+  pt0 <- proc.time()
+  t0 <- as.numeric(Sys.time())
   on.exit(
     {
       for (p in running) try(p$kill(), silent = TRUE)
       unlink(file.path(job_dir, "scheduler.pid"))
+      pt <- proc.time() - pt0
+      ufile <- file.path(job_dir, "usage.tsv")
+      utils::write.table(
+        data.frame(
+          start = t0, end = as.numeric(Sys.time()),
+          child_user_s = unname(pt[4L]), child_sys_s = unname(pt[5L])
+        ),
+        ufile,
+        sep = "\t", quote = FALSE, row.names = FALSE,
+        col.names = !file.exists(ufile), append = file.exists(ufile)
+      )
     },
     add = TRUE
   )
@@ -539,12 +553,21 @@ collect_blast_job <- function(job) {
     tolerance = st$meta$check_tolerance
   )
   pr <- job_progress(b)
+  log_path <- tryCatch(
+    write_blast_log(job, res, st, b),
+    error = function(e) {
+      cli::cli_warn(c(`!` = "Could not write the BLASTr log: {conditionMessage(e)}"))
+      NULL
+    }
+  )
   attr(res, "BLASTr_metadata") <- c(
     st$meta,
     list(
       strategy = st$strategy,
       elapsed_s = pr$elapsed,
       job_dir = as.character(job$dir),
+      cpu_s = job_cpu_s(job$dir),
+      log_file = if (is.null(log_path)) NULL else as.character(log_path),
       exit_codes = tibble::tibble(
         query_seq = seqs$sequence,
         exit_code = ifelse(bb$status == "cancelled", NA_integer_, bb$exit_code),
