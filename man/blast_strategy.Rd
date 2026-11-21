@@ -13,7 +13,8 @@ blast_strategy(
   batch_size = NULL,
   mt_mode = NULL,
   small_db_gb = 1,
-  max_batch_size = 500L
+  max_batch_size = 1000L,
+  max_threads = 32L
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ chooses automatically.}
 \item{small_db_gb}{Size under which a database is treated as small.}
 
 \item{max_batch_size}{Largest number of sequences in a single batch.}
+
+\item{max_threads}{Largest number of threads for one \code{blastn} process on
+a large database; more threads than this did not make BLAST faster.}
 }
 \value{
 A list of class \code{blastr_strategy} with \code{processes}, \code{threads},
@@ -54,13 +58,24 @@ cheap. One single-threaded process per core, each with an equal share
 of the sequences; results are identical to one search per sequence.
 \item \strong{Large databases that fit in RAM}: few processes with many threads
 each, splitting the database between the threads (\code{mt_mode = 2}).
-Threads per process are limited to the number of database volumes.
-\item \strong{Large databases that do not fit in RAM}: one process, so the disk is
-read once per batch instead of once per process.
+Threads per process are limited to the number of database volumes and
+to \code{max_threads} (32); the remaining cores run more processes, each
+with its own share of the sequences. On \code{core_nt} (92 volumes), with
+32 cores one \code{blastn} searched 500 sequences in 170 s, against 164 s
+for 2 processes x 16 threads and 243 s for 8 x 4 (2000 sequences: 239 s,
+311 s, 367 s). With 64 cores, one \code{blastn} with 64 threads was slower
+than with 32 (152 s vs 120 s for 500 sequences, 265 s vs 206 s for
+2000), while 2 processes x 32 threads took 87 s and 182 s.
+\item \strong{Large databases that do not fit in RAM}: one process and one batch,
+so the database is read from disk only once (on \code{core_nt}, each extra
+read cost about 6 minutes). The ETA is then unknown until the end.
 }
 
-Batches are kept at or under \code{max_batch_size} sequences and there is at
-least one batch per process.
+Otherwise, batches are kept at or under \code{max_batch_size} sequences and
+there is at least one batch per process. Each batch reads the whole
+database again (about 70 s on \code{core_nt} in RAM, with 32 threads; 2000
+sequences in 80 batches took 1190 s instead of 345 s in 4), so batches
+are only as many as needed for the ETA to show up during long searches.
 }
 \examples{
 \dontrun{

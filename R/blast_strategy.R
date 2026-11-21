@@ -15,12 +15,23 @@
 #'   of the sequences; results are identical to one search per sequence.
 #' * **Large databases that fit in RAM**: few processes with many threads
 #'   each, splitting the database between the threads (`mt_mode = 2`).
-#'   Threads per process are limited to the number of database volumes.
-#' * **Large databases that do not fit in RAM**: one process, so the disk is
-#'   read once per batch instead of once per process.
+#'   Threads per process are limited to the number of database volumes and
+#'   to `max_threads` (32); the remaining cores run more processes, each
+#'   with its own share of the sequences. On `core_nt` (92 volumes), with
+#'   32 cores one `blastn` searched 500 sequences in 170 s, against 164 s
+#'   for 2 processes x 16 threads and 243 s for 8 x 4 (2000 sequences: 239 s,
+#'   311 s, 367 s). With 64 cores, one `blastn` with 64 threads was slower
+#'   than with 32 (152 s vs 120 s for 500 sequences, 265 s vs 206 s for
+#'   2000), while 2 processes x 32 threads took 87 s and 182 s.
+#' * **Large databases that do not fit in RAM**: one process and one batch,
+#'   so the database is read from disk only once (on `core_nt`, each extra
+#'   read cost about 6 minutes). The ETA is then unknown until the end.
 #'
-#' Batches are kept at or under `max_batch_size` sequences and there is at
-#' least one batch per process.
+#' Otherwise, batches are kept at or under `max_batch_size` sequences and
+#' there is at least one batch per process. Each batch reads the whole
+#' database again (about 70 s on `core_nt` in RAM, with 32 threads; 2000
+#' sequences in 80 batches took 1190 s instead of 345 s in 4), so batches
+#' are only as many as needed for the ETA to show up during long searches.
 #'
 #' @param n_seqs Number of unique query sequences.
 #' @param db_path Path(s) to the BLAST database(s). Several databases are
@@ -31,6 +42,8 @@
 #' @param num_threads,batch_size,mt_mode Optional fixed values; `NULL`
 #'   chooses automatically.
 #' @param small_db_gb Size under which a database is treated as small.
+#' @param max_threads Largest number of threads for one `blastn` process on
+#'   a large database; more threads than this did not make BLAST faster.
 #' @param max_batch_size Largest number of sequences in a single batch.
 #'
 #' @returns A list of class `blastr_strategy` with `processes`, `threads`,
@@ -56,7 +69,8 @@ blast_strategy <- function(
   batch_size = NULL,
   mt_mode = NULL,
   small_db_gb = 1,
-  max_batch_size = 500L
+  max_batch_size = 1000L,
+  max_threads = 32L
 ) {
   total_cores <- max(1L, as.integer(total_cores))
   n_seqs <- max(1L, as.integer(n_seqs))
@@ -72,17 +86,17 @@ blast_strategy <- function(
     mode <- 0L
     reason <- "small database: one single-threaded process per core"
   } else if (isTRUE(fits_ram)) {
-    threads <- max(1L, min(total_cores, db$volumes))
+    threads <- max(1L, min(total_cores, db$volumes, max_threads))
     processes <- max(1L, total_cores %/% threads)
     mode <- 2L
     reason <- "large database in RAM: threads split the database (mt_mode 2)"
   } else {
-    threads <- total_cores
+    threads <- max(1L, min(total_cores, max_threads))
     processes <- 1L
     mode <- 2L
     reason <- paste(
-      "database larger than the RAM: one process,",
-      "so each batch reads the disk only once"
+      "database larger than the RAM: one process and one batch,",
+      "so the disk is read only once (no ETA until the end)"
     )
   }
 
@@ -95,6 +109,9 @@ blast_strategy <- function(
   }
   processes <- min(processes, n_seqs)
 
+  if (is.null(batch_size) && !isTRUE(fits_ram) && db$gb >= small_db_gb) {
+    batch_size <- n_seqs
+  }
   if (is.null(batch_size)) {
     n_batches <- max(processes, ceiling(n_seqs / max_batch_size))
     n_batches <- processes * ceiling(n_batches / processes)

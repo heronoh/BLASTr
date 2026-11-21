@@ -36,7 +36,7 @@ With `BLASTr`, you can efficiently perform taxonomic classification of your sequ
 
 ## Features
 
-- **Parallel BLAST Searches:** Run multiple BLAST searches concurrently to significantly speed up your analysis.
+- **Parallel BLAST Searches:** Sequences are searched in batches, with the number of processes and threads chosen from your cores, RAM and database size. Searches can run in the background, with progress and ETA.
 - **Automated Dependency Management:** `BLASTr` automatically installs and manages BLAST+ and Entrez Direct dependencies using `condathis`, ensuring a hassle-free setup.
 - **Taxonomic Classification:** Retrieve detailed taxonomic information for your sequences using their NCBI Taxonomy IDs.
 - **Flexible and Easy to Use:** The package provides a set of intuitive functions that simplify the process of running thousands of BLAST searches and handling the results.
@@ -127,20 +127,17 @@ seqs <- c(
 
 # Path to your local FASTA database
 fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")
-# Path to your local Tax ID map file
-taxid_map <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "txt")
 # Path to database
 db_path <- fs::path_temp("minimal_db_blast")
 
-
-# BLAST+ requires that the taxid_map file is composede of two columns, separated
-#  by a space. The 1st is a unique ID (no . allowed), the first word of the header.
-#  It must be preceeded by "lcl|".
-#  THe 2nd is the taxID.
+# To add taxids, pass `taxid_map`: a .txt file with the same name and
+#  directory as the FASTA, with two columns separated by a space. The 1st is
+#  the unique ID (first word of the header, no "."), preceded by "lcl|";
+#  the 2nd is the taxID.
 
 make_blast_db(
   fasta_path = fasta_path,
-  taxid_map = taxid_map,
+  db_path = db_path,
   db_type = "nucl"
 )
 
@@ -148,13 +145,9 @@ head(readLines(fasta_path))
 
 file.exists(paste0(db_path, ".ndb"))
 
-# pra o ssciname funcionar tem que exportar a variavel 
-# 
-# tem que exportar essa variavel pra funcionar!!!!!
-# export BLASTDB=/data/databases/core_nt:/data/databases/core_nt:$BLASTDB
-
-
-
+# For `ssciname` (subject scientific name) to work, BLAST must find the
+#  taxdb files: export BLASTDB pointing to their directory, e.g.
+#  export BLASTDB=/data/databases/core_nt:$BLASTDB
 ```
 
 ```{r}
@@ -164,11 +157,67 @@ file.exists(paste0(db_path, ".ndb"))
 blast_results <- parallel_blast(
   query_seqs = seqs,
   db_path = db_path,
-  total_cores = 2 # Number of BLAST processes to use
+  total_cores = 2 # Total number of threads to use
 )
 
 blast_results
 ```
+
+### How the search is split
+
+`parallel_blast()` groups the sequences in batches and runs one `blastn` per batch, so the database is read once per batch instead of once per sequence.
+How many `blastn` run at once, with how many threads each, and how many sequences go in each batch are chosen automatically from `total_cores`, `ram_gb` (the RAM available for the search; the total RAM of the machine by default), the size of the database(s) and the number of sequences.
+`blast_strategy()` shows the plan without running BLAST:
+
+```{r}
+#| label: blastr-strategy
+#| eval: false
+blast_strategy(
+  n_seqs = 2000,
+  db_path = "/data/databases/core_nt/core_nt",
+  total_cores = 32,
+  ram_gb = 256
+)
+```
+
+`num_threads`, `batch_size` and `mt_mode` override the automatic choice.
+Several databases can be given as a vector in `db_path`; they are searched together, smallest first.
+
+While BLAST runs, a progress bar shows the percentage done and the estimated time left (ETA).
+
+### Running in the background
+
+With `background = TRUE`, `parallel_blast()` starts the search in a separate process and returns a job at once, so the R session (or a pipeline run in blocks) is free in the meantime.
+The job lives in a directory and survives the end of the R session.
+
+```{r}
+#| label: blastr-background
+#| eval: false
+job <- parallel_blast(
+  query_seqs = seqs,
+  db_path = db_path,
+  total_cores = 2,
+  background = TRUE
+)
+
+blast_job_status(job) # progress and ETA
+blast_results <- blast_job_result(job) # waits for the end if needed
+
+# From another R session:
+# job <- blast_job("<job directory>")
+# blast_job_cancel(job); blast_job_resume(job)
+```
+
+### Results
+
+Each row is a query sequence.
+After `Sequence`, a summary of its hits:
+
+- `Check ID`: `"best ID"` when the best hits (the first `check_n = 3`) agree on the taxid, `"check ID"` when they do not.
+  Only hits within `check_tolerance = 0.5` identity points of the best one are compared, since a clearly less identical hit is most likely another taxon. Hits with unknown taxid (`0`) never confirm an identification.
+- `N hits`, `N taxids`, `N hits same taxid as 1st` and `N taxids at best identity`.
+
+Then the hits (10 by default, `num_alignments`), each with `k_subject header`, `k_Similarity score` (`(10 * identity + qcovhsp) / 11`), `k_subject`, `k_identity`, `k_length`, `k_mismatches`, `k_gaps`, `k_query start`, `k_query end`, `k_subject start`, `k_subject end`, `k_e-value`, `k_bitscore`, `k_qcovhsp` and `k_staxid`, where `k` is the hit rank.
 
 BLASTr keeps track of any errors that may occur during the BLAST searches. You can retrieve the exit codes and STDERR messages using the `exit_codes()` function.
 
@@ -200,7 +249,10 @@ print(taxonomic_info)
 
 - `install_dependencies()`: Installs BLAST+ and Entrez Direct if they are not found on your system.
 - `make_blast_db()`: Creates a BLAST database from a FASTA file.
-- `parallel_blast()`: Runs BLAST searches for multiple sequences in parallel.
+- `parallel_blast()`: Runs BLAST searches for multiple sequences in parallel, in the foreground or in the background.
+- `blast_strategy()`: Shows how `parallel_blast()` will split a search.
+- `blast_job_status()`, `blast_job_result()`, `blast_job_cancel()`, `blast_job_resume()`: Follow a search running in the background.
+- `check_hits()`, `similarity_score()`: Hit agreement (`Check ID`) and Similarity score.
 - `exit_codes()`: Retrieve the exit codes and STDERR messages from BLAST searches.
 - `parallel_get_tax()`: Retrieves taxonomic information for multiple NCBI Taxonomy IDs in parallel.
 - `run_blast()`: A lower-level function to run a BLAST search and return the raw output.

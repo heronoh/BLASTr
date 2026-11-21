@@ -56,3 +56,14 @@ testthat::test_that("check_hits handles several queries and no hits", {
   testthat::expect_equal(res$`Check ID`, c("check ID", "best ID"))
   testthat::expect_equal(nrow(check_hits(h[0, ])), 0L)
 })
+
+testthat::test_that("Check ID: unknown taxids (0) do not confirm agreement", {
+  # databases built without a taxid map report staxid 0
+  res <- check_hits(hits_of(c(100, 100, 99), c("0", "0", "0")))
+  testthat::expect_equal(res$`Check ID`, "check ID")
+  testthat::expect_equal(res$`N taxids`, 0L)
+  testthat::expect_true(is.na(res$`N hits same taxid as 1st`))
+  res <- check_hits(hits_of(c(100, 95), c("1", "0")))
+  testthat::expect_equal(res$`Check ID`, "best ID")
+  testthat::expect_equal(res$`N taxids`, 1L)
+})

@@ -68,12 +68,13 @@ similarity_score <- function(identity, qcovhsp) {
 #' not hide or create a disagreement.
 #'
 #' * `"best ID"`: all the compared hits have the taxid of the first hit.
-#' * `"check ID"`: some compared hit has another taxid, or the first hit is
-#'   not among the most identical ones.
+#' * `"check ID"`: some compared hit has another taxid or an unknown one
+#'   (`0` or empty, as in databases built without a taxid map), or the first
+#'   hit is not among the most identical ones.
 #' * `NA`: no hits.
 #'
 #' The other columns use all the hits of the sequence: `N hits`, `N taxids`
-#' (distinct taxids), `N hits same taxid as 1st` and `N taxids at best
+#' (distinct known taxids), `N hits same taxid as 1st` and `N taxids at best
 #' identity` (distinct taxids among the hits within `tolerance` of the best
 #' identity of all hits).
 #'
@@ -99,16 +100,18 @@ check_hits <- function(hits, check_n = 3L, tolerance = 0.5) {
   out <- lapply(by_query, function(h) {
     id <- as.numeric(h$identity)
     tx <- as.character(h$staxid)
+    known <- !is.na(tx) & !tx %in% c("", "0", "N/A")
     top <- seq_len(min(check_n, nrow(h)))
     tied_top <- top[id[top] >= max(id[top]) - tolerance - eps]
-    check <- if (1L %in% tied_top && all(tx[tied_top] == tx[1L])) "best ID" else "check ID"
+    check <- if (1L %in% tied_top && all(known[tied_top]) &&
+      all(tx[tied_top] == tx[1L])) "best ID" else "check ID"
     tibble::tibble(
       query = h$query[1L],
       `Check ID` = check,
       `N hits` = nrow(h),
-      `N taxids` = length(unique(tx)),
-      `N hits same taxid as 1st` = sum(tx == tx[1L]),
-      `N taxids at best identity` = length(unique(tx[id >= max(id) - tolerance - eps]))
+      `N taxids` = length(unique(tx[known])),
+      `N hits same taxid as 1st` = if (known[1L]) sum(tx == tx[1L] & known) else NA_integer_,
+      `N taxids at best identity` = length(unique(tx[known & id >= max(id) - tolerance - eps]))
     )
   })
   if (length(out) == 0L) {

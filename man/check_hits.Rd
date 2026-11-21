@@ -30,13 +30,14 @@ used here, so a good reference that covers only part of the query does
 not hide or create a disagreement.
 \itemize{
 \item \code{"best ID"}: all the compared hits have the taxid of the first hit.
-\item \code{"check ID"}: some compared hit has another taxid, or the first hit is
-not among the most identical ones.
+\item \code{"check ID"}: some compared hit has another taxid or an unknown one
+(\code{0} or empty, as in databases built without a taxid map), or the first
+hit is not among the most identical ones.
 \item \code{NA}: no hits.
 }
 
 The other columns use all the hits of the sequence: \verb{N hits}, \verb{N taxids}
-(distinct taxids), \verb{N hits same taxid as 1st} and \verb{N taxids at best identity} (distinct taxids among the hits within \code{tolerance} of the best
+(distinct known taxids), \verb{N hits same taxid as 1st} and \verb{N taxids at best identity} (distinct taxids among the hits within \code{tolerance} of the best
 identity of all hits).
 }
 \examples{
