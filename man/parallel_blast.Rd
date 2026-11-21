@@ -11,6 +11,7 @@ parallel_blast(
   total_cores = 1L,
   ram_gb = NULL,
   num_alignments = 10L,
+  search_alignments = 50L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   check_n = 3L,
@@ -18,6 +19,7 @@ parallel_blast(
   num_threads = NULL,
   batch_size = NULL,
   mt_mode = NULL,
+  task = NULL,
   background = FALSE,
   job_dir = NULL,
   log_dir = NULL,
@@ -46,6 +48,13 @@ the database fits in memory. \code{NULL} uses the total RAM of the machine.}
 \item{num_alignments}{Number of hits to keep for each sequence.
 Defaults to \code{10}.}
 
+\item{search_alignments}{Number of subjects BLAST keeps during the
+search (\code{-max_target_seqs}). BLAST cuts its list of subjects before the
+\code{perc_qcov_hsp} filter, so asking only for \code{num_alignments} can lose
+valid hits. BLASTr searches \code{max(num_alignments, search_alignments)}
+subjects and keeps the \code{num_alignments} best ones that pass the
+filters. In the benchmark, 50 instead of 10 added about 5\% to the time.}
+
 \item{perc_id}{Lowest identity percentage cutoff.}
 
 \item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.}
@@ -60,6 +69,9 @@ two hits are considered tied by \verb{Check ID}. Defaults to \code{0.5}.}
 threads per \code{blastn} process, sequences per batch and BLAST+
 multithreading mode (\code{0}, \code{1} or \code{2}). \code{NULL} (default) chooses
 automatically.}
+
+\item{task}{BLAST task (\code{-task}), e.g. \code{"megablast"} (the \code{blastn}
+default), \code{"dc-megablast"} or \code{"blastn"}. \code{NULL} uses the BLAST default.}
 
 \item{background}{If \code{TRUE}, start the search in the background and return
 a job (see \code{\link[=blast_job]{blast_job()}}) instead of the results.}

@@ -112,13 +112,9 @@ blast_strategy <- function(
   if (is.null(batch_size) && !isTRUE(fits_ram) && db$gb >= small_db_gb) {
     batch_size <- n_seqs
   }
-  if (is.null(batch_size)) {
-    n_batches <- max(processes, ceiling(n_seqs / max_batch_size))
-    n_batches <- processes * ceiling(n_batches / processes)
-    batch_size <- ceiling(n_seqs / n_batches)
-  }
-  batch_size <- max(1L, as.integer(batch_size))
-  n_batches <- as.integer(ceiling(n_seqs / batch_size))
+  plan <- batch_plan(n_seqs, processes, batch_size, max_batch_size)
+  batch_size <- plan$batch_size
+  n_batches <- plan$n_batches
   processes <- min(processes, n_batches)
 
   structure(
@@ -142,11 +138,18 @@ blast_strategy <- function(
 
 #' @export
 print.blastr_strategy <- function(x, ...) {
-  cli::cli_text(
-    "{x$n_seqs} sequences in {x$n_batches} batch{?es} of up to ",
-    "{x$batch_size}; {x$processes} process{?es} x {x$threads} thread{?s} ",
-    "(mt_mode {x$mt_mode})."
-  )
+  if (is.na(x$threads)) {
+    cli::cli_text(
+      "{x$n_seqs} sequences in {x$n_batches} batch{?es} of up to ",
+      "{x$batch_size}; {x$processes} single-threaded process{?es}."
+    )
+  } else {
+    cli::cli_text(
+      "{x$n_seqs} sequences in {x$n_batches} batch{?es} of up to ",
+      "{x$batch_size}; {x$processes} process{?es} x {x$threads} thread{?s} ",
+      "(mt_mode {x$mt_mode})."
+    )
+  }
   cli::cli_text(
     "Database: {format(round(x$db_gb, 2), nsmall = 2)} GB in ",
     "{x$db_volumes} volume{?s}; RAM: ",
@@ -211,4 +214,16 @@ db_arg <- function(db_paths) {
 system_ram_gb <- function() {
   ram <- tryCatch(ps::ps_system_memory()$total, error = function(e) NA_real_)
   ram / 1024^3
+}
+
+# Batches: at least one per process, a multiple of the processes, none
+# larger than max_batch_size; or the batch size given.
+batch_plan <- function(n_seqs, processes, batch_size = NULL, max_batch_size = 1000L) {
+  if (is.null(batch_size)) {
+    n_batches <- max(processes, ceiling(n_seqs / max_batch_size))
+    n_batches <- processes * ceiling(n_batches / processes)
+    batch_size <- ceiling(n_seqs / n_batches)
+  }
+  batch_size <- max(1L, as.integer(batch_size))
+  list(batch_size = batch_size, n_batches = as.integer(ceiling(n_seqs / batch_size)))
 }

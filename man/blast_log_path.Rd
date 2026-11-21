@@ -30,15 +30,16 @@ collected with \code{\link[=blast_job_result]{blast_job_result()}}.
 Each line has:
 \itemize{
 \item the run: \code{run_id}, \code{start}, \code{end}, \code{host}, \code{user}, \code{mode}
-(foreground/background), \code{blastr_version}, \code{blast_version},
-\code{job_dir};
+(foreground/background), \code{function} (\code{\link[=parallel_blast]{parallel_blast()}} or
+\code{\link[=parallel_blast_hsps]{parallel_blast_hsps()}}), \code{blastr_version}, \code{blast_version}, \code{job_dir};
 \item the sequences: \code{n_input} (as given), \code{n_seqs} (unique ones searched),
 \code{n_invalid} and their length distribution (\code{len_min}, \code{len_q25},
 \code{len_median}, \code{len_mean}, \code{len_q75}, \code{len_max});
 \item the database(s): \code{db_path}, \code{n_dbs}, \code{db_gb} (sum), \code{db_volumes},
 \code{ram_gb}, \code{fits_ram};
 \item the strategy and settings: \code{total_cores}, \code{processes}, \code{threads},
-\code{mt_mode}, \code{batch_size}, \code{n_batches}, \code{num_alignments}, \code{perc_id},
+\code{mt_mode}, \code{batch_size}, \code{n_batches}, \code{task}, \code{num_alignments},
+\code{search_alignments}, \code{perc_id},
 \code{perc_qcov_hsp}, \code{check_n}, \code{check_tolerance};
 \item the cost: \code{wall_s}, \code{cpu_s} (CPU time of the BLAST processes),
 \code{cpu_h}, \code{cpu_efficiency} (\code{cpu_s} over \code{wall_s} times the threads in
@@ -46,8 +47,13 @@ use), \code{n_batches_failed}, \code{n_seqs_failed};
 \item the identifications: \code{n_with_hits}, \code{pct_with_hits}, \code{pct_best_id},
 \code{pct_check_id} (both over all sequences), \code{id1_median} (median identity
 of the first hit) and \code{pct_id1_ge_99}, \code{pct_id1_ge_97} (sequences whose
-first hit has identity of at least 99\% / 97\%).
+first hit has identity of at least 99\% / 97\%). For
+\code{\link[=parallel_blast_hsps]{parallel_blast_hsps()}}, \code{pct_best_id} and \code{pct_check_id} are \code{NA} and
+the first hit is the first HSP of the best subject.
 }
+
+When a newer BLASTr adds columns, the file is rewritten with all of them
+(missing values as \code{NA}).
 }
 \examples{
 \dontrun{

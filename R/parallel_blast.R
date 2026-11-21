@@ -20,6 +20,12 @@
 #'   the database fits in memory. `NULL` uses the total RAM of the machine.
 #' @param num_alignments Number of hits to keep for each sequence.
 #'   Defaults to `10`.
+#' @param search_alignments Number of subjects BLAST keeps during the
+#'   search (`-max_target_seqs`). BLAST cuts its list of subjects before the
+#'   `perc_qcov_hsp` filter, so asking only for `num_alignments` can lose
+#'   valid hits. BLASTr searches `max(num_alignments, search_alignments)`
+#'   subjects and keeps the `num_alignments` best ones that pass the
+#'   filters. In the benchmark, 50 instead of 10 added about 5% to the time.
 #' @param perc_id Lowest identity percentage cutoff.
 #' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff.
 #' @param check_n Number of best hits compared by `Check ID`
@@ -30,6 +36,8 @@
 #'   threads per `blastn` process, sequences per batch and BLAST+
 #'   multithreading mode (`0`, `1` or `2`). `NULL` (default) chooses
 #'   automatically.
+#' @param task BLAST task (`-task`), e.g. `"megablast"` (the `blastn`
+#'   default), `"dc-megablast"` or `"blastn"`. `NULL` uses the BLAST default.
 #' @param background If `TRUE`, start the search in the background and return
 #'   a job (see [blast_job()]) instead of the results.
 #' @param job_dir Directory for the job files. Defaults to a temporary
@@ -101,6 +109,7 @@ parallel_blast <- function(
   total_cores = 1L,
   ram_gb = NULL,
   num_alignments = 10L,
+  search_alignments = 50L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   check_n = 3L,
@@ -108,6 +117,7 @@ parallel_blast <- function(
   num_threads = NULL,
   batch_size = NULL,
   mt_mode = NULL,
+  task = NULL,
   background = FALSE,
   job_dir = NULL,
   log_dir = NULL,
@@ -185,12 +195,17 @@ parallel_blast <- function(
     "-max_hsps", "1",
     "-perc_identity", as.character(perc_id),
     "-qcov_hsp_perc", as.character(perc_qcov_hsp),
-    "-num_alignments", as.character(num_alignments),
-    "-mt_mode", as.character(strategy$mt_mode)
+    "-num_alignments", as.character(max(num_alignments, search_alignments)),
+    "-mt_mode", as.character(strategy$mt_mode),
+    if (!is.null(task)) c("-task", task)
   )
+
   meta <- list(
     db_path = strategy$db_path,
+    output = "wide",
     num_alignments = as.integer(num_alignments),
+    search_alignments = as.integer(max(num_alignments, search_alignments)),
+    task = if (is.null(task)) NA_character_ else task,
     perc_id = perc_id,
     perc_qcov_hsp = perc_qcov_hsp,
     blast_type = blast_type,
@@ -202,6 +217,54 @@ parallel_blast <- function(
     log_dir = resolve_log_dir(log_dir)
   )
 
+  blast_res <- run_blast_job(
+    seqs = seqs,
+    strategy = strategy,
+    blast_type = blast_type,
+    blast_args = blast_args,
+    retry_times = retry_times,
+    env_name = env_name,
+    job_dir = job_dir,
+    meta = meta,
+    background = background,
+    verbose = verbose
+  )
+  if (inherits(blast_res, "blastr_job")) {
+    return(blast_res)
+  }
+
+  if (
+    lifecycle::is_present(out_file) &&
+      !rlang::is_na(out_file) &&
+      !rlang::is_null(out_file)
+  ) {
+    readr::write_csv(x = blast_res, file = out_file, append = FALSE)
+  }
+  if (
+    lifecycle::is_present(out_RDS) &&
+      !rlang::is_na(out_RDS) &&
+      !rlang::is_null(out_RDS)
+  ) {
+    readr::write_rds(x = blast_res, file = out_RDS)
+  }
+
+  blast_res
+}
+
+# Create the job and run it: in the background (returns the job) or in the
+# R session with a progress bar (returns the collected results).
+run_blast_job <- function(
+  seqs,
+  strategy,
+  blast_type,
+  blast_args,
+  retry_times,
+  env_name,
+  job_dir,
+  meta,
+  background,
+  verbose
+) {
   if (is.null(job_dir)) {
     job_dir <- if (isTRUE(background)) {
       get_blastr_cache("jobs", format(Sys.time(), "%Y%m%d-%H%M%S"))
@@ -240,22 +303,5 @@ parallel_blast <- function(
   )
   blastr_scheduler(job$dir, on_progress = bar$update)
   bar$done()
-  blast_res <- collect_blast_job(job)
-
-  if (
-    lifecycle::is_present(out_file) &&
-      !rlang::is_na(out_file) &&
-      !rlang::is_null(out_file)
-  ) {
-    readr::write_csv(x = blast_res, file = out_file, append = FALSE)
-  }
-  if (
-    lifecycle::is_present(out_RDS) &&
-      !rlang::is_na(out_RDS) &&
-      !rlang::is_null(out_RDS)
-  ) {
-    readr::write_rds(x = blast_res, file = out_RDS)
-  }
-
-  blast_res
+  collect_blast_job(job)
 }

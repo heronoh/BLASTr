@@ -170,7 +170,8 @@ blastr_scheduler <- function(job_dir, on_progress = NULL) {
           job$blast_args,
           "-query", qfile(id),
           "-out", ofile(id),
-          "-num_threads", as.character(job$threads)
+          # no -num_threads with -subject (BLAST ignores it and warns)
+          if (!is.na(job$threads)) c("-num_threads", as.character(job$threads))
         ),
         env = c("current", job$env),
         stdout = NULL,
@@ -519,7 +520,6 @@ collect_blast_job <- function(job) {
   b <- read_batches(job)
   final <- b[b$status != "split", , drop = FALSE]
   out_files <- fs::path(job$dir, "out", final$batch[final$status == "done"], ext = "tsv")
-  hits <- read_blast_hits(out_files)
 
   # exit code and BLAST messages of each sequence
   q_batch <- lapply(final$batch, function(id) {
@@ -544,17 +544,21 @@ collect_blast_job <- function(job) {
     paste(l, collapse = "\n")
   }, character(1L))
 
-  res <- widen_blast_hits(
-    hits,
-    seq_ids = seqs$query,
-    seqs = seqs$sequence,
-    num_alignments = st$meta$num_alignments,
-    check_n = st$meta$check_n,
-    tolerance = st$meta$check_tolerance
-  )
+  res <- if (identical(st$meta$output, "hsps")) {
+    read_blast_hsps(out_files, seqs, st$meta$fields)
+  } else {
+    widen_blast_hits(
+      read_blast_hits(out_files),
+      seq_ids = seqs$query,
+      seqs = seqs$sequence,
+      num_alignments = st$meta$num_alignments,
+      check_n = st$meta$check_n,
+      tolerance = st$meta$check_tolerance
+    )
+  }
   pr <- job_progress(b)
   log_path <- tryCatch(
-    write_blast_log(job, res, st, b),
+    write_blast_log(job, res, st, b, seqs),
     error = function(e) {
       cli::cli_warn(c(`!` = "Could not write the BLASTr log: {conditionMessage(e)}"))
       NULL

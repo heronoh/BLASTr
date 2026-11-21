@@ -15,15 +15,16 @@
 #'
 #' Each line has:
 #' * the run: `run_id`, `start`, `end`, `host`, `user`, `mode`
-#'   (foreground/background), `blastr_version`, `blast_version`,
-#'   `job_dir`;
+#'   (foreground/background), `function` ([parallel_blast()] or
+#'   [parallel_blast_hsps()]), `blastr_version`, `blast_version`, `job_dir`;
 #' * the sequences: `n_input` (as given), `n_seqs` (unique ones searched),
 #'   `n_invalid` and their length distribution (`len_min`, `len_q25`,
 #'   `len_median`, `len_mean`, `len_q75`, `len_max`);
 #' * the database(s): `db_path`, `n_dbs`, `db_gb` (sum), `db_volumes`,
 #'   `ram_gb`, `fits_ram`;
 #' * the strategy and settings: `total_cores`, `processes`, `threads`,
-#'   `mt_mode`, `batch_size`, `n_batches`, `num_alignments`, `perc_id`,
+#'   `mt_mode`, `batch_size`, `n_batches`, `task`, `num_alignments`,
+#'   `search_alignments`, `perc_id`,
 #'   `perc_qcov_hsp`, `check_n`, `check_tolerance`;
 #' * the cost: `wall_s`, `cpu_s` (CPU time of the BLAST processes),
 #'   `cpu_h`, `cpu_efficiency` (`cpu_s` over `wall_s` times the threads in
@@ -31,7 +32,12 @@
 #' * the identifications: `n_with_hits`, `pct_with_hits`, `pct_best_id`,
 #'   `pct_check_id` (both over all sequences), `id1_median` (median identity
 #'   of the first hit) and `pct_id1_ge_99`, `pct_id1_ge_97` (sequences whose
-#'   first hit has identity of at least 99% / 97%).
+#'   first hit has identity of at least 99% / 97%). For
+#'   [parallel_blast_hsps()], `pct_best_id` and `pct_check_id` are `NA` and
+#'   the first hit is the first HSP of the best subject.
+#'
+#' When a newer BLASTr adds columns, the file is rewritten with all of them
+#' (missing values as `NA`).
 #'
 #' @param log_dir Directory where the `BLASTr_logs` folder is kept. `NULL`
 #'   uses the option and the environment variable described above.
@@ -104,7 +110,7 @@ blast_version <- function(blast_bin) {
 pct <- function(x, n) if (n > 0) round(100 * x / n, 2) else NA_real_
 
 # Add the line of a finished job to the log. Called once per job.
-write_blast_log <- function(job, res, st, b) {
+write_blast_log <- function(job, res, st, b, seqs) {
   path <- blast_log_path(st$meta$log_dir)
   if (is.null(path)) {
     return(invisible(NULL))
@@ -114,17 +120,28 @@ write_blast_log <- function(job, res, st, b) {
     return(invisible(path))
   }
   s <- st$strategy
-  len <- nchar(res$Sequence)
+  hsps <- identical(st$meta$output, "hsps")
+  len <- nchar(seqs$sequence)
   final <- b[b$status != "split", , drop = FALSE]
-  n <- nrow(res)
-  with_hits <- !is.na(res$`N hits`) & res$`N hits` > 0L
-  id1 <- res$`1_identity`
+  n <- nrow(seqs)
+  if (hsps) {
+    with_hits <- seqs$sequence %in% res$Sequence
+    first <- res[!is.na(res$hit) & res$hit == 1L & res$hsp == 1L, , drop = FALSE]
+    id1 <- if ("pident" %in% names(res)) first$pident[match(seqs$sequence, first$Sequence)] else rep(NA_real_, n)
+    check <- rep(NA_character_, n)
+  } else {
+    with_hits <- !is.na(res$`N hits`) & res$`N hits` > 0L
+    id1 <- res$`1_identity`
+    check <- res$`Check ID`
+  }
+  threads_used <- s$processes * (if (is.na(s$threads)) 1L else s$threads)
   wall <- max(b$end, na.rm = TRUE) - min(b$start, na.rm = TRUE)
   if (!is.finite(wall)) wall <- NA_real_
   cpu <- job_cpu_s(job$dir)
   q <- if (n > 0L) stats::quantile(len, c(0.25, 0.5, 0.75), names = FALSE) else rep(NA_real_, 3L)
 
   row <- data.frame(
+    check.names = FALSE,
     run_id = paste0(
       format(as.POSIXct(min(b$start, na.rm = TRUE), origin = "1970-01-01"), "%Y%m%d-%H%M%S"),
       "_", basename(job$dir)
@@ -134,12 +151,13 @@ write_blast_log <- function(job, res, st, b) {
     host = Sys.info()[["nodename"]],
     user = Sys.info()[["user"]],
     mode = if (isTRUE(st$meta$background)) "background" else "foreground",
+    "function" = if (hsps) "parallel_blast_hsps" else "parallel_blast",
     blastr_version = as.character(utils::packageVersion("BLASTr")),
     blast_version = blast_version(st$blast_bin),
     job_dir = as.character(job$dir),
     n_input = if (is.null(st$meta$n_input)) NA_integer_ else st$meta$n_input,
     n_seqs = n,
-    n_invalid = sum(!is_valid_seq(res$Sequence)),
+    n_invalid = sum(!is_valid_seq(seqs$sequence)),
     len_min = if (n > 0L) min(len) else NA_integer_,
     len_q25 = q[1L],
     len_median = q[2L],
@@ -158,7 +176,9 @@ write_blast_log <- function(job, res, st, b) {
     mt_mode = s$mt_mode,
     batch_size = s$batch_size,
     n_batches = s$n_batches,
+    task = if (is.null(st$meta$task)) NA_character_ else st$meta$task,
     num_alignments = st$meta$num_alignments,
+    search_alignments = if (is.null(st$meta$search_alignments)) NA_integer_ else st$meta$search_alignments,
     perc_id = st$meta$perc_id,
     perc_qcov_hsp = st$meta$perc_qcov_hsp,
     check_n = st$meta$check_n,
@@ -166,23 +186,33 @@ write_blast_log <- function(job, res, st, b) {
     wall_s = round(wall, 1),
     cpu_s = round(cpu, 1),
     cpu_h = round(cpu / 3600, 4),
-    cpu_efficiency = round(cpu / (wall * s$processes * s$threads), 3),
+    cpu_efficiency = round(cpu / (wall * threads_used), 3),
     n_batches_failed = sum(final$status == "failed"),
     n_seqs_failed = sum(final$n[final$status == "failed"]),
     n_with_hits = sum(with_hits),
     pct_with_hits = pct(sum(with_hits), n),
-    pct_best_id = pct(sum(res$`Check ID` %in% "best ID"), n),
-    pct_check_id = pct(sum(res$`Check ID` %in% "check ID"), n),
+    pct_best_id = if (hsps) NA_real_ else pct(sum(check %in% "best ID"), n),
+    pct_check_id = if (hsps) NA_real_ else pct(sum(check %in% "check ID"), n),
     id1_median = if (any(!is.na(id1))) stats::median(id1, na.rm = TRUE) else NA_real_,
     pct_id1_ge_99 = pct(sum(id1 >= 99, na.rm = TRUE), n),
     pct_id1_ge_97 = pct(sum(id1 >= 97, na.rm = TRUE), n)
   )
 
   fs::dir_create(fs::path_dir(path))
+  if (fs::file_exists(path)) {
+    header <- strsplit(readLines(path, n = 1L), "\t", fixed = TRUE)[[1L]]
+    if (!identical(header, names(row))) {
+      # columns changed between BLASTr versions: rewrite with all of them
+      old <- utils::read.delim(path, colClasses = "character", check.names = FALSE)
+      row[] <- lapply(row, as.character)
+      row <- dplyr::bind_rows(old, row)
+      fs::file_delete(path)
+    }
+  }
   new_file <- !fs::file_exists(path)
   utils::write.table(
     row, path,
-    sep = "\t", quote = FALSE, row.names = FALSE,
+    sep = "\t", quote = FALSE, row.names = FALSE, na = "NA",
     col.names = new_file, append = !new_file
   )
   fs::file_create(marker)

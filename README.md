@@ -241,6 +241,10 @@ print(taxonomic_info)
 - `make_blast_db()`: Creates a BLAST database from a FASTA file.
 - `parallel_blast()`: Runs BLAST searches for multiple sequences in
   parallel, in the foreground or in the background.
+- `parallel_blast_hsps()`: Like `parallel_blast()`, but returns every
+  HSP in long format, against a database or a FASTA file (`subject`).
+- `blast_log_path()`, `read_blast_log()`: Optional log of the searches
+  (`log_dir`).
 - `blast_strategy()`: Shows how `parallel_blast()` will split a search.
 - `blast_job_status()`, `blast_job_result()`, `blast_job_cancel()`,
   `blast_job_resume()`: Follow a search running in the background.
