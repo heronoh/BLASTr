@@ -32,7 +32,7 @@ hit_fields <- c(
 # Columns that summarise the hits of each sequence.
 hit_summary_cols <- c(
   "Check ID", "N hits", "N taxids", "N hits same taxid as 1st",
-  "N taxids at best identity"
+  "N hits at best identity", "N taxids at best identity"
 )
 
 #' @title Similarity score of BLAST hits
@@ -74,9 +74,16 @@ similarity_score <- function(identity, qcovhsp) {
 #' * `NA`: no hits.
 #'
 #' The other columns use all the hits of the sequence: `N hits`, `N taxids`
-#' (distinct known taxids), `N hits same taxid as 1st` and `N taxids at best
-#' identity` (distinct taxids among the hits within `tolerance` of the best
-#' identity of all hits).
+#' (distinct known taxids), `N hits same taxid as 1st`, `N hits at best
+#' identity` (hits within `tolerance` of the best identity of all hits) and
+#' `N taxids at best identity` (distinct known taxids among those hits).
+#'
+#' Together they tell how well a `"best ID"` is supported: `N hits at best
+#' identity = 1` means a single reference at the best identity (the others,
+#' if any, are clearly less identical); several hits at best identity with
+#' `N taxids at best identity = 1` mean several references agreeing; more
+#' than one taxid at best identity means a tie between taxa. Sequences with
+#' fewer hits than `check_n` are checked with the hits they have.
 #'
 #' @param hits Data frame with one row per hit and the columns `query`,
 #'   `rank`, `identity` and `staxid`.
@@ -93,7 +100,7 @@ similarity_score <- function(identity, qcovhsp) {
 #' )
 #' check_hits(hits)
 #' @export
-check_hits <- function(hits, check_n = 3L, tolerance = 0.5) {
+check_hits <- function(hits, check_n = 10L, tolerance = 0.5) {
   hits <- hits[order(hits$query, hits$rank), , drop = FALSE]
   eps <- 1e-9
   by_query <- split(hits, factor(hits$query, levels = unique(hits$query)))
@@ -111,6 +118,7 @@ check_hits <- function(hits, check_n = 3L, tolerance = 0.5) {
       `N hits` = nrow(h),
       `N taxids` = length(unique(tx[known])),
       `N hits same taxid as 1st` = if (known[1L]) sum(tx == tx[1L] & known) else NA_integer_,
+      `N hits at best identity` = sum(id >= max(id) - tolerance - eps),
       `N taxids at best identity` = length(unique(tx[known & id >= max(id) - tolerance - eps]))
     )
   })
@@ -121,6 +129,7 @@ check_hits <- function(hits, check_n = 3L, tolerance = 0.5) {
       `N hits` = integer(0L),
       `N taxids` = integer(0L),
       `N hits same taxid as 1st` = integer(0L),
+      `N hits at best identity` = integer(0L),
       `N taxids at best identity` = integer(0L)
     ))
   }

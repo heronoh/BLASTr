@@ -29,7 +29,7 @@
 #' @param perc_id Lowest identity percentage cutoff.
 #' @param perc_qcov_hsp Lowest query coverage per HSP percentage cutoff.
 #' @param check_n Number of best hits compared by `Check ID`
-#'   (see [check_hits()]). Defaults to `3`.
+#'   (see [check_hits()]). Defaults to `10`.
 #' @param check_tolerance Identity difference (percentage points) under which
 #'   two hits are considered tied by `Check ID`. Defaults to `0.5`.
 #' @param num_threads,batch_size,mt_mode Override the automatic strategy:
@@ -66,7 +66,8 @@
 #'
 #' @returns A tibble with one row per unique sequence: `Sequence`, the hit
 #'   summary (`Check ID`, `N hits`, `N taxids`, `N hits same taxid as 1st`,
-#'   `N taxids at best identity`; see [check_hits()]) and, for each hit `k`
+#'   `N hits at best identity`, `N taxids at best identity`; see
+#'   [check_hits()]) and, for each hit `k`
 #'   from 1 to `num_alignments`, the columns `k_subject header`,
 #'   `k_Similarity score` (see [similarity_score()]), `k_subject`,
 #'   `k_identity`, `k_length`, `k_mismatches`, `k_gaps`, `k_query start`,
@@ -112,7 +113,7 @@ parallel_blast <- function(
   search_alignments = 50L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
-  check_n = 3L,
+  check_n = 10L,
   check_tolerance = 0.5,
   num_threads = NULL,
   batch_size = NULL,

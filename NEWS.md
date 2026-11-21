@@ -29,9 +29,11 @@
 
 * `parallel_blast()` results have a hit summary after `Sequence`:
   `Check ID` ("best ID" / "check ID", agreement of the taxids of the best
-  `check_n` hits, comparing only hits within `check_tolerance` identity
-  points of the best one), `N hits`, `N taxids`, `N hits same taxid as 1st`
-  and `N taxids at best identity` (see `check_hits()`).
+  `check_n` hits, by default 10, comparing only hits within
+  `check_tolerance` identity points of the best one), `N hits`, `N taxids`,
+  `N hits same taxid as 1st`, `N hits at best identity` (1 = a single
+  reference at the best identity) and `N taxids at best identity` (see
+  `check_hits()`).
 * New `k_Similarity score` column for each hit,
   `(10 * identity + qcovhsp) / 11` (formerly "BLASTn pseudo-score"; see
   `similarity_score()`).

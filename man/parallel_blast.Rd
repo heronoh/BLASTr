@@ -14,7 +14,7 @@ parallel_blast(
   search_alignments = 50L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
-  check_n = 3L,
+  check_n = 10L,
   check_tolerance = 0.5,
   num_threads = NULL,
   batch_size = NULL,
@@ -60,7 +60,7 @@ filters. In the benchmark, 50 instead of 10 added about 5\% to the time.}
 \item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.}
 
 \item{check_n}{Number of best hits compared by \verb{Check ID}
-(see \code{\link[=check_hits]{check_hits()}}). Defaults to \code{3}.}
+(see \code{\link[=check_hits]{check_hits()}}). Defaults to \code{10}.}
 
 \item{check_tolerance}{Identity difference (percentage points) under which
 two hits are considered tied by \verb{Check ID}. Defaults to \code{0.5}.}
@@ -107,7 +107,8 @@ directory.}
 \value{
 A tibble with one row per unique sequence: \code{Sequence}, the hit
 summary (\verb{Check ID}, \verb{N hits}, \verb{N taxids}, \verb{N hits same taxid as 1st},
-\verb{N taxids at best identity}; see \code{\link[=check_hits]{check_hits()}}) and, for each hit \code{k}
+\verb{N hits at best identity}, \verb{N taxids at best identity}; see
+\code{\link[=check_hits]{check_hits()}}) and, for each hit \code{k}
 from 1 to \code{num_alignments}, the columns \verb{k_subject header},
 \verb{k_Similarity score} (see \code{\link[=similarity_score]{similarity_score()}}), \code{k_subject},
 \code{k_identity}, \code{k_length}, \code{k_mismatches}, \code{k_gaps}, \verb{k_query start},

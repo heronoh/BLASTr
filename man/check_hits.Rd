@@ -4,7 +4,7 @@
 \alias{check_hits}
 \title{Check the agreement of the best BLAST hits}
 \usage{
-check_hits(hits, check_n = 3L, tolerance = 0.5)
+check_hits(hits, check_n = 10L, tolerance = 0.5)
 }
 \arguments{
 \item{hits}{Data frame with one row per hit and the columns \code{query},
@@ -37,8 +37,14 @@ hit is not among the most identical ones.
 }
 
 The other columns use all the hits of the sequence: \verb{N hits}, \verb{N taxids}
-(distinct known taxids), \verb{N hits same taxid as 1st} and \verb{N taxids at best identity} (distinct taxids among the hits within \code{tolerance} of the best
-identity of all hits).
+(distinct known taxids), \verb{N hits same taxid as 1st}, \verb{N hits at best identity} (hits within \code{tolerance} of the best identity of all hits) and
+\verb{N taxids at best identity} (distinct known taxids among those hits).
+
+Together they tell how well a \code{"best ID"} is supported: \verb{N hits at best identity = 1} means a single reference at the best identity (the others,
+if any, are clearly less identical); several hits at best identity with
+\verb{N taxids at best identity = 1} mean several references agreeing; more
+than one taxid at best identity means a tie between taxa. Sequences with
+fewer hits than \code{check_n} are checked with the hits they have.
 }
 \examples{
 hits <- data.frame(

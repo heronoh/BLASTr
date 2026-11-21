@@ -38,8 +38,9 @@ testthat::test_that("Check ID: first hit less identical than another is check ID
 
 testthat::test_that("Check ID: only the first check_n hits count", {
   h <- hits_of(c(100, 100, 100, 100), c("1", "1", "1", "2"))
-  testthat::expect_equal(check_hits(h)$`Check ID`, "best ID")
+  testthat::expect_equal(check_hits(h, check_n = 3)$`Check ID`, "best ID")
   testthat::expect_equal(check_hits(h, check_n = 4)$`Check ID`, "check ID")
+  testthat::expect_equal(check_hits(h)$`Check ID`, "check ID") # default 10
   testthat::expect_equal(check_hits(h)$`N taxids at best identity`, 2L)
 })
 
@@ -66,4 +67,31 @@ testthat::test_that("Check ID: unknown taxids (0) do not confirm agreement", {
   res <- check_hits(hits_of(c(100, 95), c("1", "0")))
   testthat::expect_equal(res$`Check ID`, "best ID")
   testthat::expect_equal(res$`N taxids`, 1L)
+})
+
+testthat::test_that("one good reference and distant ones: best ID from 1 hit", {
+  res <- check_hits(hits_of(c(100, 92, 91.5, 91, 90, 89, 88, 87, 86, 85), as.character(1:10)))
+  testthat::expect_equal(res$`Check ID`, "best ID")
+  testthat::expect_equal(res$`N hits`, 10L)
+  testthat::expect_equal(res$`N hits at best identity`, 1L)
+  testthat::expect_equal(res$`N taxids at best identity`, 1L)
+})
+
+testthat::test_that("several references agreeing vs a tie between taxa", {
+  agree <- check_hits(hits_of(c(100, 100, 99.8, 99.6, 95), c("1", "1", "1", "1", "2")))
+  testthat::expect_equal(agree$`Check ID`, "best ID")
+  testthat::expect_equal(agree$`N hits at best identity`, 4L)
+  testthat::expect_equal(agree$`N taxids at best identity`, 1L)
+  # a tie past the 3rd hit is seen with the default check_n = 10
+  tie <- check_hits(hits_of(c(100, 100, 100, 99.9, 99.8), c("1", "1", "1", "1", "2")))
+  testthat::expect_equal(tie$`Check ID`, "check ID")
+  testthat::expect_equal(tie$`N hits at best identity`, 5L)
+  testthat::expect_equal(tie$`N taxids at best identity`, 2L)
+})
+
+testthat::test_that("fewer hits than check_n are checked with the ones there are", {
+  res <- check_hits(hits_of(c(99, 98.8), c("1", "1")))
+  testthat::expect_equal(res$`Check ID`, "best ID")
+  testthat::expect_equal(res$`N hits at best identity`, 2L)
+  testthat::expect_equal(check_hits(hits_of(98, "1"))$`Check ID`, "best ID")
 })
