@@ -46,7 +46,11 @@
 #'   [similarity_score()]), `"identity"` or `"bitscore"`. Ties are broken by
 #'   identity, coverage, bitscore and BLAST order. BLAST orders its hits by
 #'   e-value/bitscore, which favours longer alignments, so its first hit is
-#'   not always the most similar one.
+#'   not always the most similar one. In a calibration on plant barcodes of
+#'   known genus (ITS2, rbcL) and on 1257 GenBank references of six markers
+#'   searched without themselves, ranking by Similarity score or identity
+#'   picked the right taxon significantly more often than bitscore (genus:
+#'   72% and 76% against 62%), with no significant difference between them.
 #' @param output `"long"` (default): one row per hit. `"wide"`: one row per
 #'   sequence, with the summary of [blast_summary()] and the first
 #'   `num_alignments` hits side by side (`1_` is the best one).

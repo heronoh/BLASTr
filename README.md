@@ -197,7 +197,18 @@ By default (`output = "long"`) each row is a hit, best first. The hits
 of each sequence are ranked by BLASTr, not by BLAST’s order (which
 favours long alignments): by the Similarity score
 (`(10 * identity + qcovhsp) / 11`; or `rank_by = "identity"` /
-`"bitscore"`), then identity, coverage and bitscore.
+`"bitscore"`), then identity, coverage and bitscore. The Similarity
+score weighs identity ten times more than coverage: a reference that
+covers less of the sequence is penalised only a little, since a part not
+covered is missing information, not a difference. In a calibration with
+sequences of known taxonomy (87 plant barcodes, ITS2 and rbcL, of genus
+confirmed by two markers; 1257 GenBank references of six markers
+searched without themselves), the first hit by Similarity score or by
+identity had the right genus or species significantly more often than
+the first hit by bitscore (plant barcodes: right genus in 72% and 76%
+against 62%; GenBank, species: 9 and 15 cases right only with them
+against 1 and 3 only with bitscore), with no significant difference
+between Similarity score and identity.
 
 BLAST searches with a low coverage cutoff (`search_qcov_hsp = 50`): a
 closer reference that covers a bit less of the query is kept, not

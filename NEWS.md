@@ -34,6 +34,9 @@
 * Hits are ranked by `rank_by` (default `"similarity"`, the Similarity
   score; or `"identity"`, `"bitscore"`), no longer by BLAST's order, which
   favours long alignments. `check_tolerance` is in the units of `rank_by`.
+  The default was calibrated on sequences of known taxonomy: Similarity
+  score and identity picked the right taxon significantly more often than
+  bitscore (scripts in `dev/benchmark/R/10_*` to `12_*`).
 * `perc_qcov_hsp` (80) no longer removes hits: BLAST searches with the new
   `search_qcov_hsp` (default 50) and the hits below `perc_qcov_hsp` are
   kept and flagged (`low_qcov`; summary `Best low qcov`). Removing them

@@ -83,7 +83,11 @@ BLAST (\code{-qcov_hsp_perc}); hits below it are not returned. Defaults to
 \code{\link[=similarity_score]{similarity_score()}}), \code{"identity"} or \code{"bitscore"}. Ties are broken by
 identity, coverage, bitscore and BLAST order. BLAST orders its hits by
 e-value/bitscore, which favours longer alignments, so its first hit is
-not always the most similar one.}
+not always the most similar one. In a calibration on plant barcodes of
+known genus (ITS2, rbcL) and on 1257 GenBank references of six markers
+searched without themselves, ranking by Similarity score or identity
+picked the right taxon significantly more often than bitscore (genus:
+72\% and 76\% against 62\%), with no significant difference between them.}
 
 \item{output}{\code{"long"} (default): one row per hit. \code{"wide"}: one row per
 sequence, with the summary of \code{\link[=blast_summary]{blast_summary()}} and the first
