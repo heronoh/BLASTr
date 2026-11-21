@@ -130,7 +130,7 @@ for (ph in unique(runs$phase)) {
 read_hits <- function(run_id) {
   f <- file.path(res_dir, "runs", run_id, "hits.tsv")
   h <- utils::read.delim(f, colClasses = "character")
-  h$subject <- sub("^[a-z]+\\|([^|]+)\\|?$", "\\1", h$subject)
+  h$subject <- sub("^.*\\|([^|]+)\\|?$", "\\1", h$subject) # gi|..|emb|ACC| -> ACC
   h
 }
 agree <- list()

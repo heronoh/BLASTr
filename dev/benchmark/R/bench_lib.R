@@ -153,3 +153,26 @@ server_ok <- function(max_load = 45) {
   attr(ok, "detail") <- sprintf("heron running blastn=%s load1=%.1f", st, load1)
   ok
 }
+
+# Drop a database's files from the page cache (no root: posix_fadvise
+# DONTNEED; pages mapped by a running process stay). Returns the % still cached.
+evict_db <- function(db = DBS$core_nt) {
+  files <- Sys.glob(paste0(db, "*"))
+  py <- "import os,sys
+for f in sys.argv[1:]:
+    fd=os.open(f,os.O_RDONLY); os.posix_fadvise(fd,0,0,os.POSIX_FADV_DONTNEED); os.close(fd)"
+  system2("python3", c("-c", shQuote(py), shQuote(files)))
+  cached_pct(db)
+}
+
+cached_pct <- function(db = DBS$core_nt) {
+  files <- Sys.glob(paste0(db, "*"))
+  out <- system2("fincore", c("-b", "-n", "-o", "RES,SIZE", shQuote(files)), stdout = TRUE)
+  v <- matrix(as.numeric(unlist(strsplit(trimws(out), "\\s+"))), ncol = 2, byrow = TRUE)
+  100 * sum(v[, 1]) / sum(v[, 2])
+}
+
+# Other users' blastn on the same machine (cold runs need the DB to ourselves)
+others_blast <- function() {
+  as.integer(system("ps -eo user=,comm= | awk '$2==\"blastn\" && $1!=\"noreh\"' | wc -l", intern = TRUE))
+}
