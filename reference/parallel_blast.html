@@ -178,7 +178,11 @@ BLAST (<code>-qcov_hsp_perc</code>); hits below it are not returned. Defaults to
 <code><a href="similarity_score.html">similarity_score()</a></code>), <code>"identity"</code> or <code>"bitscore"</code>. Ties are broken by
 identity, coverage, bitscore and BLAST order. BLAST orders its hits by
 e-value/bitscore, which favours longer alignments, so its first hit is
-not always the most similar one.</p></dd>
+not always the most similar one. In a calibration on plant barcodes of
+known genus (ITS2, rbcL) and on 1257 GenBank references of six markers
+searched without themselves, ranking by Similarity score or identity
+picked the right taxon significantly more often than bitscore (genus:
+72% and 76% against 62%), with no significant difference between them.</p></dd>
 
 
 <dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
