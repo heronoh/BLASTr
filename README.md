@@ -237,6 +237,48 @@ taxonomic_info <- parallel_get_tax(
 print(taxonomic_info)
 ```
 
+## Performance
+
+In the development version, `parallel_blast()` groups the sequences in
+batches instead of running one `blastn` per sequence. Each `blastn`
+reads the whole database once per batch, so on large databases the gain
+is large. Benchmark on a shared server (80 threads, 503 GB RAM,
+rotational disks) with BLAST+ 2.16.0 and NCBI `core_nt` (299 GB in 92
+volumes, all in RAM unless stated), searching sets of amplicon
+sequences:
+
+| Search | Sequences | Before (one `blastn` per sequence, 32 at a time) | Now (automatic strategy) |
+|----|----|----|----|
+| `core_nt` in RAM | 100 | 944 s | 79 s |
+| `core_nt` read from disk | 100 | 1296 s | 441 s |
+| `core_nt` in RAM | 500 | 6138 s (1 run) | 168 s |
+
+CPU time fell in the same proportion: 0.26 CPU-hours against 6.9 for the
+same 100 sequences searched one per `blastn`. In the tests with 100
+sequences the first hit was the same for every sequence, and so were the
+sequences with and without hits; with 500 sequences, the batched search
+found a hit for one sequence more (293 against 292).
+
+What drives the automatic strategy (see `blast_strategy()`):
+
+- **Threads per `blastn`**: with 32 threads `blastn` splits the database
+  among them (`-mt_mode 2`). More threads in one process did not help:
+  with 500 / 2000 sequences, 1 `blastn` with 64 threads took 152 s / 265
+  s against 120 s / 206 s with 32. Extra cores go to more processes: 2
+  processes of 32 threads took 87 s / 182 s.
+- **Fewer, larger batches**: each batch reads the database again (about
+  70 s on `core_nt`). With 4 processes of 8 threads, 2000 sequences in
+  80 batches took 1194 s; in 4 batches, 345 s.
+- **Database larger than the RAM**: each batch reads it from disk, so
+  all sequences go in one batch.
+- **Number of hits**: keeping 1 to 50 hits per sequence took 71 s to 91
+  s for 100 sequences, so the default is 10 hits, searched among 50.
+
+The benchmark scripts are in `dev/benchmark/`. Times depend on the
+machine and on the load of a shared server; they are a guide, not a
+guarantee. `log_dir` keeps a log of your own searches (see
+`blast_log_path()`).
+
 ## Main Functions
 
 - `install_dependencies()`: Installs BLAST+ and Entrez Direct if they
