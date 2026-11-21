@@ -43,7 +43,7 @@ testthat::test_that("parallel_blast_hsps returns every HSP with typed fields", {
   # no filters by default: at least the hits parallel_blast() finds
   w <- parallel_blast(s, tmp_blast_db_path, verbose = "silent")
   best <- h[h$hit == 1L & h$hsp == 1L, ]
-  k <- match(w$Sequence[!is.na(w$`1_subject`)], best$Sequence)
+  k <- match(unique(w$Sequence[!is.na(w$subject)]), best$Sequence)
   testthat::expect_false(anyNA(k))
 
   # chosen fields and filters

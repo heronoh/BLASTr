@@ -21,13 +21,14 @@ testthat::test_that("parallel_blast works", {
     num_alignments = 4,
     retry_times = 0,
     blast_type = "blastn",
+    output = "wide",
     verbose = "silent"
   )
 
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 6L + 4L * 15L)
+  testthat::expect_equal(ncol(blast_res), 1L + 9L + 4L * 19L)
 
   exit_codes_df <- exit_codes(blast_res)
   testthat::expect_s3_class(exit_codes_df, "data.frame")
@@ -151,6 +152,7 @@ testthat::test_that("parallel_blast - single thread", {
     num_threads = 1,
     total_cores = 1,
     num_alignments = 4,
+    output = "wide",
     verbose = "silent"
   )
 
@@ -158,7 +160,7 @@ testthat::test_that("parallel_blast - single thread", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 6L + 4L * 15L)
+  testthat::expect_equal(ncol(blast_res), 1L + 9L + 4L * 19L)
 })
 
 testthat::test_that("parallel blast - empty args", {
@@ -193,6 +195,7 @@ testthat::test_that("parallel_blast - depracated arguments", {
         db_path = db_path,
         num_threads = 1,
         num_alignments = 4,
+        output = "wide",
         verbose = "silent",
         out_file = withr::local_tempfile(fileext = ".csv")
       )
@@ -203,5 +206,24 @@ testthat::test_that("parallel_blast - depracated arguments", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 6L + 4L * 15L)
+  testthat::expect_equal(ncol(blast_res), 1L + 9L + 4L * 19L)
+})
+
+testthat::test_that("parallel_blast long output: one row per hit, best first", {
+  testthat::skip_on_cran()
+  seqs_test <- readLines(fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt"))
+  res <- parallel_blast(seqs_test, tmp_blast_db_path, num_alignments = 4, verbose = "silent")
+  testthat::expect_equal(names(res), long_cols)
+  testthat::expect_setequal(unique(res$Sequence), unique(seqs_test))
+  hit <- res[!is.na(res$rank), ]
+  testthat::expect_true(all(hit$rank[!duplicated(hit$Sequence)] == 1L))
+  testthat::expect_true(all(stats::ave(hit$rank, hit$Sequence, FUN = function(r) all(diff(r) >= 0)) == 1))
+  s <- blast_summary(res)
+  testthat::expect_equal(s$Sequence, unique(res$Sequence))
+  testthat::expect_true("Taxids at best" %in% names(s))
+  meta <- attr(res, "BLASTr_metadata")
+  testthat::expect_match(meta$blast_cmd, "^blastn -db .* -query <batch.fasta>")
+  testthat::expect_false(any(vapply(seqs_test, grepl, logical(1L), x = meta$blast_cmd, fixed = TRUE)))
+  testthat::expect_type(meta$db_dates, "character")
+  testthat::expect_false(is.na(meta$blast_version))
 })

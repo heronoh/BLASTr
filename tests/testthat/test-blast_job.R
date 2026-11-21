@@ -50,7 +50,7 @@ testthat::test_that("cancel and resume a background job", {
   }
   blast_job_resume(job)
   res <- blast_job_result(job, progress = FALSE)
-  testthat::expect_equal(nrow(res), length(unique(seqs_test)))
+  testthat::expect_equal(length(unique(res$Sequence)), length(unique(seqs_test)))
   testthat::expect_true(all(exit_codes(res)$exit_code == 0L))
 })
 
@@ -61,6 +61,6 @@ testthat::test_that("searching several databases together", {
     seqs_test, c(tmp_blast_db_path, tmp_blast_db_path),
     num_alignments = 4, verbose = "silent"
   )
-  testthat::expect_equal(nrow(res), length(unique(seqs_test)))
+  testthat::expect_equal(length(unique(res$Sequence)), length(unique(seqs_test)))
   testthat::expect_equal(attr(res, "BLASTr_metadata")$db_path, c(tmp_blast_db_path, tmp_blast_db_path))
 })

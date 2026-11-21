@@ -24,6 +24,28 @@
     hits can be lost.
   * Hit column `k_indentity` was renamed to `k_identity` (typo).
   * Subjects are reported by accession (`saccver`), as before.
+* `parallel_blast()` returns the long format by default: one row per hit,
+  ranked by BLASTr (`rank`, `tie`, `at_best`, `blast_rank`), and one row
+  with `NA` hit fields for each sequence without hits. The wide format (one
+  row per sequence, hits `1_` to `n_`) is still available with
+  `output = "wide"`; its `k_` hits now follow BLASTr's rank (BLAST's order
+  is in `k_blast_rank`). The summary per sequence (`Check ID`, ...) comes
+  from the new `blast_summary()`.
+* Hits are ranked by `rank_by` (default `"similarity"`, the Similarity
+  score; or `"identity"`, `"bitscore"`), no longer by BLAST's order, which
+  favours long alignments. `check_tolerance` is in the units of `rank_by`.
+* `perc_qcov_hsp` (80) no longer removes hits: BLAST searches with the new
+  `search_qcov_hsp` (default 50) and the hits below `perc_qcov_hsp` are
+  kept and flagged (`low_qcov`; summary `Best low qcov`). Removing them
+  inside BLAST hid closer references that cover a bit less of the query
+  (common with partial references) and promoted worse ones: in 66 ITS2 and
+  rbcL sequences, 65 got a hit of another genus. With
+  `search_qcov_hsp = perc_qcov_hsp` the search is as before.
+* Summary columns `N hits at best identity` and `N taxids at best identity`
+  were renamed to `N hits at best` and `N taxids at best` (they follow
+  `rank_by`).
+* `get_tax_by_taxID()`, `parallel_get_tax()` and `get_tax_by_name()`
+  (online, `efetch`) are deprecated; they now call `get_tax()`.
 
 ### New features
 
@@ -60,6 +82,24 @@
   coverage filter unless asked. Searches a database or, with `subject`, the
   sequences of a FASTA file (BLAST `-subject`). Same batches, strategy,
   ETA, background jobs and log as `parallel_blast()`.
+* All the hits tied with the best one (`at_best`) are kept, even beyond
+  `num_alignments`. New summary columns `Taxids at best` (the tied taxids,
+  for a lowest common ancestor) and `At best truncated` (the tie may go
+  beyond the `search_alignments` subjects BLAST returned).
+* New hit fields `nident` and `subject strand`.
+* New `as_blast_long()`: converts wide results of any version (including
+  `k_indentity`) to the long format, ranked with the same rules.
+* New `get_tax()`: taxonomy of taxids from a local SQLite database (NCBI
+  taxdump, `taxonomizr` layout), in a fraction of a second for thousands of
+  taxids. Takes taxids or any BLASTr result and returns one row per taxid:
+  ranks, `lineage`, `lineage_taxids` and `merged_into` (merged taxids).
+  When the database does not exist, it is built from the NCBI taxdump
+  matching the date of the BLAST database of the search (or the one given),
+  once, and kept in the BLASTr cache. `make_taxonomy_db()` builds it
+  explicitly.
+* The BLAST command of each search (without the sequences) is kept in
+  `BLASTr_metadata$blast_cmd`, with the BLAST version and the date of each
+  database; it is shown in interactive sessions and written to the log.
 * Optional log of the searches: with `log_dir` (or the option
   `BLASTr.log_dir` / the environment variable `BLASTR_LOG_DIR`), each
   search adds a line to `BLASTr_logs/blastr_runs.tsv` with the number and

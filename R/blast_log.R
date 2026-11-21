@@ -71,7 +71,7 @@ read_blast_log <- function(log_dir = NULL) {
       class = "blastr_no_log_error"
     )
   }
-  readr::read_tsv(path, show_col_types = FALSE, progress = FALSE)
+  readr::read_tsv(path, show_col_types = FALSE, progress = FALSE, quote = "")
 }
 
 resolve_log_dir <- function(log_dir = NULL) {
@@ -110,7 +110,7 @@ blast_version <- function(blast_bin) {
 pct <- function(x, n) if (n > 0) round(100 * x / n, 2) else NA_real_
 
 # Add the line of a finished job to the log. Called once per job.
-write_blast_log <- function(job, res, st, b, seqs) {
+write_blast_log <- function(job, res, st, b, seqs, summ = NULL) {
   path <- blast_log_path(st$meta$log_dir)
   if (is.null(path)) {
     return(invisible(NULL))
@@ -130,9 +130,16 @@ write_blast_log <- function(job, res, st, b, seqs) {
     id1 <- if ("pident" %in% names(res)) first$pident[match(seqs$sequence, first$Sequence)] else rep(NA_real_, n)
     check <- rep(NA_character_, n)
   } else {
-    with_hits <- !is.na(res$`N hits`) & res$`N hits` > 0L
-    id1 <- res$`1_identity`
-    check <- res$`Check ID`
+    k <- match(seqs$sequence, summ$Sequence)
+    with_hits <- !is.na(summ$`N hits`[k]) & summ$`N hits`[k] > 0L
+    check <- summ$`Check ID`[k]
+    id1 <- if ("1_identity" %in% names(res)) {
+      res$`1_identity`[match(seqs$sequence, res$Sequence)]
+    } else {
+      # long: the first row of each sequence is its best hit
+      first <- res[!duplicated(res$Sequence), , drop = FALSE]
+      first$identity[match(seqs$sequence, first$Sequence)]
+    }
   }
   threads_used <- s$processes * (if (is.na(s$threads)) 1L else s$threads)
   wall <- max(b$end, na.rm = TRUE) - min(b$start, na.rm = TRUE)
@@ -153,7 +160,7 @@ write_blast_log <- function(job, res, st, b, seqs) {
     mode = if (isTRUE(st$meta$background)) "background" else "foreground",
     "function" = if (hsps) "parallel_blast_hsps" else "parallel_blast",
     blastr_version = as.character(utils::packageVersion("BLASTr")),
-    blast_version = blast_version(st$blast_bin),
+    blast_version = if (is.null(st$meta$blast_version)) blast_version(st$blast_bin) else st$meta$blast_version,
     job_dir = as.character(job$dir),
     n_input = if (is.null(st$meta$n_input)) NA_integer_ else st$meta$n_input,
     n_seqs = n,
@@ -165,6 +172,7 @@ write_blast_log <- function(job, res, st, b, seqs) {
     len_q75 = q[3L],
     len_max = if (n > 0L) max(len) else NA_integer_,
     db_path = paste(s$db_path, collapse = " "),
+    db_date = paste(if (is.null(st$meta$db_dates)) db_dates(s$db_path) else st$meta$db_dates, collapse = " "),
     n_dbs = length(s$db_path),
     db_gb = round(s$db_gb, 3),
     db_volumes = s$db_volumes,
@@ -181,8 +189,11 @@ write_blast_log <- function(job, res, st, b, seqs) {
     search_alignments = if (is.null(st$meta$search_alignments)) NA_integer_ else st$meta$search_alignments,
     perc_id = st$meta$perc_id,
     perc_qcov_hsp = st$meta$perc_qcov_hsp,
+    search_qcov_hsp = if (is.null(st$meta$search_qcov_hsp)) NA_real_ else st$meta$search_qcov_hsp,
     check_n = st$meta$check_n,
     check_tolerance = st$meta$check_tolerance,
+    rank_by = if (is.null(st$meta$rank_by)) NA_character_ else st$meta$rank_by,
+    output = if (is.null(st$meta$output)) NA_character_ else st$meta$output,
     wall_s = round(wall, 1),
     cpu_s = round(cpu, 1),
     cpu_h = round(cpu / 3600, 4),
@@ -195,7 +206,8 @@ write_blast_log <- function(job, res, st, b, seqs) {
     pct_check_id = if (hsps) NA_real_ else pct(sum(check %in% "check ID"), n),
     id1_median = if (any(!is.na(id1))) stats::median(id1, na.rm = TRUE) else NA_real_,
     pct_id1_ge_99 = pct(sum(id1 >= 99, na.rm = TRUE), n),
-    pct_id1_ge_97 = pct(sum(id1 >= 97, na.rm = TRUE), n)
+    pct_id1_ge_97 = pct(sum(id1 >= 97, na.rm = TRUE), n),
+    blast_cmd = if (is.null(st$meta$blast_cmd)) NA_character_ else st$meta$blast_cmd
   )
 
   fs::dir_create(fs::path_dir(path))
@@ -203,7 +215,7 @@ write_blast_log <- function(job, res, st, b, seqs) {
     header <- strsplit(readLines(path, n = 1L), "\t", fixed = TRUE)[[1L]]
     if (!identical(header, names(row))) {
       # columns changed between BLASTr versions: rewrite with all of them
-      old <- utils::read.delim(path, colClasses = "character", check.names = FALSE)
+      old <- utils::read.delim(path, colClasses = "character", check.names = FALSE, quote = "", na.strings = "NA")
       row[] <- lapply(row, as.character)
       row <- dplyr::bind_rows(old, row)
       fs::file_delete(path)

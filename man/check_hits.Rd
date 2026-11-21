@@ -4,52 +4,67 @@
 \alias{check_hits}
 \title{Check the agreement of the best BLAST hits}
 \usage{
-check_hits(hits, check_n = 10L, tolerance = 0.5)
+check_hits(
+  hits,
+  check_n = 10L,
+  tolerance = 0.5,
+  rank_by = c("similarity", "identity", "bitscore"),
+  search_alignments = NA_integer_
+)
 }
 \arguments{
 \item{hits}{Data frame with one row per hit and the columns \code{query},
-\code{rank}, \code{identity} and \code{staxid}.}
+\code{identity}, \code{staxid} and, as needed by \code{rank_by}, \code{qcovhsp} or
+\code{bitscore}. The BLAST order is taken from \code{blast_rank} or \code{rank}, or
+else from the row order.}
 
 \item{check_n}{Number of best hits used by \verb{Check ID}.}
 
-\item{tolerance}{Identity difference (percentage points) under which two
-hits are considered tied.}
+\item{tolerance}{Difference from the best value, in the units of
+\code{rank_by} (points of Similarity score or identity, bits of bitscore),
+under which hits are tied.}
+
+\item{rank_by}{Criterion to order the hits: \code{"similarity"} (Similarity
+score, see \code{\link[=similarity_score]{similarity_score()}}), \code{"identity"} or \code{"bitscore"}.}
+
+\item{search_alignments}{Number of subjects BLAST was asked for, to
+compute \verb{At best truncated}.}
 }
 \value{
 A tibble with \code{query} and the summary columns.
 }
 \description{
-For each query sequence, decides whether its best hits agree on the
-taxon (\verb{Check ID}) and summarises all of its hits.
+For each query sequence, orders its hits by \code{rank_by}, decides whether
+the best ones agree on the taxon (\verb{Check ID}) and summarises all of them.
 
-\verb{Check ID} looks at the first \code{check_n} hits. Only the hits whose identity
-is within \code{tolerance} percentage points of the best identity among them
-are compared: a hit clearly less identical than the best one is most
-likely another taxon, not a competing identification. Coverage is not
-used here, so a good reference that covers only part of the query does
-not hide or create a disagreement.
+The hits are ordered by \code{rank_by} (Similarity score, identity or
+bitscore) and then by identity, coverage, bitscore and BLAST order. Hits
+within \code{tolerance} of the best value are "at best": they are tied
+candidates for the identification.
+
+\verb{Check ID} looks at the first \code{check_n} hits and compares only the ones at
+best: a hit clearly worse than the best one is most likely another taxon,
+not a competing identification.
 \itemize{
-\item \code{"best ID"}: all the compared hits have the taxid of the first hit.
-\item \code{"check ID"}: some compared hit has another taxid or an unknown one
-(\code{0} or empty, as in databases built without a taxid map), or the first
-hit is not among the most identical ones.
+\item \code{"best ID"}: all the hits at best among the first \code{check_n} have the
+taxid of the first hit.
+\item \code{"check ID"}: some of them has another taxid or an unknown one (\code{0} or
+empty, as in databases built without a taxid map).
 \item \code{NA}: no hits.
 }
 
 The other columns use all the hits of the sequence: \verb{N hits}, \verb{N taxids}
-(distinct known taxids), \verb{N hits same taxid as 1st}, \verb{N hits at best identity} (hits within \code{tolerance} of the best identity of all hits) and
-\verb{N taxids at best identity} (distinct known taxids among those hits).
-
-Together they tell how well a \code{"best ID"} is supported: \verb{N hits at best identity = 1} means a single reference at the best identity (the others,
-if any, are clearly less identical); several hits at best identity with
-\verb{N taxids at best identity = 1} mean several references agreeing; more
-than one taxid at best identity means a tie between taxa. Sequences with
-fewer hits than \code{check_n} are checked with the hits they have.
+(distinct known taxids), \verb{N hits same taxid as 1st}, \verb{N hits at best},
+\verb{N taxids at best}, \verb{Taxids at best} (the known taxids of the hits at
+best, in rank order, separated by \code{";"}, for a lowest common ancestor) and
+\verb{At best truncated} (\code{TRUE} when the last subject BLAST returned is at
+best: more tied subjects may exist beyond \code{search_alignments}; \code{NA} when
+\code{search_alignments} is unknown).
 }
 \examples{
 hits <- data.frame(
-  query = "q1", rank = 1:3,
-  identity = c(100, 99, 98.7), staxid = c("9606", "9598", "9597")
+  query = "q1", identity = c(100, 99, 98.7), qcovhsp = 100,
+  staxid = c("9606", "9598", "9597")
 )
 check_hits(hits)
 }

@@ -1,246 +1,49 @@
-#' Retrieve Taxonomic Ranks Using NCBI Taxonomy Tax IDs
+#' @title Deprecated taxonomy functions
 #'
-#' Retrieves complete taxonomy information for given NCBI Taxonomy Tax IDs by querying the NCBI database using the `efetch` command.
+#' @description
+#' `r lifecycle::badge("deprecated")`
 #'
-#' @param organisms_taxIDs A character vector of NCBI Taxonomy Tax IDs for which to retrieve taxonomy information.
-#' @param parse_result Logical indicating whether to parse the taxonomy information into a tibble (`TRUE`, default) or return the raw output as returned by `efetch` (`FALSE`).
-#' @param verbose Character indicating whether to print verbose messages during the process. Default is `"silent"`.
-#' @param env_name Character string specifying the name of the conda environment where `efetch` is installed. Default is `"blastr-entrez-env"`.
+#' `get_tax_by_taxID()`, `parallel_get_tax()` and `get_tax_by_name()`
+#' queried the NCBI online (`efetch`), one taxid at a time. Use [get_tax()],
+#' which reads a local taxonomy database and is much faster. These functions
+#' now call it and return its table.
 #'
-#' @returns A tibble containing the taxonomic ranks for the given Tax IDs.
+#' @param organisms_taxIDs Taxids.
+#' @param organisms_names Scientific (or other) names of taxa.
+#' @param taxonomy_db See [get_tax()].
+#' @param ... Ignored (arguments of the old versions).
 #'
-#' @examples
-#' \dontrun{
-#' # Retrieve taxonomy for a single Tax ID
-#' tax_info <- get_tax_by_taxID("9606") # Human
-#'
-#' # Retrieve taxonomy for multiple Tax IDs
-#' tax_ids <- c("9606", "10090", "10116") # Human, Mouse, Rat
-#' tax_info <- get_tax_by_taxID(tax_ids)
-#'
-#' # Get unparsed taxonomy result
-#' raw_tax_info <- get_tax_by_taxID("9606", parse_result = FALSE)
-#'
-#' # Enable verbose output
-#' tax_info <- get_tax_by_taxID("9606", verbose = "output")
-#' }
+#' @returns See [get_tax()].
+#' @keywords internal
+#' @name deprecated-tax
+NULL
+
+#' @rdname deprecated-tax
 #' @export
-get_tax_by_taxID <- function(
-  organisms_taxIDs,
-  parse_result = TRUE,
-  verbose = c("silent", "cmd", "output", "full"),
-  env_name = "blastr-entrez-env"
-) {
-  .data <- rlang::.data
+get_tax_by_taxID <- function(organisms_taxIDs, ..., taxonomy_db = NULL) {
+  lifecycle::deprecate_warn("0.1.8", "get_tax_by_taxID()", "get_tax()")
+  get_tax(organisms_taxIDs, taxonomy_db = taxonomy_db)
+}
 
-  organisms_taxIDs <- as.character(organisms_taxIDs)
-  verbose <- rlang::arg_match(verbose)
+#' @rdname deprecated-tax
+#' @export
+parallel_get_tax <- function(organisms_taxIDs, ..., taxonomy_db = NULL) {
+  lifecycle::deprecate_warn("0.1.8", "parallel_get_tax()", "get_tax()")
+  get_tax(organisms_taxIDs, taxonomy_db = taxonomy_db)
+}
 
-  check_cmd("efetch", env_name = env_name)
-
-  # run entrez command
-  organism_xml <- condathis::run(
-    "efetch",
-    "-db",
-    "taxonomy",
-    "-id",
-    organisms_taxIDs,
-    "-format",
-    "xml",
-    env_name = env_name,
-    verbose = verbose,
-    error = "continue"
+#' @rdname deprecated-tax
+#' @export
+get_tax_by_name <- function(organisms_names, ..., taxonomy_db = NULL) {
+  lifecycle::deprecate_warn("0.1.8", "get_tax_by_name()", "get_tax()")
+  db <- resolve_taxonomy_db(taxonomy_db)
+  con <- DBI::dbConnect(RSQLite::SQLite(), db, flags = RSQLite::SQLITE_RO)
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+  nm <- unique(as.character(organisms_names))
+  ids <- DBI::dbGetQuery(
+    con,
+    sprintf("SELECT name, id FROM names WHERE name IN (%s)", paste(DBI::dbQuoteString(con, nm), collapse = ","))
   )
-
-  # Create empty tibble to return in case of error
-  organism_tbl_parsed_empty <- tibble::tibble(
-    "Sci_name" = character(0L),
-    "query_taxID" = character(0L),
-    # "Division (NCBI)" = character(0L),
-    "Superkingdom (NCBI)" = character(0L),
-    "Kingdom (NCBI)" = character(0L),
-    "Phylum (NCBI)" = character(0L),
-    "Subphylum (NCBI)" = character(0L),
-    "Class (NCBI)" = character(0L),
-    "Subclass (NCBI)" = character(0L),
-    "Order (NCBI)" = character(0L),
-    "Suborder (NCBI)" = character(0L),
-    "Family (NCBI)" = character(0L),
-    "Subfamily (NCBI)" = character(0L),
-    "Genus (NCBI)" = character(0L)
-  )
-
-  # testing if efetch returned a valid result
-  if (isFALSE(stringr::str_detect(organism_xml$stdout, "TaxId"))) {
-    message(paste0(
-      "------------------------> unable to retrieve taxonomy for: ",
-      organisms_taxIDs,
-      "\t"
-    ))
-    return(organism_tbl_parsed_empty)
-  }
-
-  # testing integrity of xml output
-  xml_teste <- tryCatch(
-    {
-      xml_file <- xml2::read_xml(organism_xml$stdout)
-      message("XML file is valid!")
-    },
-    error = function(e) {
-      message(paste("Error in XML file:", e$message))
-    }
-  )
-
-  if (isTRUE(stringr::str_detect(xml_teste, "^Error"))) {
-    message(paste0(
-      "------------------------> unable to retrieve taxonomy for: ",
-      organisms_taxIDs,
-      "\t"
-    ))
-    return(organism_tbl_parsed_empty)
-  }
-
-  # processing valid xml
-  organism_list <- organism_xml$stdout |>
-    xml2::read_xml() |>
-    xml2::as_list()
-
-  cli::cli_inform(
-    c(
-      "v" = "Taxonomy data retrieved successfully for {organisms_taxIDs}."
-    )
-  )
-
-  organism_tbl_list <- list()
-  # for (i in seq_along(organism_list$TaxaSet)) {
-  #   organism_tbl_list[[i]] <- organism_list$TaxaSet[i]$Taxon$LineageEx |>
-  #     unname() |>
-  #     purrr::map(function(x) {
-  #       tibble::tibble(
-  #         Rank = x$Rank[[1]],
-  #         ScientificName = x$ScientificName[[1]]
-  #       )
-  #     }) |>
-  #     purrr::list_rbind() |>
-  #     dplyr::mutate("query_taxID" = organisms_taxIDs[i]) |>
-  #     dplyr::mutate(
-  #       "Sci_name" = unlist(organism_list$TaxaSet[i]$Taxon$ScientificName)
-  #     )
-  # }
-
-  for (i in seq_along(organism_list$TaxaSet)) {
-    taxon_i <- organism_list$TaxaSet[i]$Taxon
-
-    # ancestrais (LineageEx)
-    lineage_tbl <- purrr::list_rbind(purrr::map(unname(taxon_i$LineageEx),
-                                                function(x) {
-                                                  tibble::tibble(Rank = x$Rank[[1]], ScientificName = x$ScientificName[[1]])
-                                                }))
-
-    # nó raiz: o próprio táxon consultado, com o SEU rank
-    self_tbl <- tibble::tibble(
-      Rank = taxon_i$Rank[[1]],
-      ScientificName = taxon_i$ScientificName[[1]]
-    )
-
-    organism_tbl_list[[i]] <- dplyr::mutate(
-      dplyr::mutate(
-        dplyr::bind_rows(lineage_tbl, self_tbl),
-        query_taxID = organisms_taxIDs[i]
-      ),
-      Sci_name = unlist(taxon_i$ScientificName)
-    )
-  }
-  organism_tbl <- organism_tbl_list |>
-    purrr::list_rbind()
-
-  if (rlang::is_true(parse_result)) {
-    temp_names_tbl <- tibble::tibble(
-      "Sci_name" = character(0L),
-      "query_taxID" = character(0L),
-      # "division" = character(0L),
-      "superkingdom" = character(0L),
-      "kingdom" = character(0L),
-      "phylum" = character(0L),
-      "subphylum" = character(0L),
-      "class" = character(0L),
-      "subclass" = character(0L),
-      "order" = character(0L),
-      "suborder" = character(0L),
-      "family" = character(0L),
-      "subfamily" = character(0L),
-      "genus" = character(0L)
-    )
-
-    organism_tbl_parsed <- organism_tbl |>
-      dplyr::filter(!(.data$Rank %in% c("no rank", "clade"))) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        .data$Rank %in%
-          c(
-            "superkingdom",
-            "kingdom",
-            "phylum",
-            "subphylum",
-            "class",
-            "subclass",
-            "order",
-            "suborder",
-            "family",
-            "subfamily",
-            "genus"
-          )
-      ) |>
-      tidyr::pivot_wider(
-        id_cols = c("query_taxID", "Sci_name"),
-        names_from = "Rank",
-        values_from = c("ScientificName")
-      ) |>
-      dplyr::bind_rows(
-        temp_names_tbl
-      )
-    organism_tbl_final <- organism_tbl_parsed |>
-      dplyr::relocate(
-        "Sci_name",
-        "query_taxID",
-        "superkingdom",
-        "kingdom",
-        "phylum",
-        "subphylum",
-        "class",
-        "subclass",
-        "order",
-        "suborder",
-        "family",
-        "subfamily",
-        "genus"
-      ) |>
-      dplyr::rename(
-        "Superkingdom (NCBI)" = "superkingdom",
-        "Kingdom (NCBI)" = "kingdom",
-        "Phylum (NCBI)" = "phylum",
-        "Subphylum (NCBI)" = "subphylum",
-        "Class (NCBI)" = "class",
-        "Subclass (NCBI)" = "subclass",
-        "Order (NCBI)" = "order",
-        "Suborder (NCBI)" = "suborder",
-        "Family (NCBI)" = "family",
-        "Subfamily (NCBI)" = "subfamily",
-        "Genus (NCBI)" = "genus"
-      ) |>
-      dplyr::filter(!dplyr::if_all(dplyr::everything(), rlang::are_na))
-  }
-  if (rlang::is_false(parse_result)) {
-    organism_tbl_unparsed_empty <- tibble::tibble(
-      "Rank" = character(0L),
-      "ScientificName" = character(0L),
-      "query_taxID" = character(0L),
-      "Sci_name" = character(0L)
-    )
-    organism_tbl_final <- organism_tbl |>
-      dplyr::bind_rows(
-        organism_tbl_unparsed_empty
-      )
-  }
-  return(organism_tbl_final)
+  out <- get_tax(unique(as.character(ids$id)), taxonomy_db = db)
+  dplyr::left_join(tibble::tibble(name = ids$name, taxid = as.character(ids$id)), out, by = "taxid")
 }

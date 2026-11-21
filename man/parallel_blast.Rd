@@ -14,8 +14,11 @@ parallel_blast(
   search_alignments = 50L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
+  search_qcov_hsp = 50L,
   check_n = 10L,
   check_tolerance = 0.5,
+  rank_by = c("similarity", "identity", "bitscore"),
+  output = c("long", "wide"),
   num_threads = NULL,
   batch_size = NULL,
   mt_mode = NULL,
@@ -57,13 +60,34 @@ filters. In the benchmark, 50 instead of 10 added about 5\% to the time.}
 
 \item{perc_id}{Lowest identity percentage cutoff.}
 
-\item{perc_qcov_hsp}{Lowest query coverage per HSP percentage cutoff.}
+\item{perc_qcov_hsp}{Query coverage per HSP (percent) expected of a
+good hit. Hits below it are kept and flagged (\code{low_qcov}), not
+removed: removing them inside BLAST hides a closer reference that covers
+a bit less of the query (common with partial reference sequences) and
+promotes a worse one. The coverage still weighs in the rank through the
+Similarity score. Defaults to \code{80}.}
+
+\item{search_qcov_hsp}{Lowest query coverage per HSP (percent) used by
+BLAST (\code{-qcov_hsp_perc}); hits below it are not returned. Defaults to
+\code{50}. Set it to \code{perc_qcov_hsp} to remove the hits below
+\code{perc_qcov_hsp}, as in earlier versions.}
 
 \item{check_n}{Number of best hits compared by \verb{Check ID}
 (see \code{\link[=check_hits]{check_hits()}}). Defaults to \code{10}.}
 
-\item{check_tolerance}{Identity difference (percentage points) under which
-two hits are considered tied by \verb{Check ID}. Defaults to \code{0.5}.}
+\item{check_tolerance}{Difference from the best hit, in the units of
+\code{rank_by}, under which hits are tied ("at best"). Defaults to \code{0.5}.}
+
+\item{rank_by}{Criterion to rank the hits of each sequence:
+\code{"similarity"} (default, the Similarity score, see
+\code{\link[=similarity_score]{similarity_score()}}), \code{"identity"} or \code{"bitscore"}. Ties are broken by
+identity, coverage, bitscore and BLAST order. BLAST orders its hits by
+e-value/bitscore, which favours longer alignments, so its first hit is
+not always the most similar one.}
+
+\item{output}{\code{"long"} (default): one row per hit. \code{"wide"}: one row per
+sequence, with the summary of \code{\link[=blast_summary]{blast_summary()}} and the first
+\code{num_alignments} hits side by side (\verb{1_} is the best one).}
 
 \item{num_threads, batch_size, mt_mode}{Override the automatic strategy:
 threads per \code{blastn} process, sequences per batch and BLAST+
@@ -105,17 +129,26 @@ directory.}
 directory.}
 }
 \value{
-A tibble with one row per unique sequence: \code{Sequence}, the hit
-summary (\verb{Check ID}, \verb{N hits}, \verb{N taxids}, \verb{N hits same taxid as 1st},
-\verb{N hits at best identity}, \verb{N taxids at best identity}; see
-\code{\link[=check_hits]{check_hits()}}) and, for each hit \code{k}
-from 1 to \code{num_alignments}, the columns \verb{k_subject header},
-\verb{k_Similarity score} (see \code{\link[=similarity_score]{similarity_score()}}), \code{k_subject},
-\code{k_identity}, \code{k_length}, \code{k_mismatches}, \code{k_gaps}, \verb{k_query start},
-\verb{k_query end}, \verb{k_subject start}, \verb{k_subject end}, \code{k_e-value},
-\code{k_bitscore}, \code{k_qcovhsp} and \code{k_staxid}. The attribute
-\code{BLASTr_metadata} keeps the parameters, the strategy and the exit codes
-(see \code{\link[=exit_codes]{exit_codes()}}). With \code{background = TRUE}, a \code{blastr_job}.
+With \code{output = "long"}, a tibble with one row per hit, best
+first: \code{Sequence}, \code{rank} (1 = best; tied hits share the rank), \code{tie}
+(the rank is shared), \code{at_best} (within \code{check_tolerance} of the best
+hit), \code{low_qcov} (\code{qcovhsp} below \code{perc_qcov_hsp}), \code{blast_rank}
+(order given by BLAST), \code{subject}, \verb{subject header},
+\code{staxid}, \code{identity}, \verb{Similarity score}, \code{qcovhsp}, \code{nident},
+\code{length}, \code{mismatches}, \code{gaps}, \verb{query start}, \verb{query end},
+\verb{subject start}, \verb{subject end}, \verb{subject strand}, \code{e-value} and
+\code{bitscore}. The first \code{num_alignments} hits are kept, plus all the hits
+at best. A sequence without hits has one row with \code{NA} hit fields. The
+summary per sequence (\verb{Check ID}, ...) comes from \code{\link[=blast_summary]{blast_summary()}}.
+
+With \code{output = "wide"}, one row per sequence: \code{Sequence}, the summary
+of \code{\link[=blast_summary]{blast_summary()}} and, for each hit \code{k} from 1 to \code{num_alignments}
+in rank order, the hit fields prefixed by \code{k_}.
+
+The attribute \code{BLASTr_metadata} keeps the parameters, the strategy, the
+BLAST command (\code{blast_cmd}, without the sequences), the BLAST version,
+the date of each database and the exit codes (see \code{\link[=exit_codes]{exit_codes()}}). With
+\code{background = TRUE}, a \code{blastr_job}.
 }
 \description{
 Search a set of sequences against one or more BLAST databases, using the

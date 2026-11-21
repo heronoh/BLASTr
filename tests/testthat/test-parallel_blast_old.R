@@ -42,15 +42,12 @@ testthat::test_that("new parallel_blast generates same output as old", {
     verbose = "silent"
   )
 
-  # the new results have more columns (hit summary, Similarity score, all
-  # num_alignments hits); the hits themselves must be the same
-  shared <- setdiff(names(blast_res_old), "1_staxid")
-  blast_res_old <- blast_res_old[match(blast_res_new$Sequence, blast_res_old$Sequence), ]
-  testthat::expect_equal(
-    as.data.frame(blast_res_new[, shared]),
-    as.data.frame(blast_res_old[, shared]),
-    ignore_attr = TRUE
-  )
+  # same hits, whatever their order (the new results are ranked by BLASTr)
+  key <- function(x) {
+    x <- x[!is.na(x$subject), ]
+    sort(paste(x$Sequence, x$subject, x$identity, x$qcovhsp))
+  }
+  testthat::expect_equal(key(blast_res_new), key(as_blast_long(blast_res_old)))
   testthat::expect_s3_class(blast_res_new, "tbl_df")
 })
 

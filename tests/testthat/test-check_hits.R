@@ -4,8 +4,8 @@ testthat::test_that("similarity_score weights identity 10x", {
   testthat::expect_equal(similarity_score(c(90, NA), c(80, 80)), c((900 + 80) / 11, NA))
 })
 
-hits_of <- function(identity, staxid, query = "q1") {
-  data.frame(query = query, rank = seq_along(identity), identity = identity, staxid = staxid)
+hits_of <- function(identity, staxid, query = "q1", qcovhsp = 100) {
+  data.frame(query = query, rank = seq_along(identity), identity = identity, staxid = staxid, qcovhsp = qcovhsp)
 }
 
 testthat::test_that("Check ID: same taxid in the top hits is best ID", {
@@ -18,7 +18,7 @@ testthat::test_that("Check ID: same taxid in the top hits is best ID", {
 testthat::test_that("Check ID: other taxid tied in identity is check ID", {
   res <- check_hits(hits_of(c(100, 99.7, 95), c("1", "2", "1")))
   testthat::expect_equal(res$`Check ID`, "check ID")
-  testthat::expect_equal(res$`N taxids at best identity`, 2L)
+  testthat::expect_equal(res$`N taxids at best`, 2L)
 })
 
 testthat::test_that("Check ID: clearly less identical hits are another taxon", {
@@ -27,13 +27,34 @@ testthat::test_that("Check ID: clearly less identical hits are another taxon", {
   testthat::expect_equal(res$`Check ID`, "best ID")
   testthat::expect_equal(res$`N taxids`, 3L)
   testthat::expect_equal(res$`N hits same taxid as 1st`, 1L)
-  testthat::expect_equal(res$`N taxids at best identity`, 1L)
+  testthat::expect_equal(res$`N taxids at best`, 1L)
 })
 
-testthat::test_that("Check ID: first hit less identical than another is check ID", {
+testthat::test_that("hits are ranked by BLASTr, not by BLAST order", {
   # BLAST ranks by score; a shorter alignment can be ranked lower but be more identical
   res <- check_hits(hits_of(c(99, 100), c("1", "2")))
-  testthat::expect_equal(res$`Check ID`, "check ID")
+  testthat::expect_equal(res$`Check ID`, "best ID")
+  testthat::expect_equal(res$`Taxids at best`, "2")
+})
+
+testthat::test_that("rank_by similarity prefers the full-coverage hit", {
+  # 100% over 80% of the query vs 99.8% over all of it
+  h <- hits_of(c(100, 99.8), c("1", "2"), qcovhsp = c(80, 100))
+  testthat::expect_equal(check_hits(h)$`Taxids at best`, "2")
+  testthat::expect_equal(check_hits(h, rank_by = "identity", tolerance = 0.1)$`Taxids at best`, "1")
+  # a partial but much closer reference beats a full but distant one
+  h <- hits_of(c(92.97, 99.44), c("1", "2"), qcovhsp = c(81, 79))
+  testthat::expect_equal(check_hits(h)$`Taxids at best`, "2")
+})
+
+testthat::test_that("Taxids at best lists the tied taxids and flags truncation", {
+  h <- hits_of(c(100, 100, 100, 95), c("1", "2;3", "1", "4"))
+  res <- check_hits(h, search_alignments = 4L)
+  testthat::expect_equal(res$`Taxids at best`, "1;2;3")
+  testthat::expect_false(res$`At best truncated`)
+  res <- check_hits(h[1:3, ], search_alignments = 3L)
+  testthat::expect_true(res$`At best truncated`)
+  testthat::expect_true(is.na(check_hits(h)$`At best truncated`))
 })
 
 testthat::test_that("Check ID: only the first check_n hits count", {
@@ -41,7 +62,7 @@ testthat::test_that("Check ID: only the first check_n hits count", {
   testthat::expect_equal(check_hits(h, check_n = 3)$`Check ID`, "best ID")
   testthat::expect_equal(check_hits(h, check_n = 4)$`Check ID`, "check ID")
   testthat::expect_equal(check_hits(h)$`Check ID`, "check ID") # default 10
-  testthat::expect_equal(check_hits(h)$`N taxids at best identity`, 2L)
+  testthat::expect_equal(check_hits(h)$`N taxids at best`, 2L)
 })
 
 testthat::test_that("Check ID: tolerance is configurable", {
@@ -73,25 +94,25 @@ testthat::test_that("one good reference and distant ones: best ID from 1 hit", {
   res <- check_hits(hits_of(c(100, 92, 91.5, 91, 90, 89, 88, 87, 86, 85), as.character(1:10)))
   testthat::expect_equal(res$`Check ID`, "best ID")
   testthat::expect_equal(res$`N hits`, 10L)
-  testthat::expect_equal(res$`N hits at best identity`, 1L)
-  testthat::expect_equal(res$`N taxids at best identity`, 1L)
+  testthat::expect_equal(res$`N hits at best`, 1L)
+  testthat::expect_equal(res$`N taxids at best`, 1L)
 })
 
 testthat::test_that("several references agreeing vs a tie between taxa", {
   agree <- check_hits(hits_of(c(100, 100, 99.8, 99.6, 95), c("1", "1", "1", "1", "2")))
   testthat::expect_equal(agree$`Check ID`, "best ID")
-  testthat::expect_equal(agree$`N hits at best identity`, 4L)
-  testthat::expect_equal(agree$`N taxids at best identity`, 1L)
+  testthat::expect_equal(agree$`N hits at best`, 4L)
+  testthat::expect_equal(agree$`N taxids at best`, 1L)
   # a tie past the 3rd hit is seen with the default check_n = 10
   tie <- check_hits(hits_of(c(100, 100, 100, 99.9, 99.8), c("1", "1", "1", "1", "2")))
   testthat::expect_equal(tie$`Check ID`, "check ID")
-  testthat::expect_equal(tie$`N hits at best identity`, 5L)
-  testthat::expect_equal(tie$`N taxids at best identity`, 2L)
+  testthat::expect_equal(tie$`N hits at best`, 5L)
+  testthat::expect_equal(tie$`N taxids at best`, 2L)
 })
 
 testthat::test_that("fewer hits than check_n are checked with the ones there are", {
   res <- check_hits(hits_of(c(99, 98.8), c("1", "1")))
   testthat::expect_equal(res$`Check ID`, "best ID")
-  testthat::expect_equal(res$`N hits at best identity`, 2L)
+  testthat::expect_equal(res$`N hits at best`, 2L)
   testthat::expect_equal(check_hits(hits_of(98, "1"))$`Check ID`, "best ID")
 })

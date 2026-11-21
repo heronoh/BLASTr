@@ -67,9 +67,13 @@ new_blast_job <- function(
     sep = "\t", quote = FALSE, row.names = FALSE
   )
 
+  blast_bin <- blast_bin_path(blast_type, env_name)
+  meta$blast_cmd <- blast_cmd_line(blast_type, blast_args, strategy$threads)
+  meta$blast_version <- blast_version(blast_bin)
+  meta$db_dates <- db_dates(strategy$db_path)
   saveRDS(
     list(
-      blast_bin = blast_bin_path(blast_type, env_name),
+      blast_bin = blast_bin,
       blast_args = blast_args,
       processes = strategy$processes,
       threads = strategy$threads,
@@ -510,6 +514,35 @@ new_progress <- function(pr0, show) {
   )
 }
 
+# The BLAST command of each batch, without the sequences: the query and
+# output files are shown as <batch.fasta> and <batch.tsv>.
+blast_cmd_line <- function(blast_type, blast_args, threads = NA) {
+  args <- c(
+    blast_args, "-query", "<batch.fasta>", "-out", "<batch.tsv>",
+    if (!is.na(threads)) c("-num_threads", as.character(threads))
+  )
+  q <- ifelse(grepl("[^A-Za-z0-9_./<>=:,+-]", args), shQuote(args), args)
+  paste(c(blast_type, q), collapse = " ")
+}
+
+# Date of each BLAST database: "last-updated" of its .njs file (BLAST
+# databases v5), or else the date of its files.
+db_dates <- function(db_paths) {
+  vapply(db_paths, function(p) {
+    njs <- paste0(p, c(".njs", ".nal", ".nin", ".pjs", ".pal", ".pin"))
+    njs <- njs[fs::file_exists(njs)]
+    j <- njs[grepl("js$", njs)]
+    if (length(j) > 0L) {
+      l <- grep("\"last-updated\"", readLines(j[1L], n = 50L, warn = FALSE), value = TRUE)
+      if (length(l) > 0L) {
+        return(sub('.*"last-updated"\\s*:\\s*"([^"]+)".*', "\\1", l[1L]))
+      }
+    }
+    f <- if (length(njs) > 0L) njs[1L] else if (fs::file_exists(p)) p else NA_character_
+    if (is.na(f)) NA_character_ else format(fs::file_info(f)$modification_time, "%Y-%m-%dT%H:%M:%S")
+  }, character(1L), USE.NAMES = FALSE)
+}
+
 # Results of a finished job as returned by parallel_blast().
 collect_blast_job <- function(job) {
   st <- readRDS(fs::path(job$dir, "job.rds"))
@@ -544,21 +577,31 @@ collect_blast_job <- function(job) {
     paste(l, collapse = "\n")
   }, character(1L))
 
+  summ <- NULL
   res <- if (identical(st$meta$output, "hsps")) {
     read_blast_hsps(out_files, seqs, st$meta$fields)
   } else {
-    widen_blast_hits(
+    m <- st$meta
+    rank_by <- if (is.null(m$rank_by)) "similarity" else m$rank_by
+    long <- blast_long(
       read_blast_hits(out_files),
       seq_ids = seqs$query,
       seqs = seqs$sequence,
-      num_alignments = st$meta$num_alignments,
-      check_n = st$meta$check_n,
-      tolerance = st$meta$check_tolerance
+      num_alignments = m$num_alignments,
+      rank_by = rank_by,
+      tolerance = m$check_tolerance,
+      perc_qcov_hsp = if (is.null(m$perc_qcov_hsp)) NA else m$perc_qcov_hsp
     )
+    summ <- blast_summary(
+      long,
+      check_n = m$check_n, tolerance = m$check_tolerance, rank_by = rank_by,
+      search_alignments = m$search_alignments
+    )
+    if (identical(m$output, "wide")) widen_blast_hits(long, summ, m$num_alignments) else long
   }
   pr <- job_progress(b)
   log_path <- tryCatch(
-    write_blast_log(job, res, st, b, seqs),
+    write_blast_log(job, res, st, b, seqs, summ),
     error = function(e) {
       cli::cli_warn(c(`!` = "Could not write the BLASTr log: {conditionMessage(e)}"))
       NULL

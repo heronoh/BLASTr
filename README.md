@@ -193,25 +193,57 @@ blast_results <- blast_job_result(job) # waits for the end if needed
 
 ### Results
 
-Each row is a query sequence. After `Sequence`, a summary of its hits:
+By default (`output = "long"`) each row is a hit, best first. The hits
+of each sequence are ranked by BLASTr, not by BLAST’s order (which
+favours long alignments): by the Similarity score
+(`(10 * identity + qcovhsp) / 11`; or `rank_by = "identity"` /
+`"bitscore"`), then identity, coverage and bitscore.
+
+BLAST searches with a low coverage cutoff (`search_qcov_hsp = 50`): a
+closer reference that covers a bit less of the query is kept, not
+replaced by a worse one. Hits below `perc_qcov_hsp = 80` are flagged
+(`low_qcov`), and the coverage weighs in the Similarity score.
+
+- `rank`: 1 is the best hit; tied hits share the rank (`tie = TRUE`).
+- `at_best`: the hit is within `check_tolerance = 0.5` of the best one,
+  a tied candidate for the identification. All hits at best are kept,
+  even beyond `num_alignments` (10 by default).
+- `blast_rank`: the order given by BLAST.
+- The hit fields: `subject`, `subject header`, `staxid`, `identity`,
+  `Similarity score`, `qcovhsp`, `nident`, `length`, `mismatches`,
+  `gaps`, `query start`, `query end`, `subject start`, `subject end`,
+  `subject strand`, `e-value` and `bitscore`.
+
+A sequence without hits has one row with empty hit fields.
+`blast_summary()` gives one row per sequence:
 
 - `Check ID`: `"best ID"` when the best hits (the first `check_n = 10`)
-  agree on the taxid, `"check ID"` when they do not. Only hits within
-  `check_tolerance = 0.5` identity points of the best one are compared,
-  since a clearly less identical hit is most likely another taxon. Hits
-  with unknown taxid (`0`) never confirm an identification.
-- `N hits`, `N taxids`, `N hits same taxid as 1st`,
-  `N hits at best identity` and `N taxids at best identity`.
-  `N hits at best identity = 1` means the `"best ID"` rests on a single
-  reference (the other hits are clearly less identical); several hits
-  with one taxid at best identity mean several references agreeing.
+  at best agree on the taxid, `"check ID"` when they do not. Hits with
+  unknown taxid (`0`) never confirm an identification.
+- `N hits`, `N taxids`, `N hits same taxid as 1st`, `N hits at best` and
+  `N taxids at best`. `N hits at best = 1` means the `"best ID"` rests
+  on a single reference; several hits with one taxid at best mean
+  several references agreeing.
+- `Taxids at best`: the taxids tied with the best hit, for a lowest
+  common ancestor; `At best truncated`: the tie may go beyond the
+  subjects BLAST returned (`search_alignments`).
+- `Best low qcov`: the best hit covers less than `perc_qcov_hsp` of the
+  query.
 
-Then the hits (10 by default, `num_alignments`), each with
-`k_subject header`, `k_Similarity score`
-(`(10 * identity + qcovhsp) / 11`), `k_subject`, `k_identity`,
-`k_length`, `k_mismatches`, `k_gaps`, `k_query start`, `k_query end`,
-`k_subject start`, `k_subject end`, `k_e-value`, `k_bitscore`,
-`k_qcovhsp` and `k_staxid`, where `k` is the hit rank.
+``` r
+summary <- blast_summary(blast_results)
+best <- blast_results[blast_results$rank %in% 1L, ]
+```
+
+`output = "wide"` gives one row per sequence: `Sequence`, the summary
+and the hits side by side (`1_subject`, `1_identity`, …) in rank order.
+`as_blast_long()` converts wide results, of this or older versions, to
+the long format.
+
+The BLAST command (without the sequences), the BLAST version and the
+date of each database are kept in
+`attr(blast_results, "BLASTr_metadata")` (`blast_cmd`, `blast_version`,
+`db_dates`); the command is shown in interactive sessions.
 
 BLASTr keeps track of any errors that may occur during the BLAST
 searches. You can retrieve the exit codes and STDERR messages using the
@@ -223,18 +255,22 @@ exit_code_df <- exit_codes(blast_results)
 print(exit_code_df[c("exit_code", "stderr")])
 ```
 
+### Taxonomy
+
+`get_tax()` reads the NCBI taxonomy from a local SQLite database. It
+takes taxids or a BLASTr result and returns one row per taxid, with the
+ranks, the full `lineage` and its `lineage_taxids`. If the database does
+not exist, it is built once from the NCBI taxdump: for a BLASTr result,
+the taxdump published right after the date of its BLAST database, so the
+taxonomy matches the database (about a minute, then kept in the BLASTr
+cache).
+
 ``` r
-# Extract the taxonomy IDs from the top BLAST hit for each query sequence.
-tax_ids <- blast_results$`1_staxid`
+taxonomy <- get_tax(blast_results)
 
-# Retrieve taxonomic information in parallel
-taxonomic_info <- parallel_get_tax(
-  organisms_taxIDs = tax_ids,
-  total_cores = 2,
-  retry_times = 0
-)
-
-print(taxonomic_info)
+# or a database of your choice, built from a given taxdump if missing
+taxonomy <- get_tax(c("9606", "10090"), taxonomy_db = "~/databases/taxonomy.sqlite")
+dplyr::left_join(blast_results, taxonomy, by = c(staxid = "taxid"))
 ```
 
 ## Performance
@@ -293,12 +329,14 @@ guarantee. `log_dir` keeps a log of your own searches (see
 - `blast_strategy()`: Shows how `parallel_blast()` will split a search.
 - `blast_job_status()`, `blast_job_result()`, `blast_job_cancel()`,
   `blast_job_resume()`: Follow a search running in the background.
-- `check_hits()`, `similarity_score()`: Hit agreement (`Check ID`) and
-  Similarity score.
+- `blast_summary()`, `check_hits()`, `similarity_score()`: Summary per
+  sequence (`Check ID`, ties) and Similarity score.
+- `as_blast_long()`: Converts wide results (any version) to the long
+  format.
 - `exit_codes()`: Retrieve the exit codes and STDERR messages from BLAST
   searches.
-- `parallel_get_tax()`: Retrieves taxonomic information for multiple
-  NCBI Taxonomy IDs in parallel.
+- `get_tax()`, `make_taxonomy_db()`: Taxonomy of NCBI taxids from a
+  local database.
 - `run_blast()`: A lower-level function to run a BLAST search and return
   the raw output.
 - `parse_fasta()`: Extracts sequences from a FASTA file.
