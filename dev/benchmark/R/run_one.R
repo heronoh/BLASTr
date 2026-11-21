@@ -4,7 +4,10 @@
 # Usage: Rscript run_one.R <config.json>
 #
 # Strategies:
-#   A_blastr  BLASTr::parallel_blast(), 1 query per blastn, P processes x T threads
+#   A_blastr  BLASTr 0.1.7 parallel_blast(), 1 query per blastn, P processes x T threads
+#             (loaded from cfg$pkg_path_old, a worktree at 60ce902)
+#   E_blastr  BLASTr parallel_blast() of this repo, automatic strategy with
+#             total_cores = P * T (batched; the version being benchmarked)
 #   D_raw     raw blastn, 1 query per process, P processes x T threads (no R/mirai/condathis)
 #   B_single  raw blastn, all queries in one process, T threads, -mt_mode m
 #   C_batch   raw blastn, batches of k queries, P processes x T threads
@@ -103,8 +106,50 @@ run_chunks <- function(chunks, P, threads) {
 split_k <- function(x, k) split(x, ceiling(seq_along(x) / k))
 
 t0 <- Sys.time()
-if (cfg$strategy == "A_blastr") {
+# wide BLASTr results -> long hits (identity column: k_identity, or
+# k_indentity before the rename)
+blastr_long <- function(res, n) {
+  long <- do.call(rbind, lapply(seq_len(n), function(r) {
+    sc <- paste0(r, "_subject")
+    if (!sc %in% names(res)) return(NULL)
+    idc <- intersect(paste0(r, c("_identity", "_indentity")), names(res))[1]
+    data.frame(
+      seq_id = ids[res$Sequence], rank = r,
+      subject = res[[sc]], staxid = res[[paste0(r, "_staxid")]],
+      identity = res[[idc]], qcovhsp = res[[paste0(r, "_qcovhsp")]],
+      evalue = res[[paste0(r, "_e-value")]], bitscore = res[[paste0(r, "_bitscore")]]
+    )
+  }))
+  long[!is.na(long$subject), ]
+}
+ids <- stats::setNames(names(queries), unname(queries))
+
+if (cfg$strategy == "E_blastr") {
   suppressMessages(pkgload::load_all(cfg$pkg_path, quiet = TRUE))
+  res <- parallel_blast(
+    query_seqs = unname(queries),
+    db_path = strsplit(cfg$db, " ", fixed = TRUE)[[1]],
+    total_cores = cfg$P * cfg$T,
+    perc_id = cfg$perc_id,
+    perc_qcov_hsp = cfg$qcov,
+    num_alignments = cfg$num_alignments,
+    verbose = "silent"
+  )
+  meta <- attr(res, "BLASTr_metadata")
+  st <- meta$strategy
+  writeLines(
+    sprintf("processes=%d threads=%d mt_mode=%d batch_size=%d n_batches=%d search_alignments=%d",
+      st$processes, st$threads, st$mt_mode, st$batch_size, st$n_batches, meta$search_alignments),
+    file.path(cfg$out_dir, "strategy.txt")
+  )
+  long <- blastr_long(res, cfg$num_alignments)
+  ex <- meta$exit_codes
+  log <- data.frame(chunk = NA, n_queries = length(queries), start = as.numeric(t0),
+    end = as.numeric(Sys.time()), status = max(ex$exit_code, na.rm = TRUE), stderr = "")
+} else if (cfg$strategy == "A_blastr") {
+  pkg_old <- if (!is.null(cfg$pkg_path_old) && dir.exists(cfg$pkg_path_old)) cfg$pkg_path_old else
+    stop("strategy A needs BLASTr 0.1.7 at cfg$pkg_path_old (git worktree at 60ce902)")
+  suppressMessages(pkgload::load_all(pkg_old, quiet = TRUE))
   withr::local_envvar(c(BLAST_USAGE_REPORT = "false"))
   res <- parallel_blast(
     query_seqs = unname(queries),
@@ -117,18 +162,7 @@ if (cfg$strategy == "A_blastr") {
     mt_mode = as.character(if (is.null(cfg$mt_mode) || is.na(cfg$mt_mode)) 2 else cfg$mt_mode),
     verbose = "silent"
   )
-  ids <- stats::setNames(names(queries), unname(queries))
-  long <- do.call(rbind, lapply(seq_len(cfg$num_alignments), function(r) {
-    sc <- paste0(r, "_subject")
-    if (!sc %in% names(res)) return(NULL)
-    data.frame(
-      seq_id = ids[res$Sequence], rank = r,
-      subject = res[[sc]], staxid = res[[paste0(r, "_staxid")]],
-      identity = res[[paste0(r, "_indentity")]], qcovhsp = res[[paste0(r, "_qcovhsp")]],
-      evalue = res[[paste0(r, "_e-value")]], bitscore = res[[paste0(r, "_bitscore")]]
-    )
-  }))
-  long <- long[!is.na(long$subject), ]
+  long <- blastr_long(res, cfg$num_alignments)
   ex <- attr(res, "BLASTr_metadata")$exit_codes
   log <- data.frame(chunk = NA, n_queries = length(queries), start = as.numeric(t0),
     end = as.numeric(Sys.time()), status = max(ex$exit_code), stderr = "")

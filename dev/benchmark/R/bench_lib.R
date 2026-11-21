@@ -79,6 +79,10 @@ run_config <- function(..., sample_interval = 2) {
   cfg$db <- DBS[[cfg$db_name]]
   cfg$query_fasta <- file.path(bench_dir, "data", paste0(cfg$query_set, ".fasta"))
   cfg$pkg_path <- normalizePath(file.path(bench_dir, "..", ".."))
+  # BLASTr 0.1.7 (one blastn per sequence) for strategy A: a worktree at
+  # 60ce902, the last commit before the batched parallel_blast()
+  #   git worktree add --detach ../BLASTr-v017 60ce902
+  cfg$pkg_path_old <- normalizePath(file.path(cfg$pkg_path, "..", "BLASTr-v017"), mustWork = FALSE)
   cfg$run_id <- paste0(
     format(Sys.time(), "%Y%m%d-%H%M%S"), "_", cfg$phase, "_", cfg$strategy,
     "_P", cfg$P, "T", cfg$T, "_k", cfg$k, "_m", cfg$mt_mode, "_n", cfg$num_alignments, "_r", cfg$rep

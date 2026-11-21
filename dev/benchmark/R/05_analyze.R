@@ -18,10 +18,12 @@ runs <- runs |>
     config = case_when(
       strategy == "B_single" ~ sprintf("B single T%d m%d", T, mt_mode),
       strategy == "C_batch" ~ sprintf("C batch k%d %dx%d", k, P, T),
+      strategy == "E_blastr" ~ sprintf("E BLASTr auto %d cores", P * T),
       TRUE ~ sprintf("%s %dx%d", strategy, P, T)
     ),
     strategy_label = recode(strategy,
-      A_blastr = "A: BLASTr atual (1 query/processo)",
+      A_blastr = "A: BLASTr 0.1.7 (1 query/processo)",
+      E_blastr = "E: BLASTr novo (estratégia automática)",
       D_raw = "D: blastn puro (1 query/processo)",
       B_single = "B: 1 blastn com todas",
       C_batch = "C: lotes de k queries"
@@ -126,7 +128,8 @@ for (ph in unique(runs$phase)) {
   }
 }
 
-# 6. Result agreement vs reference (D_raw, P max, same db/set/alignments) -------
+# 6. Result agreement vs reference (D_raw, P max, same db/set/alignments; ------
+#    without D_raw in the group, the single blastn B with most threads) -------
 read_hits <- function(run_id) {
   f <- file.path(res_dir, "runs", run_id, "hits.tsv")
   h <- utils::read.delim(f, colClasses = "character")
@@ -137,6 +140,7 @@ agree <- list()
 for (key in unique(paste(runs$phase, runs$db, runs$query_set, runs$num_alignments))) {
   d <- filter(runs, paste(phase, db, query_set, num_alignments) == key)
   ref <- d |> filter(strategy == "D_raw") |> arrange(desc(P), rep) |> slice(1)
+  if (!nrow(ref)) ref <- d |> filter(strategy == "B_single") |> arrange(desc(T), rep) |> slice(1)
   if (!nrow(ref)) next
   rh <- read_hits(ref$run_id)
   ids <- sub("^>", "", grep("^>", readLines(file.path("dev/benchmark/data", paste0(ref$query_set, ".fasta"))), value = TRUE))
@@ -170,4 +174,61 @@ if (length(agree)) {
     summarise(across(ends_with("_pct"), min), .groups = "drop")
   utils::write.table(a, file.path(res_dir, "agreement_summary.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
 }
+
+# 7. Searches of the projects that use BLASTr (BLASTr_logs) -------------------
+# Each project writes <dir>/BLASTr_logs/blastr_runs.tsv (parallel_blast(log_dir =)).
+# Paths: BLASTR_BENCH_LOGS (":"-separated), or the known project folders.
+log_files <- strsplit(Sys.getenv("BLASTR_BENCH_LOGS", ""), ":", fixed = TRUE)[[1]]
+if (!length(log_files)) {
+  log_files <- unique(c(
+    Sys.glob("/home/noreh/prjcts/*/BLASTr_logs/blastr_runs.tsv"),
+    Sys.glob("/home/noreh/prjcts/*/mtbrcdR_logs/BLASTr_logs/blastr_runs.tsv")
+  ))
+}
+log_files <- log_files[file.exists(log_files)]
+if (length(log_files)) {
+  plog <- bind_rows(lapply(log_files, function(f) {
+    x <- utils::read.delim(f, colClasses = "character", check.names = FALSE)
+    x$project <- basename(sub("/(mtbrcdR_logs/)?BLASTr_logs/blastr_runs.tsv$", "", f))
+    x$log_file <- f
+    x
+  }))
+  num <- c("n_input", "n_seqs", "len_median", "db_gb", "processes", "threads", "n_batches",
+           "wall_s", "cpu_s", "cpu_h", "cpu_efficiency", "pct_with_hits", "pct_best_id", "num_alignments")
+  for (k in intersect(num, names(plog))) plog[[k]] <- suppressWarnings(as.numeric(plog[[k]]))
+  if (!"function" %in% names(plog)) plog[["function"]] <- "parallel_blast"
+  plog[["function"]][is.na(plog[["function"]]) | plog[["function"]] == ""] <- "parallel_blast"
+  plog$s_per_seq <- plog$wall_s / plog$n_seqs
+  utils::write.table(plog, file.path(res_dir, "project_logs.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
+
+  plog_summ <- plog |>
+    group_by(project, `function`) |>
+    summarise(
+      runs = n(), seqs = sum(n_seqs, na.rm = TRUE), db_gb = max(db_gb, na.rm = TRUE),
+      wall_h = sum(wall_s, na.rm = TRUE) / 3600, cpu_h = sum(cpu_h, na.rm = TRUE),
+      s_per_seq_med = median(s_per_seq, na.rm = TRUE),
+      strategies = paste(unique(paste0(processes, "x", threads, " b", n_batches)), collapse = "; "),
+      .groups = "drop"
+    )
+  utils::write.table(plog_summ, file.path(res_dir, "project_logs_summary.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
+  print(as.data.frame(plog_summ))
+
+  # seconds per sequence of the real searches, with the benchmark (core_nt in
+  # RAM) for reference: new BLASTr (E), and BLASTr 0.1.7 (A)
+  bench <- runs |>
+    filter(db == "core_nt", strategy %in% c("A_blastr", "E_blastr"), cache != "cold") |>
+    transmute(source = strategy_label, n_seqs = n_queries, s_per_seq = wall_s / n_queries)
+  pts <- bind_rows(
+    plog |> transmute(source = paste0(project, ": ", `function`), n_seqs, s_per_seq),
+    bench
+  ) |> filter(is.finite(s_per_seq), s_per_seq > 0)
+  p <- ggplot(pts, aes(n_seqs, s_per_seq, colour = source)) +
+    geom_point(size = 2.5, alpha = 0.8) +
+    scale_x_log10() + scale_y_log10() +
+    labs(x = "sequências na busca", y = "segundos por sequência (log)", colour = NULL,
+         title = "Buscas reais dos projetos (BLASTr_logs) e benchmark no core_nt") +
+    theme(legend.position = "bottom", legend.direction = "vertical")
+  save(p, "project_logs_s_per_seq", h = 6.5)
+}
+
 cat("Summary rows:", nrow(summ), " figs:", length(list.files(fig_dir)), "\n")
