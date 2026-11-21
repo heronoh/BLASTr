@@ -25,8 +25,11 @@ parallel_blast(
   search_alignments = 50L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
+  search_qcov_hsp = 50L,
   check_n = 10L,
   check_tolerance = 0.5,
+  rank_by = c("similarity", "identity", "bitscore"),
+  output = c("long", "wide"),
   num_threads = NULL,
   batch_size = NULL,
   mt_mode = NULL,
@@ -87,7 +90,19 @@ parallel_blast(
 
 - perc_qcov_hsp:
 
-  Lowest query coverage per HSP percentage cutoff.
+  Query coverage per HSP (percent) expected of a good hit. Hits below it
+  are kept and flagged (`low_qcov`), not removed: removing them inside
+  BLAST hides a closer reference that covers a bit less of the query
+  (common with partial reference sequences) and promotes a worse one.
+  The coverage still weighs in the rank through the Similarity score.
+  Defaults to `80`.
+
+- search_qcov_hsp:
+
+  Lowest query coverage per HSP (percent) used by BLAST
+  (`-qcov_hsp_perc`); hits below it are not returned. Defaults to `50`.
+  Set it to `perc_qcov_hsp` to remove the hits below `perc_qcov_hsp`, as
+  in earlier versions.
 
 - check_n:
 
@@ -97,8 +112,26 @@ parallel_blast(
 
 - check_tolerance:
 
-  Identity difference (percentage points) under which two hits are
-  considered tied by `Check ID`. Defaults to `0.5`.
+  Difference from the best hit, in the units of `rank_by`, under which
+  hits are tied ("at best"). Defaults to `0.5`.
+
+- rank_by:
+
+  Criterion to rank the hits of each sequence: `"similarity"` (default,
+  the Similarity score, see
+  [`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)),
+  `"identity"` or `"bitscore"`. Ties are broken by identity, coverage,
+  bitscore and BLAST order. BLAST orders its hits by e-value/bitscore,
+  which favours longer alignments, so its first hit is not always the
+  most similar one.
+
+- output:
+
+  `"long"` (default): one row per hit. `"wide"`: one row per sequence,
+  with the summary of
+  [`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md)
+  and the first `num_alignments` hits side by side (`1_` is the best
+  one).
 
 - num_threads, batch_size, mt_mode:
 
@@ -161,18 +194,27 @@ parallel_blast(
 
 ## Value
 
-A tibble with one row per unique sequence: `Sequence`, the hit summary
-(`Check ID`, `N hits`, `N taxids`, `N hits same taxid as 1st`,
-`N hits at best identity`, `N taxids at best identity`; see
-[`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md))
-and, for each hit `k` from 1 to `num_alignments`, the columns
-`k_subject header`, `k_Similarity score` (see
-[`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)),
-`k_subject`, `k_identity`, `k_length`, `k_mismatches`, `k_gaps`,
-`k_query start`, `k_query end`, `k_subject start`, `k_subject end`,
-`k_e-value`, `k_bitscore`, `k_qcovhsp` and `k_staxid`. The attribute
-`BLASTr_metadata` keeps the parameters, the strategy and the exit codes
-(see
+With `output = "long"`, a tibble with one row per hit, best first:
+`Sequence`, `rank` (1 = best; tied hits share the rank), `tie` (the rank
+is shared), `at_best` (within `check_tolerance` of the best hit),
+`low_qcov` (`qcovhsp` below `perc_qcov_hsp`), `blast_rank` (order given
+by BLAST), `subject`, `subject header`, `staxid`, `identity`,
+`Similarity score`, `qcovhsp`, `nident`, `length`, `mismatches`, `gaps`,
+`query start`, `query end`, `subject start`, `subject end`,
+`subject strand`, `e-value` and `bitscore`. The first `num_alignments`
+hits are kept, plus all the hits at best. A sequence without hits has
+one row with `NA` hit fields. The summary per sequence (`Check ID`, ...)
+comes from
+[`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md).
+
+With `output = "wide"`, one row per sequence: `Sequence`, the summary of
+[`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md)
+and, for each hit `k` from 1 to `num_alignments` in rank order, the hit
+fields prefixed by `k_`.
+
+The attribute `BLASTr_metadata` keeps the parameters, the strategy, the
+BLAST command (`blast_cmd`, without the sequences), the BLAST version,
+the date of each database and the exit codes (see
 [`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md)).
 With `background = TRUE`, a `blastr_job`.
 

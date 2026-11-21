@@ -80,8 +80,11 @@ separate process and the function returns at once; see <code><a href="blast_job.
 <span>  search_alignments <span class="op">=</span> <span class="fl">50L</span>,</span>
 <span>  perc_id <span class="op">=</span> <span class="fl">80L</span>,</span>
 <span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80L</span>,</span>
+<span>  search_qcov_hsp <span class="op">=</span> <span class="fl">50L</span>,</span>
 <span>  check_n <span class="op">=</span> <span class="fl">10L</span>,</span>
 <span>  check_tolerance <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  rank_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"similarity"</span>, <span class="st">"identity"</span>, <span class="st">"bitscore"</span><span class="op">)</span>,</span>
+<span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"long"</span>, <span class="st">"wide"</span><span class="op">)</span>,</span>
 <span>  num_threads <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  batch_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  mt_mode <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -144,7 +147,19 @@ filters. In the benchmark, 50 instead of 10 added about 5% to the time.</p></dd>
 
 
 <dt id="arg-perc-qcov-hsp">perc_qcov_hsp<a class="anchor" aria-label="anchor" href="#arg-perc-qcov-hsp"></a></dt>
-<dd><p>Lowest query coverage per HSP percentage cutoff.</p></dd>
+<dd><p>Query coverage per HSP (percent) expected of a
+good hit. Hits below it are kept and flagged (<code>low_qcov</code>), not
+removed: removing them inside BLAST hides a closer reference that covers
+a bit less of the query (common with partial reference sequences) and
+promotes a worse one. The coverage still weighs in the rank through the
+Similarity score. Defaults to <code>80</code>.</p></dd>
+
+
+<dt id="arg-search-qcov-hsp">search_qcov_hsp<a class="anchor" aria-label="anchor" href="#arg-search-qcov-hsp"></a></dt>
+<dd><p>Lowest query coverage per HSP (percent) used by
+BLAST (<code>-qcov_hsp_perc</code>); hits below it are not returned. Defaults to
+<code>50</code>. Set it to <code>perc_qcov_hsp</code> to remove the hits below
+<code>perc_qcov_hsp</code>, as in earlier versions.</p></dd>
 
 
 <dt id="arg-check-n">check_n<a class="anchor" aria-label="anchor" href="#arg-check-n"></a></dt>
@@ -153,8 +168,23 @@ filters. In the benchmark, 50 instead of 10 added about 5% to the time.</p></dd>
 
 
 <dt id="arg-check-tolerance">check_tolerance<a class="anchor" aria-label="anchor" href="#arg-check-tolerance"></a></dt>
-<dd><p>Identity difference (percentage points) under which
-two hits are considered tied by <code>Check ID</code>. Defaults to <code>0.5</code>.</p></dd>
+<dd><p>Difference from the best hit, in the units of
+<code>rank_by</code>, under which hits are tied ("at best"). Defaults to <code>0.5</code>.</p></dd>
+
+
+<dt id="arg-rank-by">rank_by<a class="anchor" aria-label="anchor" href="#arg-rank-by"></a></dt>
+<dd><p>Criterion to rank the hits of each sequence:
+<code>"similarity"</code> (default, the Similarity score, see
+<code><a href="similarity_score.html">similarity_score()</a></code>), <code>"identity"</code> or <code>"bitscore"</code>. Ties are broken by
+identity, coverage, bitscore and BLAST order. BLAST orders its hits by
+e-value/bitscore, which favours longer alignments, so its first hit is
+not always the most similar one.</p></dd>
+
+
+<dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
+<dd><p><code>"long"</code> (default): one row per hit. <code>"wide"</code>: one row per
+sequence, with the summary of <code><a href="blast_summary.html">blast_summary()</a></code> and the first
+<code>num_alignments</code> hits side by side (<code>1_</code> is the best one).</p></dd>
 
 
 <dt id="arg-num-threads-batch-size-mt-mode">num_threads, batch_size, mt_mode<a class="anchor" aria-label="anchor" href="#arg-num-threads-batch-size-mt-mode"></a></dt>
@@ -220,17 +250,24 @@ directory.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tibble with one row per unique sequence: <code>Sequence</code>, the hit
-summary (<code>Check ID</code>, <code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code>,
-<code>N hits at best identity</code>, <code>N taxids at best identity</code>; see
-<code><a href="check_hits.html">check_hits()</a></code>) and, for each hit <code>k</code>
-from 1 to <code>num_alignments</code>, the columns <code>k_subject header</code>,
-<code>k_Similarity score</code> (see <code><a href="similarity_score.html">similarity_score()</a></code>), <code>k_subject</code>,
-<code>k_identity</code>, <code>k_length</code>, <code>k_mismatches</code>, <code>k_gaps</code>, <code>k_query start</code>,
-<code>k_query end</code>, <code>k_subject start</code>, <code>k_subject end</code>, <code>k_e-value</code>,
-<code>k_bitscore</code>, <code>k_qcovhsp</code> and <code>k_staxid</code>. The attribute
-<code>BLASTr_metadata</code> keeps the parameters, the strategy and the exit codes
-(see <code><a href="exit_codes.html">exit_codes()</a></code>). With <code>background = TRUE</code>, a <code>blastr_job</code>.</p>
+    <p>With <code>output = "long"</code>, a tibble with one row per hit, best
+first: <code>Sequence</code>, <code>rank</code> (1 = best; tied hits share the rank), <code>tie</code>
+(the rank is shared), <code>at_best</code> (within <code>check_tolerance</code> of the best
+hit), <code>low_qcov</code> (<code>qcovhsp</code> below <code>perc_qcov_hsp</code>), <code>blast_rank</code>
+(order given by BLAST), <code>subject</code>, <code>subject header</code>,
+<code>staxid</code>, <code>identity</code>, <code>Similarity score</code>, <code>qcovhsp</code>, <code>nident</code>,
+<code>length</code>, <code>mismatches</code>, <code>gaps</code>, <code>query start</code>, <code>query end</code>,
+<code>subject start</code>, <code>subject end</code>, <code>subject strand</code>, <code>e-value</code> and
+<code>bitscore</code>. The first <code>num_alignments</code> hits are kept, plus all the hits
+at best. A sequence without hits has one row with <code>NA</code> hit fields. The
+summary per sequence (<code>Check ID</code>, ...) comes from <code><a href="blast_summary.html">blast_summary()</a></code>.</p>
+<p>With <code>output = "wide"</code>, one row per sequence: <code>Sequence</code>, the summary
+of <code><a href="blast_summary.html">blast_summary()</a></code> and, for each hit <code>k</code> from 1 to <code>num_alignments</code>
+in rank order, the hit fields prefixed by <code>k_</code>.</p>
+<p>The attribute <code>BLASTr_metadata</code> keeps the parameters, the strategy, the
+BLAST command (<code>blast_cmd</code>, without the sequences), the BLAST version,
+the date of each database and the exit codes (see <code><a href="exit_codes.html">exit_codes()</a></code>). With
+<code>background = TRUE</code>, a <code>blastr_job</code>.</p>
     </div>
 
     <div class="section level2">

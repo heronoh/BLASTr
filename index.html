@@ -218,31 +218,49 @@
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h3>
-<p>Each row is a query sequence. After <code>Sequence</code>, a summary of its hits:</p>
+<p>By default (<code>output = "long"</code>) each row is a hit, best first. The hits of each sequence are ranked by BLASTr, not by BLAST’s order (which favours long alignments): by the Similarity score (<code>(10 * identity + qcovhsp) / 11</code>; or <code>rank_by = "identity"</code> / <code>"bitscore"</code>), then identity, coverage and bitscore.</p>
+<p>BLAST searches with a low coverage cutoff (<code>search_qcov_hsp = 50</code>): a closer reference that covers a bit less of the query is kept, not replaced by a worse one. Hits below <code>perc_qcov_hsp = 80</code> are flagged (<code>low_qcov</code>), and the coverage weighs in the Similarity score.</p>
 <ul>
 <li>
-<code>Check ID</code>: <code>"best ID"</code> when the best hits (the first <code>check_n = 10</code>) agree on the taxid, <code>"check ID"</code> when they do not. Only hits within <code>check_tolerance = 0.5</code> identity points of the best one are compared, since a clearly less identical hit is most likely another taxon. Hits with unknown taxid (<code>0</code>) never confirm an identification.</li>
+<code>rank</code>: 1 is the best hit; tied hits share the rank (<code>tie = TRUE</code>).</li>
 <li>
-<code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code>, <code>N hits at best identity</code> and <code>N taxids at best identity</code>. <code>N hits at best identity = 1</code> means the <code>"best ID"</code> rests on a single reference (the other hits are clearly less identical); several hits with one taxid at best identity mean several references agreeing.</li>
+<code>at_best</code>: the hit is within <code>check_tolerance = 0.5</code> of the best one, a tied candidate for the identification. All hits at best are kept, even beyond <code>num_alignments</code> (10 by default).</li>
+<li>
+<code>blast_rank</code>: the order given by BLAST.</li>
+<li>The hit fields: <code>subject</code>, <code>subject header</code>, <code>staxid</code>, <code>identity</code>, <code>Similarity score</code>, <code>qcovhsp</code>, <code>nident</code>, <code>length</code>, <code>mismatches</code>, <code>gaps</code>, <code>query start</code>, <code>query end</code>, <code>subject start</code>, <code>subject end</code>, <code>subject strand</code>, <code>e-value</code> and <code>bitscore</code>.</li>
 </ul>
-<p>Then the hits (10 by default, <code>num_alignments</code>), each with <code>k_subject header</code>, <code>k_Similarity score</code> (<code>(10 * identity + qcovhsp) / 11</code>), <code>k_subject</code>, <code>k_identity</code>, <code>k_length</code>, <code>k_mismatches</code>, <code>k_gaps</code>, <code>k_query start</code>, <code>k_query end</code>, <code>k_subject start</code>, <code>k_subject end</code>, <code>k_e-value</code>, <code>k_bitscore</code>, <code>k_qcovhsp</code> and <code>k_staxid</code>, where <code>k</code> is the hit rank.</p>
-<p>BLASTr keeps track of any errors that may occur during the BLAST searches. You can retrieve the exit codes and STDERR messages using the <code><a href="reference/exit_codes.html">exit_codes()</a></code> function.</p>
+<p>A sequence without hits has one row with empty hit fields. <code><a href="reference/blast_summary.html">blast_summary()</a></code> gives one row per sequence:</p>
+<ul>
+<li>
+<code>Check ID</code>: <code>"best ID"</code> when the best hits (the first <code>check_n = 10</code>) at best agree on the taxid, <code>"check ID"</code> when they do not. Hits with unknown taxid (<code>0</code>) never confirm an identification.</li>
+<li>
+<code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code>, <code>N hits at best</code> and <code>N taxids at best</code>. <code>N hits at best = 1</code> means the <code>"best ID"</code> rests on a single reference; several hits with one taxid at best mean several references agreeing.</li>
+<li>
+<code>Taxids at best</code>: the taxids tied with the best hit, for a lowest common ancestor; <code>At best truncated</code>: the tie may go beyond the subjects BLAST returned (<code>search_alignments</code>).</li>
+<li>
+<code>Best low qcov</code>: the best hit covers less than <code>perc_qcov_hsp</code> of the query.</li>
+</ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/blast_summary.html">blast_summary</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
+<span><span class="va">best</span> <span class="op">&lt;-</span> <span class="va">blast_results</span><span class="op">[</span><span class="va">blast_results</span><span class="op">$</span><span class="va">rank</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">1L</span>, <span class="op">]</span></span></code></pre></div>
+<p><code>output = "wide"</code> gives one row per sequence: <code>Sequence</code>, the summary and the hits side by side (<code>1_subject</code>, <code>1_identity</code>, …) in rank order. <code><a href="reference/as_blast_long.html">as_blast_long()</a></code> converts wide results, of this or older versions, to the long format.</p>
+<p>The BLAST command (without the sequences), the BLAST version and the date of each database are kept in <code>attr(blast_results, "BLASTr_metadata")</code> (<code>blast_cmd</code>, <code>blast_version</code>, <code>db_dates</code>); the command is shown in interactive sessions.</p>
+<p>BLASTr keeps track of any errors that may occur during the BLAST searches. You can retrieve the exit codes and STDERR messages using the <code><a href="reference/exit_codes.html">exit_codes()</a></code> function.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check for any errors during BLAST searches</span></span>
 <span><span class="va">exit_code_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/exit_codes.html">exit_codes</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">exit_code_df</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exit_code"</span>, <span class="st">"stderr"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Extract the taxonomy IDs from the top BLAST hit for each query sequence.</span></span>
-<span><span class="va">tax_ids</span> <span class="op">&lt;-</span> <span class="va">blast_results</span><span class="op">$</span><span class="va">`1_staxid`</span></span>
+</div>
+<div class="section level3">
+<h3 id="taxonomy">Taxonomy<a class="anchor" aria-label="anchor" href="#taxonomy"></a>
+</h3>
+<p><code><a href="reference/get_tax.html">get_tax()</a></code> reads the NCBI taxonomy from a local SQLite database. It takes taxids or a BLASTr result and returns one row per taxid, with the ranks, the full <code>lineage</code> and its <code>lineage_taxids</code>. If the database does not exist, it is built once from the NCBI taxdump: for a BLASTr result, the taxdump published right after the date of its BLAST database, so the taxonomy matches the database (about a minute, then kept in the BLASTr cache).</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">taxonomy</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_tax.html">get_tax</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Retrieve taxonomic information in parallel</span></span>
-<span><span class="va">taxonomic_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_get_tax.html">parallel_get_tax</a></span><span class="op">(</span></span>
-<span>  organisms_taxIDs <span class="op">=</span> <span class="va">tax_ids</span>,</span>
-<span>  total_cores <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  retry_times <span class="op">=</span> <span class="fl">0</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">taxonomic_info</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># or a database of your choice, built from a given taxdump if missing</span></span>
+<span><span class="va">taxonomy</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_tax.html">get_tax</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9606"</span>, <span class="st">"10090"</span><span class="op">)</span>, taxonomy_db <span class="op">=</span> <span class="st">"~/databases/taxonomy.sqlite"</span><span class="op">)</span></span>
+<span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">blast_results</span>, <span class="va">taxonomy</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>staxid <span class="op">=</span> <span class="st">"taxid"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -319,11 +337,13 @@
 <li>
 <code><a href="reference/blast_job.html">blast_job_status()</a></code>, <code><a href="reference/blast_job.html">blast_job_result()</a></code>, <code><a href="reference/blast_job.html">blast_job_cancel()</a></code>, <code><a href="reference/blast_job.html">blast_job_resume()</a></code>: Follow a search running in the background.</li>
 <li>
-<code><a href="reference/check_hits.html">check_hits()</a></code>, <code><a href="reference/similarity_score.html">similarity_score()</a></code>: Hit agreement (<code>Check ID</code>) and Similarity score.</li>
+<code><a href="reference/blast_summary.html">blast_summary()</a></code>, <code><a href="reference/check_hits.html">check_hits()</a></code>, <code><a href="reference/similarity_score.html">similarity_score()</a></code>: Summary per sequence (<code>Check ID</code>, ties) and Similarity score.</li>
+<li>
+<code><a href="reference/as_blast_long.html">as_blast_long()</a></code>: Converts wide results (any version) to the long format.</li>
 <li>
 <code><a href="reference/exit_codes.html">exit_codes()</a></code>: Retrieve the exit codes and STDERR messages from BLAST searches.</li>
 <li>
-<code><a href="reference/parallel_get_tax.html">parallel_get_tax()</a></code>: Retrieves taxonomic information for multiple NCBI Taxonomy IDs in parallel.</li>
+<code><a href="reference/get_tax.html">get_tax()</a></code>, <code><a href="reference/make_taxonomy_db.html">make_taxonomy_db()</a></code>: Taxonomy of NCBI taxids from a local database.</li>
 <li>
 <code><a href="reference/run_blast.html">run_blast()</a></code>: A lower-level function to run a BLAST search and return the raw output.</li>
 <li>

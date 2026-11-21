@@ -59,6 +59,14 @@
 <li>Hit column <code>k_indentity</code> was renamed to <code>k_identity</code> (typo).</li>
 <li>Subjects are reported by accession (<code>saccver</code>), as before.</li>
 </ul></li>
+<li>
+<code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> returns the long format by default: one row per hit, ranked by BLASTr (<code>rank</code>, <code>tie</code>, <code>at_best</code>, <code>blast_rank</code>), and one row with <code>NA</code> hit fields for each sequence without hits. The wide format (one row per sequence, hits <code>1_</code> to <code>n_</code>) is still available with <code>output = "wide"</code>; its <code>k_</code> hits now follow BLASTr’s rank (BLAST’s order is in <code>k_blast_rank</code>). The summary per sequence (<code>Check ID</code>, …) comes from the new <code><a href="../reference/blast_summary.html">blast_summary()</a></code>.</li>
+<li>Hits are ranked by <code>rank_by</code> (default <code>"similarity"</code>, the Similarity score; or <code>"identity"</code>, <code>"bitscore"</code>), no longer by BLAST’s order, which favours long alignments. <code>check_tolerance</code> is in the units of <code>rank_by</code>.</li>
+<li>
+<code>perc_qcov_hsp</code> (80) no longer removes hits: BLAST searches with the new <code>search_qcov_hsp</code> (default 50) and the hits below <code>perc_qcov_hsp</code> are kept and flagged (<code>low_qcov</code>; summary <code>Best low qcov</code>). Removing them inside BLAST hid closer references that cover a bit less of the query (common with partial references) and promoted worse ones: in 66 ITS2 and rbcL sequences, 65 got a hit of another genus. With <code>search_qcov_hsp = perc_qcov_hsp</code> the search is as before.</li>
+<li>Summary columns <code>N hits at best identity</code> and <code>N taxids at best identity</code> were renamed to <code>N hits at best</code> and <code>N taxids at best</code> (they follow <code>rank_by</code>).</li>
+<li>
+<code><a href="../reference/deprecated-tax.html">get_tax_by_taxID()</a></code>, <code><a href="../reference/deprecated-tax.html">parallel_get_tax()</a></code> and <code><a href="../reference/deprecated-tax.html">get_tax_by_name()</a></code> (online, <code>efetch</code>) are deprecated; they now call <code><a href="../reference/get_tax.html">get_tax()</a></code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
@@ -74,6 +82,11 @@
 <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> searches <code>search_alignments</code> subjects (default 50) and keeps the <code>num_alignments</code> best ones that pass the identity and coverage filters: BLAST cuts its subject list before the coverage filter, so asking only for <code>num_alignments</code> could lose valid hits.</li>
 <li>New <code>task</code> argument in <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> (BLAST <code>-task</code>, e.g. <code>"dc-megablast"</code>).</li>
 <li>New <code><a href="../reference/parallel_blast_hsps.html">parallel_blast_hsps()</a></code>: the raw hits in long format, one row per HSP, with the BLAST fields chosen in <code>fields</code> and no HSP limit or coverage filter unless asked. Searches a database or, with <code>subject</code>, the sequences of a FASTA file (BLAST <code>-subject</code>). Same batches, strategy, ETA, background jobs and log as <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code>.</li>
+<li>All the hits tied with the best one (<code>at_best</code>) are kept, even beyond <code>num_alignments</code>. New summary columns <code>Taxids at best</code> (the tied taxids, for a lowest common ancestor) and <code>At best truncated</code> (the tie may go beyond the <code>search_alignments</code> subjects BLAST returned).</li>
+<li>New hit fields <code>nident</code> and <code>subject strand</code>.</li>
+<li>New <code><a href="../reference/as_blast_long.html">as_blast_long()</a></code>: converts wide results of any version (including <code>k_indentity</code>) to the long format, ranked with the same rules.</li>
+<li>New <code><a href="../reference/get_tax.html">get_tax()</a></code>: taxonomy of taxids from a local SQLite database (NCBI taxdump, <code>taxonomizr</code> layout), in a fraction of a second for thousands of taxids. Takes taxids or any BLASTr result and returns one row per taxid: ranks, <code>lineage</code>, <code>lineage_taxids</code> and <code>merged_into</code> (merged taxids). When the database does not exist, it is built from the NCBI taxdump matching the date of the BLAST database of the search (or the one given), once, and kept in the BLASTr cache. <code><a href="../reference/make_taxonomy_db.html">make_taxonomy_db()</a></code> builds it explicitly.</li>
+<li>The BLAST command of each search (without the sequences) is kept in <code>BLASTr_metadata$blast_cmd</code>, with the BLAST version and the date of each database; it is shown in interactive sessions and written to the log.</li>
 <li>Optional log of the searches: with <code>log_dir</code> (or the option <code>BLASTr.log_dir</code> / the environment variable <code>BLASTR_LOG_DIR</code>), each search adds a line to <code>BLASTr_logs/blastr_runs.tsv</code> with the number and lengths of the sequences, database size, strategy, time, CPU time and percentage of identifications. See <code><a href="../reference/blast_log_path.html">blast_log_path()</a></code> and <code><a href="../reference/blast_log_path.html">read_blast_log()</a></code>.</li>
 </ul></div>
 </div>
@@ -114,7 +127,7 @@
 <h3 id="fixed-0-1-6">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-1-6"></a></h3>
 <ul><li><p>Fix hard coded <code>num_threads = 1L</code> in <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code>. <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> now correctly uses the user provided <code>num_threads</code> argument.</p></li>
 <li><p>Fix parallel functions not using the the custom compute profile. <code><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">purrr::map</a></code> do not have an argument for specifying the <code>mirai</code> <code>.compute</code> argument correctly. Now all parallel functions use the “default” mirai compute profile <code>.compute = NULL</code>.</p></li>
-<li><p>Fix <code><a href="../reference/get_tax_by_taxID.html">get_tax_by_taxID()</a></code> when multiple tax IDs are provided.</p></li>
+<li><p>Fix <code><a href="../reference/deprecated-tax.html">get_tax_by_taxID()</a></code> when multiple tax IDs are provided.</p></li>
 <li><p>Fix <code><a href="../reference/parse_fasta.html">parse_fasta()</a></code> concatenate lines for multiline FASTA.</p></li>
 </ul></div>
 </div>
