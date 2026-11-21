@@ -270,14 +270,21 @@ print(exit_code_df[c("exit_code", "stderr")])
 
 `get_tax()` reads the NCBI taxonomy from a local SQLite database. It
 takes taxids or a BLASTr result and returns one row per taxid, with the
-ranks, the full `lineage` and its `lineage_taxids`. If the database does
-not exist, it is built once from the NCBI taxdump: for a BLASTr result,
-the taxdump published right after the date of its BLAST database, so the
+ranks, the full `lineage` and its `lineage_taxids`. `blast_lca()` gives,
+for each sequence, the deepest taxon that holds at least 90% of the hits
+tied with the best one (`consensus`): one mislabelled reference among
+many tied hits does not push the identification up to a high rank, and
+with up to 9 tied hits all of them must agree. If the database does not
+exist, it is built once from the NCBI taxdump: for a BLASTr result, the
+taxdump published right after the date of its BLAST database, so the
 taxonomy matches the database (about a minute, then kept in the BLASTr
 cache).
 
 ``` r
 taxonomy <- get_tax(blast_results)
+
+# taxon shared by the hits tied with the best one (90% consensus)
+lca <- blast_lca(blast_results)
 
 # or a database of your choice, built from a given taxdump if missing
 taxonomy <- get_tax(c("9606", "10090"), taxonomy_db = "~/databases/taxonomy.sqlite")
@@ -348,6 +355,7 @@ guarantee. `log_dir` keeps a log of your own searches (see
   searches.
 - `get_tax()`, `make_taxonomy_db()`: Taxonomy of NCBI taxids from a
   local database.
+- `blast_lca()`: Consensus lowest common ancestor of the best hits.
 - `run_blast()`: A lower-level function to run a BLAST search and return
   the raw output.
 - `parse_fasta()`: Extracts sequences from a FASTA file.

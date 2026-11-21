@@ -100,6 +100,10 @@
   matching the date of the BLAST database of the search (or the one given),
   once, and kept in the BLASTr cache. `make_taxonomy_db()` builds it
   explicitly.
+* New `blast_lca()`: consensus lowest common ancestor of the hits tied with
+  the best one (by default the deepest taxon holding 90% of them, so a few
+  mislabelled references do not push the identification up), from the
+  exact lineages of `get_tax()`.
 * The BLAST command of each search (without the sequences) is kept in
   `BLASTr_metadata$blast_cmd`, with the BLAST version and the date of each
   database; it is shown in interactive sessions and written to the log.
