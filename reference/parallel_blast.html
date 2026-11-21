@@ -77,6 +77,7 @@ separate process and the function returns at once; see <code><a href="blast_job.
 <span>  total_cores <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  ram_gb <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  num_alignments <span class="op">=</span> <span class="fl">10L</span>,</span>
+<span>  search_alignments <span class="op">=</span> <span class="fl">50L</span>,</span>
 <span>  perc_id <span class="op">=</span> <span class="fl">80L</span>,</span>
 <span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80L</span>,</span>
 <span>  check_n <span class="op">=</span> <span class="fl">3L</span>,</span>
@@ -84,6 +85,7 @@ separate process and the function returns at once; see <code><a href="blast_job.
 <span>  num_threads <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  batch_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  mt_mode <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  task <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  background <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  job_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -128,6 +130,15 @@ the database fits in memory. <code>NULL</code> uses the total RAM of the machine
 Defaults to <code>10</code>.</p></dd>
 
 
+<dt id="arg-search-alignments">search_alignments<a class="anchor" aria-label="anchor" href="#arg-search-alignments"></a></dt>
+<dd><p>Number of subjects BLAST keeps during the
+search (<code>-max_target_seqs</code>). BLAST cuts its list of subjects before the
+<code>perc_qcov_hsp</code> filter, so asking only for <code>num_alignments</code> can lose
+valid hits. BLASTr searches <code>max(num_alignments, search_alignments)</code>
+subjects and keeps the <code>num_alignments</code> best ones that pass the
+filters. In the benchmark, 50 instead of 10 added about 5% to the time.</p></dd>
+
+
 <dt id="arg-perc-id">perc_id<a class="anchor" aria-label="anchor" href="#arg-perc-id"></a></dt>
 <dd><p>Lowest identity percentage cutoff.</p></dd>
 
@@ -151,6 +162,11 @@ two hits are considered tied by <code>Check ID</code>. Defaults to <code>0.5</co
 threads per <code>blastn</code> process, sequences per batch and BLAST+
 multithreading mode (<code>0</code>, <code>1</code> or <code>2</code>). <code>NULL</code> (default) chooses
 automatically.</p></dd>
+
+
+<dt id="arg-task">task<a class="anchor" aria-label="anchor" href="#arg-task"></a></dt>
+<dd><p>BLAST task (<code>-task</code>), e.g. <code>"megablast"</code> (the <code>blastn</code>
+default), <code>"dc-megablast"</code> or <code>"blastn"</code>. <code>NULL</code> uses the BLAST default.</p></dd>
 
 
 <dt id="arg-background">background<a class="anchor" aria-label="anchor" href="#arg-background"></a></dt>

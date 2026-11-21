@@ -14,7 +14,11 @@ jobs, the line is written when the results are collected with
 Each line has:
 
 - the run: `run_id`, `start`, `end`, `host`, `user`, `mode`
-  (foreground/background), `blastr_version`, `blast_version`, `job_dir`;
+  (foreground/background), `function`
+  ([`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+  or
+  [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md)),
+  `blastr_version`, `blast_version`, `job_dir`;
 
 - the sequences: `n_input` (as given), `n_seqs` (unique ones searched),
   `n_invalid` and their length distribution (`len_min`, `len_q25`,
@@ -24,8 +28,9 @@ Each line has:
   `ram_gb`, `fits_ram`;
 
 - the strategy and settings: `total_cores`, `processes`, `threads`,
-  `mt_mode`, `batch_size`, `n_batches`, `num_alignments`, `perc_id`,
-  `perc_qcov_hsp`, `check_n`, `check_tolerance`;
+  `mt_mode`, `batch_size`, `n_batches`, `task`, `num_alignments`,
+  `search_alignments`, `perc_id`, `perc_qcov_hsp`, `check_n`,
+  `check_tolerance`;
 
 - the cost: `wall_s`, `cpu_s` (CPU time of the BLAST processes),
   `cpu_h`, `cpu_efficiency` (`cpu_s` over `wall_s` times the threads in
@@ -34,7 +39,13 @@ Each line has:
 - the identifications: `n_with_hits`, `pct_with_hits`, `pct_best_id`,
   `pct_check_id` (both over all sequences), `id1_median` (median
   identity of the first hit) and `pct_id1_ge_99`, `pct_id1_ge_97`
-  (sequences whose first hit has identity of at least 99% / 97%).
+  (sequences whose first hit has identity of at least 99% / 97%). For
+  [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md),
+  `pct_best_id` and `pct_check_id` are `NA` and the first hit is the
+  first HSP of the best subject.
+
+When a newer BLASTr adds columns, the file is rewritten with all of them
+(missing values as `NA`).
 
 ## Usage
 

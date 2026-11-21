@@ -245,6 +245,14 @@ print(taxonomic_info)
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md):
   Runs BLAST searches for multiple sequences in parallel, in the
   foreground or in the background.
+- [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md):
+  Like
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md),
+  but returns every HSP in long format, against a database or a FASTA
+  file (`subject`).
+- [`blast_log_path()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md),
+  [`read_blast_log()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md):
+  Optional log of the searches (`log_dir`).
 - [`blast_strategy()`](https://heronoh.github.io/BLASTr/reference/blast_strategy.md):
   Shows how
   [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
@@ -345,6 +353,9 @@ details.
 
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
   : Run Parallelized BLAST
+
+- [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md)
+  : Run Parallelized BLAST and return every HSP
 
 - [`parallel_blast_old()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_old.md)
   **\[deprecated\]** : Run parallel BLAST for a set of sequences.

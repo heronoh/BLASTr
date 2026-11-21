@@ -22,6 +22,7 @@ parallel_blast(
   total_cores = 1L,
   ram_gb = NULL,
   num_alignments = 10L,
+  search_alignments = 50L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   check_n = 3L,
@@ -29,6 +30,7 @@ parallel_blast(
   num_threads = NULL,
   batch_size = NULL,
   mt_mode = NULL,
+  task = NULL,
   background = FALSE,
   job_dir = NULL,
   log_dir = NULL,
@@ -70,6 +72,15 @@ parallel_blast(
 
   Number of hits to keep for each sequence. Defaults to `10`.
 
+- search_alignments:
+
+  Number of subjects BLAST keeps during the search (`-max_target_seqs`).
+  BLAST cuts its list of subjects before the `perc_qcov_hsp` filter, so
+  asking only for `num_alignments` can lose valid hits. BLASTr searches
+  `max(num_alignments, search_alignments)` subjects and keeps the
+  `num_alignments` best ones that pass the filters. In the benchmark, 50
+  instead of 10 added about 5% to the time.
+
 - perc_id:
 
   Lowest identity percentage cutoff.
@@ -94,6 +105,11 @@ parallel_blast(
   Override the automatic strategy: threads per `blastn` process,
   sequences per batch and BLAST+ multithreading mode (`0`, `1` or `2`).
   `NULL` (default) chooses automatically.
+
+- task:
+
+  BLAST task (`-task`), e.g. `"megablast"` (the `blastn` default),
+  `"dc-megablast"` or `"blastn"`. `NULL` uses the BLAST default.
 
 - background:
 

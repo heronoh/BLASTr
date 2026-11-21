@@ -62,6 +62,22 @@
   choosing the strategy.
 - A sequence that makes BLAST fail is retried alone, so the others in
   its batch are not affected.
+- [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+  searches `search_alignments` subjects (default 50) and keeps the
+  `num_alignments` best ones that pass the identity and coverage
+  filters: BLAST cuts its subject list before the coverage filter, so
+  asking only for `num_alignments` could lose valid hits.
+- New `task` argument in
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+  (BLAST `-task`, e.g. `"dc-megablast"`).
+- New
+  [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md):
+  the raw hits in long format, one row per HSP, with the BLAST fields
+  chosen in `fields` and no HSP limit or coverage filter unless asked.
+  Searches a database or, with `subject`, the sequences of a FASTA file
+  (BLAST `-subject`). Same batches, strategy, ETA, background jobs and
+  log as
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md).
 - Optional log of the searches: with `log_dir` (or the option
   `BLASTr.log_dir` / the environment variable `BLASTR_LOG_DIR`), each
   search adds a line to `BLASTr_logs/blastr_runs.tsv` with the number

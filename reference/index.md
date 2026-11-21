@@ -48,6 +48,9 @@
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
   : Run Parallelized BLAST
 
+- [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md)
+  : Run Parallelized BLAST and return every HSP
+
 - [`parallel_blast_old()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_old.md)
   **\[deprecated\]** : Run parallel BLAST for a set of sequences.
 
