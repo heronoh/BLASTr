@@ -80,7 +80,7 @@
 </h2>
 <ul>
 <li>
-<strong>Parallel BLAST Searches:</strong> Run multiple BLAST searches concurrently to significantly speed up your analysis.</li>
+<strong>Parallel BLAST Searches:</strong> Sequences are searched in batches, with the number of processes and threads chosen from your cores, RAM and database size. Searches can run in the background, with progress and ETA.</li>
 <li>
 <strong>Automated Dependency Management:</strong> <code>BLASTr</code> automatically installs and manages BLAST+ and Entrez Direct dependencies using <code>condathis</code>, ensuring a hassle-free setup.</li>
 <li>
@@ -103,7 +103,38 @@
 <h2 id="basic-usage">Basic Usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
 </h2>
 <p>Here’s a simple example of how to use <code>BLASTr</code> to perform a BLAST search and retrieve taxonomic information:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+</div>
+<div class="section level2">
+<h2 id="obtain-ncbi-databases">Obtain NCBI databases<a class="anchor" aria-label="anchor" href="#obtain-ncbi-databases"></a>
+</h2>
+<p>To obtain complet NCBI blast formated databases, procees as follows</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># download volumes and md5 check files </span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">wget</span> https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">wget</span> https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz.md5 <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="fu">wget</span> https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb-metadata.json <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>     <span class="co"># where 000 is the first volume and 150, the last (up to now).</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>     </span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>5 <span class="kw">|</span> <span class="ex">parallel</span> md5sum <span class="at">-c</span> {} <span class="op">&gt;&gt;</span> check.txt</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="fu">sort</span> check.txt <span class="op">&gt;</span> check_sort.txt</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>tar.gz <span class="kw">|</span> <span class="ex">parallel</span> tar -xvzf {} </span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  </span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="making-local-custom-databeses">Making local custom databeses<a class="anchor" aria-label="anchor" href="#making-local-custom-databeses"></a>
+</h2>
+<p>You can turn any <em>.fasta</em> file with unique headers into a BLAST+ formated database using the BLASTr function <em>make_blast_db</em>. It is recomended that the unique identifier of each sequence do not contain <em>.</em>. You may provide a <em>.txt</em> with the same name as the DB’s <em>.fasta</em> file, formated <em>lcl|</em><sequenceid><taxonomyid><newline>.</newline></taxonomyid></sequenceid></p>
+<p>If you want to retrieve <em>subject Scientific name</em> on the results, you can download and extract the <em>taxdb</em> files from NCBI, as mentioned above.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/heronoh/BLASTr" class="external-link">BLASTr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># First, make sure you have the necessary dependencies installed</span></span>
@@ -121,9 +152,13 @@
 <span></span>
 <span><span class="co"># Path to your local FASTA database</span></span>
 <span><span class="va">fasta_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path_package.html" class="external-link">path_package</a></span><span class="op">(</span><span class="st">"BLASTr"</span>, <span class="st">"extdata"</span>, <span class="st">"minimal_db_blast"</span>, ext <span class="op">=</span> <span class="st">"fasta"</span><span class="op">)</span></span>
-<span></span>
 <span><span class="co"># Path to database</span></span>
 <span><span class="va">db_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/file_temp.html" class="external-link">path_temp</a></span><span class="op">(</span><span class="st">"minimal_db_blast"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># To add taxids, pass `taxid_map`: a .txt file with the same name and</span></span>
+<span><span class="co">#  directory as the FASTA, with two columns separated by a space. The 1st is</span></span>
+<span><span class="co">#  the unique ID (first word of the header, no "."), preceded by "lcl|";</span></span>
+<span><span class="co">#  the 2nd is the taxID.</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/make_blast_db.html">make_blast_db</a></span><span class="op">(</span></span>
 <span>  fasta_path <span class="op">=</span> <span class="va">fasta_path</span>,</span>
@@ -132,55 +167,71 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">fasta_path</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "&gt;AP011979.1 Gymnotus carapo mitochondrial DNA, almost complete genome"</span></span>
-<span><span class="co">#&gt; [2] "TACAAACTGGGATTAGATACCCCACTATGCCTAGCCATAAACTTAAATGAAACTATACTAAACTCATTCGCCAGAGTACT"</span></span>
-<span><span class="co">#&gt; [3] "ACAAGCGAAAGCTTAAAACTCAAAGGACTTGGCGGTGTTTCAGACCCAC"</span></span>
-<span><span class="co">#&gt; [4] "&gt;CP030121.1 Brasilonema octagenarum UFV-E1 chromosome"</span></span>
-<span><span class="co">#&gt; [5] "TAGCTCCCGTCGAGTCTCTGCACCTTCCGCATTAGTCATTTATCATTTGTCGTTAGTCATTTGCTAGTAACAATTAACTA"</span></span>
-<span><span class="co">#&gt; [6] "AAAACGAAGGACAAAAGACAAATTTGGC"</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">db_path</span>, <span class="st">".ndb"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<span></span>
+<span><span class="co"># For `ssciname` (subject scientific name) to work, BLAST must find the</span></span>
+<span><span class="co">#  taxdb files: export BLASTDB pointing to their directory, e.g.</span></span>
+<span><span class="co">#  export BLASTDB=/data/databases/core_nt:$BLASTDB</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run BLAST in parallel</span></span>
 <span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span></span>
 <span>  query_seqs <span class="op">=</span> <span class="va">seqs</span>,</span>
 <span>  db_path <span class="op">=</span> <span class="va">db_path</span>,</span>
-<span>  total_cores <span class="op">=</span> <span class="fl">2</span> <span class="co"># Number of BLAST processes to use</span></span>
+<span>  total_cores <span class="op">=</span> <span class="fl">2</span> <span class="co"># Total number of threads to use</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">blast_results</span></span>
-<span><span class="co">#&gt; # A tibble: 6 × 57</span></span>
-<span><span class="co">#&gt;   Sequence               `1_subject header` `1_subject` `1_indentity` `1_length`</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                  &lt;chr&gt;              &lt;chr&gt;               &lt;dbl&gt;      &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 CTAGCCATAAACTTAAATGAA… Gymnotus carapo m… AP011979.1           97.0         99</span></span>
-<span><span class="co">#&gt; 2 CTAGCCATAAACTTAAATGAA… &lt;NA&gt;               &lt;NA&gt;                 NA           NA</span></span>
-<span><span class="co">#&gt; 3 GCCAAATTTGTGTTTTGTCCT… Brasilonema octag… CP030121.1           96.2         78</span></span>
-<span><span class="co">#&gt; 4 AACATTGTATTTTGTCTTTGG… Symphoromyia cras… MG967958.1           84.9        179</span></span>
-<span><span class="co">#&gt; 5 ACTATACCTATTATTCGGCGC… Homo sapiens isol… MN849868.1          100          226</span></span>
-<span><span class="co">#&gt; 6 TTAGCCATAAACATAAAAGTT… Hydrochoerus hydr… KX381515.1           99.0         99</span></span>
-<span><span class="co">#&gt; # ℹ 52 more variables: `1_mismatches` &lt;dbl&gt;, `1_gaps` &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   `1_query start` &lt;dbl&gt;, `1_query end` &lt;dbl&gt;, `1_subject start` &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   `1_subject end` &lt;dbl&gt;, `1_e-value` &lt;dbl&gt;, `1_bitscore` &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   `1_qcovhsp` &lt;dbl&gt;, `1_staxid` &lt;chr&gt;, `2_subject header` &lt;chr&gt;,</span></span>
-<span><span class="co">#&gt; #   `2_subject` &lt;chr&gt;, `2_indentity` &lt;dbl&gt;, `2_length` &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   `2_mismatches` &lt;dbl&gt;, `2_gaps` &lt;dbl&gt;, `2_query start` &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   `2_query end` &lt;dbl&gt;, `2_subject start` &lt;dbl&gt;, `2_subject end` &lt;dbl&gt;, …</span></span></code></pre></div>
+<span><span class="va">blast_results</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="how-the-search-is-split">How the search is split<a class="anchor" aria-label="anchor" href="#how-the-search-is-split"></a>
+</h3>
+<p><code><a href="reference/parallel_blast.html">parallel_blast()</a></code> groups the sequences in batches and runs one <code>blastn</code> per batch, so the database is read once per batch instead of once per sequence. How many <code>blastn</code> run at once, with how many threads each, and how many sequences go in each batch are chosen automatically from <code>total_cores</code>, <code>ram_gb</code> (the RAM available for the search; the total RAM of the machine by default), the size of the database(s) and the number of sequences. <code><a href="reference/blast_strategy.html">blast_strategy()</a></code> shows the plan without running BLAST:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/blast_strategy.html">blast_strategy</a></span><span class="op">(</span></span>
+<span>  n_seqs <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  db_path <span class="op">=</span> <span class="st">"/data/databases/core_nt/core_nt"</span>,</span>
+<span>  total_cores <span class="op">=</span> <span class="fl">32</span>,</span>
+<span>  ram_gb <span class="op">=</span> <span class="fl">256</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><code>num_threads</code>, <code>batch_size</code> and <code>mt_mode</code> override the automatic choice. Several databases can be given as a vector in <code>db_path</code>; they are searched together, smallest first.</p>
+<p>While BLAST runs, a progress bar shows the percentage done and the estimated time left (ETA).</p>
+</div>
+<div class="section level3">
+<h3 id="running-in-the-background">Running in the background<a class="anchor" aria-label="anchor" href="#running-in-the-background"></a>
+</h3>
+<p>With <code>background = TRUE</code>, <code><a href="reference/parallel_blast.html">parallel_blast()</a></code> starts the search in a separate process and returns a job at once, so the R session (or a pipeline run in blocks) is free in the meantime. The job lives in a directory and survives the end of the R session.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">job</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span></span>
+<span>  query_seqs <span class="op">=</span> <span class="va">seqs</span>,</span>
+<span>  db_path <span class="op">=</span> <span class="va">db_path</span>,</span>
+<span>  total_cores <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  background <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/blast_job.html">blast_job_status</a></span><span class="op">(</span><span class="va">job</span><span class="op">)</span> <span class="co"># progress and ETA</span></span>
+<span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/blast_job.html">blast_job_result</a></span><span class="op">(</span><span class="va">job</span><span class="op">)</span> <span class="co"># waits for the end if needed</span></span>
+<span></span>
+<span><span class="co"># From another R session:</span></span>
+<span><span class="co"># job &lt;- blast_job("&lt;job directory&gt;")</span></span>
+<span><span class="co"># blast_job_cancel(job); blast_job_resume(job)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
+</h3>
+<p>Each row is a query sequence. After <code>Sequence</code>, a summary of its hits:</p>
+<ul>
+<li>
+<code>Check ID</code>: <code>"best ID"</code> when the best hits (the first <code>check_n = 3</code>) agree on the taxid, <code>"check ID"</code> when they do not. Only hits within <code>check_tolerance = 0.5</code> identity points of the best one are compared, since a clearly less identical hit is most likely another taxon. Hits with unknown taxid (<code>0</code>) never confirm an identification.</li>
+<li>
+<code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code> and <code>N taxids at best identity</code>.</li>
+</ul>
+<p>Then the hits (10 by default, <code>num_alignments</code>), each with <code>k_subject header</code>, <code>k_Similarity score</code> (<code>(10 * identity + qcovhsp) / 11</code>), <code>k_subject</code>, <code>k_identity</code>, <code>k_length</code>, <code>k_mismatches</code>, <code>k_gaps</code>, <code>k_query start</code>, <code>k_query end</code>, <code>k_subject start</code>, <code>k_subject end</code>, <code>k_e-value</code>, <code>k_bitscore</code>, <code>k_qcovhsp</code> and <code>k_staxid</code>, where <code>k</code> is the hit rank.</p>
 <p>BLASTr keeps track of any errors that may occur during the BLAST searches. You can retrieve the exit codes and STDERR messages using the <code><a href="reference/exit_codes.html">exit_codes()</a></code> function.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check for any errors during BLAST searches</span></span>
 <span><span class="va">exit_code_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/exit_codes.html">exit_codes</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">exit_code_df</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exit_code"</span>, <span class="st">"stderr"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 × 2</span></span>
-<span><span class="co">#&gt;   exit_code stderr</span></span>
-<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
-<span><span class="co">#&gt; 2         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
-<span><span class="co">#&gt; 3         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
-<span><span class="co">#&gt; 4         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
-<span><span class="co">#&gt; 5         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span>
-<span><span class="co">#&gt; 6         0 "Warning: [blastn] Examining 5 or more matches is recommended\n"</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">exit_code_df</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exit_code"</span>, <span class="st">"stderr"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extract the taxonomy IDs from the top BLAST hit for each query sequence.</span></span>
 <span><span class="va">tax_ids</span> <span class="op">&lt;-</span> <span class="va">blast_results</span><span class="op">$</span><span class="va">`1_staxid`</span></span>
 <span></span>
@@ -190,18 +241,9 @@
 <span>  total_cores <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  retry_times <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; retrying 0 of 0</span></span>
-<span><span class="co">#&gt; ------------------------&gt; unable to retrieve taxonomy for: N/A</span></span>
-<span><span class="co">#&gt; The following taxIDs could not be retrieved even after 0 attempts:</span></span>
-<span><span class="co">#&gt; N/A</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">taxonomic_info</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 0 × 13</span></span>
-<span><span class="co">#&gt; # ℹ 13 variables: Sci_name &lt;chr&gt;, query_taxID &lt;chr&gt;, Superkingdom (NCBI) &lt;chr&gt;,</span></span>
-<span><span class="co">#&gt; #   Kingdom (NCBI) &lt;chr&gt;, Phylum (NCBI) &lt;chr&gt;, Subphylum (NCBI) &lt;chr&gt;,</span></span>
-<span><span class="co">#&gt; #   Class (NCBI) &lt;chr&gt;, Subclass (NCBI) &lt;chr&gt;, Order (NCBI) &lt;chr&gt;,</span></span>
-<span><span class="co">#&gt; #   Suborder (NCBI) &lt;chr&gt;, Family (NCBI) &lt;chr&gt;, Subfamily (NCBI) &lt;chr&gt;,</span></span>
-<span><span class="co">#&gt; #   Genus (NCBI) &lt;chr&gt;</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">taxonomic_info</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="main-functions">Main Functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
@@ -212,7 +254,13 @@
 <li>
 <code><a href="reference/make_blast_db.html">make_blast_db()</a></code>: Creates a BLAST database from a FASTA file.</li>
 <li>
-<code><a href="reference/parallel_blast.html">parallel_blast()</a></code>: Runs BLAST searches for multiple sequences in parallel.</li>
+<code><a href="reference/parallel_blast.html">parallel_blast()</a></code>: Runs BLAST searches for multiple sequences in parallel, in the foreground or in the background.</li>
+<li>
+<code><a href="reference/blast_strategy.html">blast_strategy()</a></code>: Shows how <code><a href="reference/parallel_blast.html">parallel_blast()</a></code> will split a search.</li>
+<li>
+<code><a href="reference/blast_job.html">blast_job_status()</a></code>, <code><a href="reference/blast_job.html">blast_job_result()</a></code>, <code><a href="reference/blast_job.html">blast_job_cancel()</a></code>, <code><a href="reference/blast_job.html">blast_job_resume()</a></code>: Follow a search running in the background.</li>
+<li>
+<code><a href="reference/check_hits.html">check_hits()</a></code>, <code><a href="reference/similarity_score.html">similarity_score()</a></code>: Hit agreement (<code>Check ID</code>) and Similarity score.</li>
 <li>
 <code><a href="reference/exit_codes.html">exit_codes()</a></code>: Retrieve the exit codes and STDERR messages from BLAST searches.</li>
 <li>

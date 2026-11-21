@@ -2,6 +2,23 @@
 
 ## All functions
 
+- [`blast_job()`](https://heronoh.github.io/BLASTr/reference/blast_job.md)
+  [`blast_job_status()`](https://heronoh.github.io/BLASTr/reference/blast_job.md)
+  [`blast_job_cancel()`](https://heronoh.github.io/BLASTr/reference/blast_job.md)
+  [`blast_job_resume()`](https://heronoh.github.io/BLASTr/reference/blast_job.md)
+  [`blast_job_result()`](https://heronoh.github.io/BLASTr/reference/blast_job.md)
+  : Background BLAST jobs
+
+- [`blast_log_path()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md)
+  [`read_blast_log()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md)
+  : Log of BLAST searches
+
+- [`blast_strategy()`](https://heronoh.github.io/BLASTr/reference/blast_strategy.md)
+  : Plan the BLAST search strategy
+
+- [`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md)
+  : Check the agreement of the best BLAST hits
+
 - [`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md)
   : Retrieve Exit Codes and Standard Error from BLASTr Results
 
@@ -43,3 +60,6 @@
 
 - [`run_blast()`](https://heronoh.github.io/BLASTr/reference/run_blast.md)
   : Run BLAST
+
+- [`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)
+  : Similarity score of BLAST hits

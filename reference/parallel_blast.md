@@ -1,6 +1,16 @@
 # Run Parallelized BLAST
 
-Run parallel BLAST for a set of sequences
+Search a set of sequences against one or more BLAST databases, using the
+cores and RAM given. The search strategy is chosen automatically (see
+[`blast_strategy()`](https://heronoh.github.io/BLASTr/reference/blast_strategy.md)):
+the sequences are grouped in batches, and each `blastn` process searches
+a whole batch, so the database is read once per batch instead of once
+per sequence.
+
+The progress bar shows the estimated time left (ETA), computed from the
+batches already finished. With `background = TRUE` the search runs in a
+separate process and the function returns at once; see
+[`blast_job()`](https://heronoh.github.io/BLASTr/reference/blast_job.md).
 
 ## Usage
 
@@ -10,13 +20,20 @@ parallel_blast(
   db_path,
   ...,
   total_cores = 1L,
-  num_threads = 1L,
-  blast_type = "blastn",
+  ram_gb = NULL,
+  num_alignments = 10L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
-  num_alignments = 4L,
+  check_n = 3L,
+  check_tolerance = 0.5,
+  num_threads = NULL,
+  batch_size = NULL,
+  mt_mode = NULL,
+  background = FALSE,
+  job_dir = NULL,
+  log_dir = NULL,
   retry_times = 3L,
-  mt_mode = c("2", "1", "0"),
+  blast_type = "blastn",
   verbose = c("progress", "silent", "cmd", "output", "full"),
   env_name = "blastr-blast-env",
   out_file = deprecated(),
@@ -32,7 +49,9 @@ parallel_blast(
 
 - db_path:
 
-  Path to the formatted BLAST database.
+  Path(s) to the formatted BLAST database(s). Several databases (a
+  vector, or one string separated by spaces) are searched together, the
+  smallest first.
 
 - ...:
 
@@ -40,15 +59,16 @@ parallel_blast(
 
 - total_cores:
 
-  Number of parallel BLAST processes to run.
+  Number of CPU cores (threads) to use in total.
 
-- num_threads:
+- ram_gb:
 
-  Number of threads/cores to run each BLAST process on.
+  RAM available for the search, in GB. Used to decide whether the
+  database fits in memory. `NULL` uses the total RAM of the machine.
 
-- blast_type:
+- num_alignments:
 
-  BLAST+ executable to be used on search.
+  Number of hits to keep for each sequence. Defaults to `10`.
 
 - perc_id:
 
@@ -58,24 +78,57 @@ parallel_blast(
 
   Lowest query coverage per HSP percentage cutoff.
 
-- num_alignments:
+- check_n:
 
-  Number of alignments to retrieve results for each query sequence.
-  Defaults to `4`.
+  Number of best hits compared by `Check ID` (see
+  [`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md)).
+  Defaults to `3`.
+
+- check_tolerance:
+
+  Identity difference (percentage points) under which two hits are
+  considered tied by `Check ID`. Defaults to `0.5`.
+
+- num_threads, batch_size, mt_mode:
+
+  Override the automatic strategy: threads per `blastn` process,
+  sequences per batch and BLAST+ multithreading mode (`0`, `1` or `2`).
+  `NULL` (default) chooses automatically.
+
+- background:
+
+  If `TRUE`, start the search in the background and return a job (see
+  [`blast_job()`](https://heronoh.github.io/BLASTr/reference/blast_job.md))
+  instead of the results.
+
+- job_dir:
+
+  Directory for the job files. Defaults to a temporary directory
+  (removed at the end) in the foreground, and to a new directory in the
+  BLASTr cache in the background.
+
+- log_dir:
+
+  Directory where a `BLASTr_logs` folder keeps a log of the searches
+  (number and lengths of the sequences, database size, strategy, time,
+  CPU time and percentage of identifications). `NULL` uses the option
+  `BLASTr.log_dir` or the environment variable `BLASTR_LOG_DIR`; with
+  none set, nothing is logged. See
+  [`blast_log_path()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md).
 
 - retry_times:
 
   Number of times to retry failed BLAST jobs. Defaults to `3` attempts.
 
-- mt_mode:
+- blast_type:
 
-  Multithreading mode to be used by BLAST+. One of: `c("2", "1", "0")`.
-  See BLAST+ manual for details.
+  BLAST+ executable to be used on search.
 
 - verbose:
 
-  Strategy used for showing outputting internal commands. Defaults to
-  "progress".
+  `"progress"` (default) shows the progress and ETA; `"silent"` shows
+  nothing. `"cmd"`, `"output"` and `"full"` also show the chosen
+  strategy.
 
 - env_name:
 
@@ -92,7 +145,20 @@ parallel_blast(
 
 ## Value
 
-A tibble with the BLAST tabular output.
+A tibble with one row per unique sequence: `Sequence`, the hit summary
+(`Check ID`, `N hits`, `N taxids`, `N hits same taxid as 1st`,
+`N taxids at best identity`; see
+[`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md))
+and, for each hit `k` from 1 to `num_alignments`, the columns
+`k_subject header`, `k_Similarity score` (see
+[`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)),
+`k_subject`, `k_identity`, `k_length`, `k_mismatches`, `k_gaps`,
+`k_query start`, `k_query end`, `k_subject start`, `k_subject end`,
+`k_e-value`, `k_bitscore`, `k_qcovhsp` and `k_staxid`. The attribute
+`BLASTr_metadata` keeps the parameters, the strategy and the exit codes
+(see
+[`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md)).
+With `background = TRUE`, a `blastr_job`.
 
 ## Examples
 
@@ -113,5 +179,10 @@ blast_res <- parallel_blast(
   db_path = temp_db_path
 )
 blast_res
+
+# in the background
+job <- parallel_blast(query_seqs_string, temp_db_path, background = TRUE)
+blast_job_status(job)
+blast_res <- blast_job_result(job)
 } # }
 ```
