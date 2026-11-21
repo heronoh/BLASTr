@@ -193,13 +193,16 @@ blast_results <- blast_job_result(job) # waits for the end if needed
 
 Each row is a query sequence. After `Sequence`, a summary of its hits:
 
-- `Check ID`: `"best ID"` when the best hits (the first `check_n = 3`)
+- `Check ID`: `"best ID"` when the best hits (the first `check_n = 10`)
   agree on the taxid, `"check ID"` when they do not. Only hits within
   `check_tolerance = 0.5` identity points of the best one are compared,
   since a clearly less identical hit is most likely another taxon. Hits
   with unknown taxid (`0`) never confirm an identification.
-- `N hits`, `N taxids`, `N hits same taxid as 1st` and
-  `N taxids at best identity`.
+- `N hits`, `N taxids`, `N hits same taxid as 1st`,
+  `N hits at best identity` and `N taxids at best identity`.
+  `N hits at best identity = 1` means the `"best ID"` rests on a single
+  reference (the other hits are clearly less identical); several hits
+  with one taxid at best identity mean several references agreeing.
 
 Then the hits (10 by default, `num_alignments`), each with
 `k_subject header`, `k_Similarity score`

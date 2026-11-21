@@ -19,14 +19,23 @@ does not hide or create a disagreement.
 - `NA`: no hits.
 
 The other columns use all the hits of the sequence: `N hits`, `N taxids`
-(distinct known taxids), `N hits same taxid as 1st` and
-`N taxids at best identity` (distinct taxids among the hits within
-`tolerance` of the best identity of all hits).
+(distinct known taxids), `N hits same taxid as 1st`,
+`N hits at best identity` (hits within `tolerance` of the best identity
+of all hits) and `N taxids at best identity` (distinct known taxids
+among those hits).
+
+Together they tell how well a `"best ID"` is supported:
+`N hits at best identity = 1` means a single reference at the best
+identity (the others, if any, are clearly less identical); several hits
+at best identity with `N taxids at best identity = 1` mean several
+references agreeing; more than one taxid at best identity means a tie
+between taxa. Sequences with fewer hits than `check_n` are checked with
+the hits they have.
 
 ## Usage
 
 ``` r
-check_hits(hits, check_n = 3L, tolerance = 0.5)
+check_hits(hits, check_n = 10L, tolerance = 0.5)
 ```
 
 ## Arguments
@@ -57,9 +66,10 @@ hits <- data.frame(
   identity = c(100, 99, 98.7), staxid = c("9606", "9598", "9597")
 )
 check_hits(hits)
-#> # A tibble: 1 × 6
+#> # A tibble: 1 × 7
 #>   query `Check ID` `N hits` `N taxids` `N hits same taxid as 1st`
 #>   <chr> <chr>         <int>      <int>                      <int>
 #> 1 q1    best ID           3          3                          1
-#> # ℹ 1 more variable: `N taxids at best identity` <int>
+#> # ℹ 2 more variables: `N hits at best identity` <int>,
+#> #   `N taxids at best identity` <int>
 ```

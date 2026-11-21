@@ -80,7 +80,7 @@ separate process and the function returns at once; see <code><a href="blast_job.
 <span>  search_alignments <span class="op">=</span> <span class="fl">50L</span>,</span>
 <span>  perc_id <span class="op">=</span> <span class="fl">80L</span>,</span>
 <span>  perc_qcov_hsp <span class="op">=</span> <span class="fl">80L</span>,</span>
-<span>  check_n <span class="op">=</span> <span class="fl">3L</span>,</span>
+<span>  check_n <span class="op">=</span> <span class="fl">10L</span>,</span>
 <span>  check_tolerance <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  num_threads <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  batch_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -149,7 +149,7 @@ filters. In the benchmark, 50 instead of 10 added about 5% to the time.</p></dd>
 
 <dt id="arg-check-n">check_n<a class="anchor" aria-label="anchor" href="#arg-check-n"></a></dt>
 <dd><p>Number of best hits compared by <code>Check ID</code>
-(see <code><a href="check_hits.html">check_hits()</a></code>). Defaults to <code>3</code>.</p></dd>
+(see <code><a href="check_hits.html">check_hits()</a></code>). Defaults to <code>10</code>.</p></dd>
 
 
 <dt id="arg-check-tolerance">check_tolerance<a class="anchor" aria-label="anchor" href="#arg-check-tolerance"></a></dt>
@@ -222,7 +222,8 @@ directory.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with one row per unique sequence: <code>Sequence</code>, the hit
 summary (<code>Check ID</code>, <code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code>,
-<code>N taxids at best identity</code>; see <code><a href="check_hits.html">check_hits()</a></code>) and, for each hit <code>k</code>
+<code>N hits at best identity</code>, <code>N taxids at best identity</code>; see
+<code><a href="check_hits.html">check_hits()</a></code>) and, for each hit <code>k</code>
 from 1 to <code>num_alignments</code>, the columns <code>k_subject header</code>,
 <code>k_Similarity score</code> (see <code><a href="similarity_score.html">similarity_score()</a></code>), <code>k_subject</code>,
 <code>k_identity</code>, <code>k_length</code>, <code>k_mismatches</code>, <code>k_gaps</code>, <code>k_query start</code>,

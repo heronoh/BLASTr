@@ -25,7 +25,7 @@ parallel_blast(
   search_alignments = 50L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
-  check_n = 3L,
+  check_n = 10L,
   check_tolerance = 0.5,
   num_threads = NULL,
   batch_size = NULL,
@@ -93,7 +93,7 @@ parallel_blast(
 
   Number of best hits compared by `Check ID` (see
   [`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md)).
-  Defaults to `3`.
+  Defaults to `10`.
 
 - check_tolerance:
 
@@ -163,7 +163,7 @@ parallel_blast(
 
 A tibble with one row per unique sequence: `Sequence`, the hit summary
 (`Check ID`, `N hits`, `N taxids`, `N hits same taxid as 1st`,
-`N taxids at best identity`; see
+`N hits at best identity`, `N taxids at best identity`; see
 [`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md))
 and, for each hit `k` from 1 to `num_alignments`, the columns
 `k_subject header`, `k_Similarity score` (see

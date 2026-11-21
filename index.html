@@ -221,9 +221,9 @@
 <p>Each row is a query sequence. After <code>Sequence</code>, a summary of its hits:</p>
 <ul>
 <li>
-<code>Check ID</code>: <code>"best ID"</code> when the best hits (the first <code>check_n = 3</code>) agree on the taxid, <code>"check ID"</code> when they do not. Only hits within <code>check_tolerance = 0.5</code> identity points of the best one are compared, since a clearly less identical hit is most likely another taxon. Hits with unknown taxid (<code>0</code>) never confirm an identification.</li>
+<code>Check ID</code>: <code>"best ID"</code> when the best hits (the first <code>check_n = 10</code>) agree on the taxid, <code>"check ID"</code> when they do not. Only hits within <code>check_tolerance = 0.5</code> identity points of the best one are compared, since a clearly less identical hit is most likely another taxon. Hits with unknown taxid (<code>0</code>) never confirm an identification.</li>
 <li>
-<code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code> and <code>N taxids at best identity</code>.</li>
+<code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code>, <code>N hits at best identity</code> and <code>N taxids at best identity</code>. <code>N hits at best identity = 1</code> means the <code>"best ID"</code> rests on a single reference (the other hits are clearly less identical); several hits with one taxid at best identity mean several references agreeing.</li>
 </ul>
 <p>Then the hits (10 by default, <code>num_alignments</code>), each with <code>k_subject header</code>, <code>k_Similarity score</code> (<code>(10 * identity + qcovhsp) / 11</code>), <code>k_subject</code>, <code>k_identity</code>, <code>k_length</code>, <code>k_mismatches</code>, <code>k_gaps</code>, <code>k_query start</code>, <code>k_query end</code>, <code>k_subject start</code>, <code>k_subject end</code>, <code>k_e-value</code>, <code>k_bitscore</code>, <code>k_qcovhsp</code> and <code>k_staxid</code>, where <code>k</code> is the hit rank.</p>
 <p>BLASTr keeps track of any errors that may occur during the BLAST searches. You can retrieve the exit codes and STDERR messages using the <code><a href="reference/exit_codes.html">exit_codes()</a></code> function.</p>

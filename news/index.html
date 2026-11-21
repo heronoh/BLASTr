@@ -63,7 +63,7 @@
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>
-<code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> results have a hit summary after <code>Sequence</code>: <code>Check ID</code> (“best ID” / “check ID”, agreement of the taxids of the best <code>check_n</code> hits, comparing only hits within <code>check_tolerance</code> identity points of the best one), <code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code> and <code>N taxids at best identity</code> (see <code><a href="../reference/check_hits.html">check_hits()</a></code>).</li>
+<code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> results have a hit summary after <code>Sequence</code>: <code>Check ID</code> (“best ID” / “check ID”, agreement of the taxids of the best <code>check_n</code> hits, by default 10, comparing only hits within <code>check_tolerance</code> identity points of the best one), <code>N hits</code>, <code>N taxids</code>, <code>N hits same taxid as 1st</code>, <code>N hits at best identity</code> (1 = a single reference at the best identity) and <code>N taxids at best identity</code> (see <code><a href="../reference/check_hits.html">check_hits()</a></code>).</li>
 <li>New <code>k_Similarity score</code> column for each hit, <code>(10 * identity + qcovhsp) / 11</code> (formerly “BLASTn pseudo-score”; see <code><a href="../reference/similarity_score.html">similarity_score()</a></code>).</li>
 <li>Progress bar with the estimated time left (ETA), computed from the finished batches. In non-interactive sessions, one line per batch.</li>
 <li>
