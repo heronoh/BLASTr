@@ -10,6 +10,8 @@
   [`blast_job_resume()`](https://heronoh.github.io/BLASTr/reference/blast_job.md)
   [`blast_job_result()`](https://heronoh.github.io/BLASTr/reference/blast_job.md)
   : Background BLAST jobs
+- [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md)
+  : Consensus lowest common ancestor of the best BLAST hits
 - [`blast_log_path()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md)
   [`read_blast_log()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md)
   : Log of BLAST searches
