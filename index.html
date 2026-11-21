@@ -246,6 +246,61 @@
 </div>
 </div>
 <div class="section level2">
+<h2 id="performance">Performance<a class="anchor" aria-label="anchor" href="#performance"></a>
+</h2>
+<p>In the development version, <code><a href="reference/parallel_blast.html">parallel_blast()</a></code> groups the sequences in batches instead of running one <code>blastn</code> per sequence. Each <code>blastn</code> reads the whole database once per batch, so on large databases the gain is large. Benchmark on a shared server (80 threads, 503 GB RAM, rotational disks) with BLAST+ 2.16.0 and NCBI <code>core_nt</code> (299 GB in 92 volumes, all in RAM unless stated), searching sets of amplicon sequences:</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr>
+<th>Search</th>
+<th>Sequences</th>
+<th>Before (one <code>blastn</code> per sequence, 32 at a time)</th>
+<th>Now (automatic strategy)</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+<code>core_nt</code> in RAM</td>
+<td>100</td>
+<td>944 s</td>
+<td>79 s</td>
+</tr>
+<tr>
+<td>
+<code>core_nt</code> read from disk</td>
+<td>100</td>
+<td>1296 s</td>
+<td>441 s</td>
+</tr>
+<tr>
+<td>
+<code>core_nt</code> in RAM</td>
+<td>500</td>
+<td>6138 s (1 run)</td>
+<td>168 s</td>
+</tr>
+</tbody>
+</table>
+<p>CPU time fell in the same proportion: 0.26 CPU-hours against 6.9 for the same 100 sequences searched one per <code>blastn</code>. In the tests with 100 sequences the first hit was the same for every sequence, and so were the sequences with and without hits; with 500 sequences, the batched search found a hit for one sequence more (293 against 292).</p>
+<p>What drives the automatic strategy (see <code><a href="reference/blast_strategy.html">blast_strategy()</a></code>):</p>
+<ul>
+<li>
+<strong>Threads per <code>blastn</code></strong>: with 32 threads <code>blastn</code> splits the database among them (<code>-mt_mode 2</code>). More threads in one process did not help: with 500 / 2000 sequences, 1 <code>blastn</code> with 64 threads took 152 s / 265 s against 120 s / 206 s with 32. Extra cores go to more processes: 2 processes of 32 threads took 87 s / 182 s.</li>
+<li>
+<strong>Fewer, larger batches</strong>: each batch reads the database again (about 70 s on <code>core_nt</code>). With 4 processes of 8 threads, 2000 sequences in 80 batches took 1194 s; in 4 batches, 345 s.</li>
+<li>
+<strong>Database larger than the RAM</strong>: each batch reads it from disk, so all sequences go in one batch.</li>
+<li>
+<strong>Number of hits</strong>: keeping 1 to 50 hits per sequence took 71 s to 91 s for 100 sequences, so the default is 10 hits, searched among 50.</li>
+</ul>
+<p>The benchmark scripts are in <code>dev/benchmark/</code>. Times depend on the machine and on the load of a shared server; they are a guide, not a guarantee. <code>log_dir</code> keeps a log of your own searches (see <code><a href="reference/blast_log_path.html">blast_log_path()</a></code>).</p>
+</div>
+<div class="section level2">
 <h2 id="main-functions">Main Functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
 </h2>
 <ul>
