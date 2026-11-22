@@ -278,11 +278,14 @@ a BLASTr result and returns one row per taxid, with the ranks, the full
 gives, for each sequence, the deepest taxon that holds at least 90% of
 the hits tied with the best one (`consensus`): one mislabelled reference
 among many tied hits does not push the identification up to a high rank,
-and with up to 9 tied hits all of them must agree. If the database does
-not exist, it is built once from the NCBI taxdump: for a BLASTr result,
-the taxdump published right after the date of its BLAST database, so the
-taxonomy matches the database (about a minute, then kept in the BLASTr
-cache).
+and with up to 9 tied hits all of them must agree. When that taxon has
+no standard rank (e.g. the clade “Heliantheae alliance”), `LCA name`
+keeps it and `LCA ranked name` / `LCA ranked rank` give the nearest
+ranked taxon above it (here the subfamily Asteroideae). If the database
+does not exist, it is built once from the NCBI taxdump: for a BLASTr
+result, the taxdump published right after the date of its BLAST
+database, so the taxonomy matches the database (about a minute, then
+kept in the BLASTr cache).
 
 ``` r
 

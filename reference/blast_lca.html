@@ -130,7 +130,10 @@ ancestor must contain, above 0.5. Defaults to <code>0.9</code>.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with one row per sequence: <code>Sequence</code>, <code>LCA taxid</code>,
 <code>LCA name</code>, <code>LCA rank</code> (<code>"genus"</code>, <code>"family"</code>, ...; <code>NA</code> for a node
-without one of the ranks of <code><a href="get_tax.html">get_tax()</a></code>, e.g. a clade), <code>LCA support</code> (fraction of the
+without one of the ranks of <code><a href="get_tax.html">get_tax()</a></code>, e.g. a clade or a superfamily),
+<code>LCA ranked taxid</code>, <code>LCA ranked name</code>, <code>LCA ranked rank</code> (the ancestor
+itself when it has one of those ranks, otherwise the deepest node above
+it that has one: for tables by rank), <code>LCA support</code> (fraction of the
 tied hits it contains), <code>N tied</code> (hits at best) and <code>N tied no taxid</code>.
 <code>NA</code> for sequences without hits. Join <code>get_tax(result$</code>LCA taxid<code>)</code> for
 its ranks and lineage.</p>

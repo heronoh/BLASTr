@@ -138,6 +138,10 @@
   mislabelled references do not push the identification up), from the
   exact lineages of
   [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md).
+  When the ancestor has none of the ranks of
+  [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+  (a clade, a superfamily), `LCA ranked taxid/name/rank` give the
+  deepest ranked node above it, for tables by rank.
 - The BLAST command of each search (without the sequences) is kept in
   `BLASTr_metadata$blast_cmd`, with the BLAST version and the date of
   each database; it is shown in interactive sessions and written to the

@@ -67,10 +67,12 @@ A tibble with one row per sequence: `Sequence`, `LCA taxid`, `LCA name`,
 `LCA rank` (`"genus"`, `"family"`, ...; `NA` for a node without one of
 the ranks of
 [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md),
-e.g. a clade), `LCA support` (fraction of the tied hits it contains),
-`N tied` (hits at best) and `N tied no taxid`. `NA` for sequences
-without hits. Join `get_tax(result$`LCA taxid`)` for its ranks and
-lineage.
+e.g. a clade or a superfamily), `LCA ranked taxid`, `LCA ranked name`,
+`LCA ranked rank` (the ancestor itself when it has one of those ranks,
+otherwise the deepest node above it that has one: for tables by rank),
+`LCA support` (fraction of the tied hits it contains), `N tied` (hits at
+best) and `N tied no taxid`. `NA` for sequences without hits. Join
+`get_tax(result$`LCA taxid`)` for its ranks and lineage.
 
 ## Examples
 
