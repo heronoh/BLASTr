@@ -27,7 +27,10 @@ ancestor must contain, above 0.5. Defaults to \code{0.9}.}
 \value{
 A tibble with one row per sequence: \code{Sequence}, \verb{LCA taxid},
 \verb{LCA name}, \verb{LCA rank} (\code{"genus"}, \code{"family"}, ...; \code{NA} for a node
-without one of the ranks of \code{\link[=get_tax]{get_tax()}}, e.g. a clade), \verb{LCA support} (fraction of the
+without one of the ranks of \code{\link[=get_tax]{get_tax()}}, e.g. a clade or a superfamily),
+\verb{LCA ranked taxid}, \verb{LCA ranked name}, \verb{LCA ranked rank} (the ancestor
+itself when it has one of those ranks, otherwise the deepest node above
+it that has one: for tables by rank), \verb{LCA support} (fraction of the
 tied hits it contains), \verb{N tied} (hits at best) and \verb{N tied no taxid}.
 \code{NA} for sequences without hits. Join \verb{get_tax(result$}LCA taxid\verb{)} for
 its ranks and lineage.

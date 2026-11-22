@@ -103,7 +103,9 @@
 * New `blast_lca()`: consensus lowest common ancestor of the hits tied with
   the best one (by default the deepest taxon holding 90% of them, so a few
   mislabelled references do not push the identification up), from the
-  exact lineages of `get_tax()`.
+  exact lineages of `get_tax()`. When the ancestor has none of the ranks of
+  `get_tax()` (a clade, a superfamily), `LCA ranked taxid/name/rank` give the
+  deepest ranked node above it, for tables by rank.
 * The BLAST command of each search (without the sequences) is kept in
   `BLASTr_metadata$blast_cmd`, with the BLAST version and the date of each
   database; it is shown in interactive sessions and written to the log.

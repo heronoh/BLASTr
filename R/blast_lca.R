@@ -30,7 +30,10 @@
 #'
 #' @returns A tibble with one row per sequence: `Sequence`, `LCA taxid`,
 #'   `LCA name`, `LCA rank` (`"genus"`, `"family"`, ...; `NA` for a node
-#'   without one of the ranks of [get_tax()], e.g. a clade), `LCA support` (fraction of the
+#'   without one of the ranks of [get_tax()], e.g. a clade or a superfamily),
+#'   `LCA ranked taxid`, `LCA ranked name`, `LCA ranked rank` (the ancestor
+#'   itself when it has one of those ranks, otherwise the deepest node above
+#'   it that has one: for tables by rank), `LCA support` (fraction of the
 #'   tied hits it contains), `N tied` (hits at best) and `N tied no taxid`.
 #'   `NA` for sequences without hits. Join `get_tax(result$`LCA taxid`)` for
 #'   its ranks and lineage.
@@ -100,25 +103,40 @@ blast_lca <- function(x, consensus = 0.9, taxonomy = NULL, taxonomy_db = NULL, t
   )
   # name and rank of each ancestor, from the lineage of one of its hits
   rank_cols <- intersect(c(tax_ranks_default, "superkingdom"), names(taxonomy))
+  # and the deepest node at or above it with one of those ranks
+  none <- rep(NA_character_, 5L)
   info <- lapply(seq_along(res), function(r) {
     t <- res[[r]]$taxid
-    if (is.na(t)) return(c(NA_character_, NA_character_))
+    if (is.na(t)) return(none)
     i <- by_seq[[seqs[r]]]
     i <- i[known[i]]
     for (h in i) {
       p <- match(t, lin[[h]])
       if (!is.na(p)) {
         row <- taxonomy[k[h], , drop = FALSE]
-        nm <- strsplit(row$lineage, "; ", fixed = TRUE)[[1L]][p]
-        rk <- rank_cols[vapply(rank_cols, function(cc) identical(row[[cc]], nm), logical(1L))]
-        if (identical(row$taxid, t) && "rank" %in% names(row)) rk <- row$rank
-        return(c(nm, if (length(rk)) rk[1L] else NA_character_))
+        nms <- strsplit(row$lineage, "; ", fixed = TRUE)[[1L]]
+        rank_of <- function(q) {
+          rk <- rank_cols[vapply(rank_cols, function(cc) identical(row[[cc]], nms[q]), logical(1L))]
+          if (q == length(nms) && "rank" %in% names(row)) rk <- row$rank
+          if (length(rk)) rk[1L] else NA_character_
+        }
+        rk <- rank_of(p)
+        q <- p
+        while (q > 0L && !rank_of(q) %in% rank_cols) q <- q - 1L
+        if (q == 0L) return(c(nms[p], rk, NA_character_, NA_character_, NA_character_))
+        return(c(nms[p], rk, lin[[h]][q], nms[q], rank_of(q)))
       }
     }
-    c(NA_character_, NA_character_)
+    none
   })
   out$`LCA name` <- vapply(info, `[`, character(1L), 1L)
   out$`LCA rank` <- vapply(info, `[`, character(1L), 2L)
+  out$`LCA ranked taxid` <- vapply(info, `[`, character(1L), 3L)
+  out$`LCA ranked name` <- vapply(info, `[`, character(1L), 4L)
+  out$`LCA ranked rank` <- vapply(info, `[`, character(1L), 5L)
   out$`N tied`[out$`N tied` == 0L] <- NA_integer_
-  out[, c("Sequence", "LCA taxid", "LCA name", "LCA rank", "LCA support", "N tied", "N tied no taxid")]
+  out[, c(
+    "Sequence", "LCA taxid", "LCA name", "LCA rank", "LCA ranked taxid", "LCA ranked name", "LCA ranked rank",
+    "LCA support", "N tied", "N tied no taxid"
+  )]
 }

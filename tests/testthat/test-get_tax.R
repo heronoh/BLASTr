@@ -10,8 +10,8 @@ testthat::test_that("make_taxonomy_db and get_tax build the lineage", {
   testthat::expect_equal(res$domain, c("Eukaryota", "Eukaryota"))
   testthat::expect_equal(res$genus, c("Homo", "Pan"))
   testthat::expect_true(all(is.na(res$class)))
-  testthat::expect_equal(res$lineage[1], "Eukaryota; Metazoa; Chordata; Primates; Hominidae; Homo; Homo sapiens")
-  testthat::expect_equal(res$lineage_taxids[1], "2759; 33208; 7711; 9443; 9604; 9605; 9606")
+  testthat::expect_equal(res$lineage[1], "Eukaryota; Metazoa; Chordata; Primates; Hominoidea; Hominidae; Homo; Homo sapiens")
+  testthat::expect_equal(res$lineage_taxids[1], "2759; 33208; 7711; 9443; 314295; 9604; 9605; 9606")
 })
 
 testthat::test_that("get_tax resolves merged taxids and warns on missing ones", {

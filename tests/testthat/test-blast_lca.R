@@ -51,3 +51,19 @@ testthat::test_that("blast_lca takes a ready taxonomy and checks consensus", {
   testthat::expect_equal(res$`LCA rank`, "genus")
   testthat::expect_error(blast_lca(x, consensus = 0.5, taxonomy = tax))
 })
+
+testthat::test_that("blast_lca: ancestor without rank and the ranked one above it", {
+  db <- lca_db()
+  x <- long_of(c("A", "A", "B", "C"), c("9606", "9580", "9606", "9598"))
+  x$Sequence[4] <- "B"
+  res <- blast_lca(x, consensus = 1, taxonomy_db = db)
+  testthat::expect_equal(res$`LCA name`, c("Hominoidea", "Hominidae"))
+  testthat::expect_equal(res$`LCA rank`, c(NA, "family"))
+  testthat::expect_equal(res$`LCA ranked name`, c("Primates", "Hominidae"))
+  testthat::expect_equal(res$`LCA ranked rank`, c("order", "family"))
+  testthat::expect_equal(res$`LCA ranked taxid`, c("9443", "9604"))
+  # a species is its own ranked ancestor
+  sp <- blast_lca(long_of("A", "9606"), taxonomy_db = db)
+  testthat::expect_equal(sp$`LCA ranked name`, "Homo sapiens")
+  testthat::expect_equal(sp$`LCA ranked rank`, "species")
+})
