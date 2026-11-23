@@ -31,12 +31,19 @@
   : Get header from SubjectID
 - [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md) :
   Taxonomy of NCBI taxids from a local database
+- [`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
+  [`get_tax_by_name()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
+  [`parallel_get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
+  : Taxonomy from the NCBI online, without a local database
 - [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md)
   : Install Required Command-line Tool Dependencies
 - [`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md)
   : Make BLAST Database
 - [`make_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/make_taxonomy_db.md)
   : Build the local taxonomy database
+- [`list_ncbi_blast_dbs()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
+  [`download_blast_db()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
+  : BLAST databases of the NCBI
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
   : Run Parallelized BLAST
 - [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md)
@@ -45,6 +52,9 @@
   **\[deprecated\]** : Run parallel BLAST for a set of sequences.
 - [`parse_fasta()`](https://heronoh.github.io/BLASTr/reference/parse_fasta.md)
   : Parsing fasta file to sequences only
+- [`make_unite_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
+  [`make_silva_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
+  : UNITE and SILVA as BLAST databases
 - [`run_blast()`](https://heronoh.github.io/BLASTr/reference/run_blast.md)
   : Run BLAST
 - [`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)

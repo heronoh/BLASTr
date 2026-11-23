@@ -1,8 +1,11 @@
 # Install Required Command-line Tool Dependencies
 
-Installs the necessary command-line tools ('blast' and 'efetch') into
-conda environments if they are not already available. This ensures that
-all dependencies required by the package are present and up-to-date.
+Installs BLAST+ (`blastn`, `makeblastdb`, ...) into the conda
+environment `blastr-blast-env` if it is not already there. The online
+taxonomy functions
+([`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md),
+[`get_tax_by_name()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md))
+query the NCBI over HTTP and need no external tool.
 
 ## Usage
 

@@ -58,14 +58,49 @@
 - Summary columns `N hits at best identity` and
   `N taxids at best identity` were renamed to `N hits at best` and
   `N taxids at best` (they follow `rank_by`).
-- [`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/deprecated-tax.md),
-  [`parallel_get_tax()`](https://heronoh.github.io/BLASTr/reference/deprecated-tax.md)
+- [`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
   and
-  [`get_tax_by_name()`](https://heronoh.github.io/BLASTr/reference/deprecated-tax.md)
-  (online, `efetch`) are deprecated; they now call
-  [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md).
+  [`get_tax_by_name()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
+  were rewritten: they ask the NCBI online through the E-utilities over
+  HTTP (no Entrez Direct), in batches of 200 taxids and within the NCBI
+  rate limit (optional API key), and return the same columns as
+  [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md),
+  for when the local taxonomy database is not there yet.
+  [`get_tax_by_name()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
+  matches scientific names first, then synonyms and common names
+  (`matched_by`).
+  [`parallel_get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
+  is deprecated (use
+  [`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)).
+- [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md)
+  no longer installs Entrez Direct (`efetch`): nothing uses it now.
+- The internal, unexported `search_primers_on_fq()` was removed; the
+  check of which primers are found in the reads is now
+  `detect_primers()` in mtbrcdR.
 
 ### New features
+
+- Reference databases:
+  [`list_ncbi_blast_dbs()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
+  lists the BLAST databases of the NCBI with their sizes and dates;
+  [`download_blast_db()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
+  downloads one (e.g. `"core_nt"`), checking the md5 of each file, into
+  a directory named after its date, resumes interrupted downloads, and
+  by default also gets `taxdb` and builds the taxonomy database of
+  [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+  for that date.
+  [`make_unite_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
+  (UNITE general FASTA release, all eukaryotes or fungi) and
+  [`make_silva_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
+  (SILVA SSU Ref NR99) download and format them as BLAST databases with
+  NCBI taxids, so
+  [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+  and
+  [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md)
+  work as with the NCBI databases; UNITE names are matched to the NCBI
+  taxonomy (the deepest name found; homonyms resolved by the higher
+  ranks), SILVA gives the NCBI taxid of each record. A table next to the
+  database records the taxid of each sequence and how it was found.
 
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
   results have a hit summary after `Sequence`: `Check ID` (“best ID” /
@@ -75,11 +110,14 @@
   `N hits same taxid as 1st`, `N hits at best identity` (1 = a single
   reference at the best identity) and `N taxids at best identity` (see
   [`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md)).
+
 - New `k_Similarity score` column for each hit,
   `(10 * identity + qcovhsp) / 11` (formerly “BLASTn pseudo-score”; see
   [`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)).
+
 - Progress bar with the estimated time left (ETA), computed from the
   finished batches. In non-interactive sessions, one line per batch.
+
 - `parallel_blast(background = TRUE)` starts the search in a separate
   process and returns a job at once;
   [`blast_job_status()`](https://heronoh.github.io/BLASTr/reference/blast_job.md),
@@ -90,19 +128,24 @@
   follow it. The job lives in a directory (`job_dir`), so it survives
   the end of the R session and can be opened again with
   [`blast_job()`](https://heronoh.github.io/BLASTr/reference/blast_job.md).
+
 - Several databases (a vector or a space-separated string in `db_path`)
   are searched together, smallest first; their sizes are added when
   choosing the strategy.
+
 - A sequence that makes BLAST fail is retried alone, so the others in
   its batch are not affected.
+
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
   searches `search_alignments` subjects (default 50) and keeps the
   `num_alignments` best ones that pass the identity and coverage
   filters: BLAST cuts its subject list before the coverage filter, so
   asking only for `num_alignments` could lose valid hits.
+
 - New `task` argument in
   [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
   (BLAST `-task`, e.g. `"dc-megablast"`).
+
 - New
   [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md):
   the raw hits in long format, one row per HSP, with the BLAST fields
@@ -111,15 +154,19 @@
   (BLAST `-subject`). Same batches, strategy, ETA, background jobs and
   log as
   [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md).
+
 - All the hits tied with the best one (`at_best`) are kept, even beyond
   `num_alignments`. New summary columns `Taxids at best` (the tied
   taxids, for a lowest common ancestor) and `At best truncated` (the tie
   may go beyond the `search_alignments` subjects BLAST returned).
+
 - New hit fields `nident` and `subject strand`.
+
 - New
   [`as_blast_long()`](https://heronoh.github.io/BLASTr/reference/as_blast_long.md):
   converts wide results of any version (including `k_indentity`) to the
   long format, ranked with the same rules.
+
 - New
   [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md):
   taxonomy of taxids from a local SQLite database (NCBI taxdump,
@@ -131,6 +178,7 @@
   one given), once, and kept in the BLASTr cache.
   [`make_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/make_taxonomy_db.md)
   builds it explicitly.
+
 - Uninformative references:
   [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
   gains `uninformative`, the table of
@@ -149,11 +197,13 @@
   taxon missing from the database). The md5 of the table goes to the
   metadata and to the log; `as_blast_long(uninformative = )` flags older
   results.
+
 - [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md)
   gains `named_first`: hits named only above genus (“Bacterium”,
   “Entolomataceae sp.”) do not vote when a named species is tied with
   them; and a species in open nomenclature (“Picea sp. X”) is ranked at
   its genus in `LCA ranked ...`.
+
 - New
   [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md):
   consensus lowest common ancestor of the hits tied with the best one
@@ -165,10 +215,12 @@
   [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
   (a clade, a superfamily), `LCA ranked taxid/name/rank` give the
   deepest ranked node above it, for tables by rank.
+
 - The BLAST command of each search (without the sequences) is kept in
   `BLASTr_metadata$blast_cmd`, with the BLAST version and the date of
   each database; it is shown in interactive sessions and written to the
   log.
+
 - Optional log of the searches: with `log_dir` (or the option
   `BLASTr.log_dir` / the environment variable `BLASTR_LOG_DIR`), each
   search adds a line to `BLASTr_logs/blastr_runs.tsv` with the number
@@ -257,7 +309,7 @@ Development Changelog:
   profile `.compute = NULL`.
 
 - Fix
-  [`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/deprecated-tax.md)
+  [`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
   when multiple tax IDs are provided.
 
 - Fix

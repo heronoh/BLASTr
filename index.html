@@ -82,7 +82,9 @@
 <li>
 <strong>Parallel BLAST Searches:</strong> Sequences are searched in batches, with the number of processes and threads chosen from your cores, RAM and database size. Searches can run in the background, with progress and ETA.</li>
 <li>
-<strong>Automated Dependency Management:</strong> <code>BLASTr</code> automatically installs and manages BLAST+ and Entrez Direct dependencies using <code>condathis</code>, ensuring a hassle-free setup.</li>
+<strong>Automated Dependency Management:</strong> <code>BLASTr</code> automatically installs and manages BLAST+ using <code>condathis</code>, ensuring a hassle-free setup.</li>
+<li>
+<strong>Reference Databases:</strong> Download any BLAST database of the NCBI (e.g. <code>core_nt</code>), or UNITE and SILVA formatted with NCBI taxids, ready for <code><a href="reference/parallel_blast.html">parallel_blast()</a></code>.</li>
 <li>
 <strong>Taxonomic Classification:</strong> Retrieve detailed taxonomic information for your sequences using their NCBI Taxonomy IDs.</li>
 <li>
@@ -105,35 +107,26 @@
 <p>Here’s a simple example of how to use <code>BLASTr</code> to perform a BLAST search and retrieve taxonomic information:</p>
 </div>
 <div class="section level2">
-<h2 id="obtain-ncbi-databases">Obtain NCBI databases<a class="anchor" aria-label="anchor" href="#obtain-ncbi-databases"></a>
+<h2 id="reference-databases">Reference databases<a class="anchor" aria-label="anchor" href="#reference-databases"></a>
 </h2>
-<p>To obtain complet NCBI blast formated databases, procees as follows</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co">#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#          tmux: https://tmuxcheatsheet.com/</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># download volumes and md5 check files </span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">seq</span> <span class="at">-w</span> 000 150 <span class="kw">|</span> <span class="ex">parallel</span> wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">wget</span> https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">wget</span> https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz.md5 <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="fu">wget</span> https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb-metadata.json <span class="at">-t</span> 0 <span class="at">--show-progress</span><span class="kw">;</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>     <span class="co"># where 000 is the first volume and 150, the last (up to now).</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>     </span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>5 <span class="kw">|</span> <span class="ex">parallel</span> md5sum <span class="at">-c</span> {} <span class="op">&gt;&gt;</span> check.txt</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="fu">sort</span> check.txt <span class="op">&gt;</span> check_sort.txt</span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="fu">ls</span> <span class="pp">*</span>tar.gz <span class="kw">|</span> <span class="ex">parallel</span> tar -xvzf {} </span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  </span></code></pre></div>
+<p><code><a href="reference/ncbi_blast_dbs.html">download_blast_db()</a></code> downloads any BLAST database the NCBI publishes (see <code><a href="reference/ncbi_blast_dbs.html">list_ncbi_blast_dbs()</a></code> for their sizes and dates), checks the md5 of each file and unpacks it into a directory named after the database and its date, so a new release does not overwrite the one older results were searched against. An interrupted download resumes where it stopped. By default it also downloads <code>taxdb</code> and builds the taxonomy database of <code><a href="reference/get_tax.html">get_tax()</a></code> for the same date.</p>
+<p><code><a href="reference/reference_dbs.html">make_unite_db()</a></code> and <code><a href="reference/reference_dbs.html">make_silva_db()</a></code> download UNITE (ITS, all eukaryotes or only fungi) and SILVA (SSU Ref NR99, 16S/18S) and format them as BLAST databases with NCBI taxids, so <code><a href="reference/get_tax.html">get_tax()</a></code>, <code><a href="reference/blast_lca.html">blast_lca()</a></code> and the summaries work as with the NCBI databases. The UNITE or SILVA classification goes to the subject header. UNITE has no NCBI taxids: each sequence gets the taxid of the deepest name of its classification found in the NCBI taxonomy (in the release of 2026-11-20, 98% of the sequences named to species got the taxid of the species). SILVA gives the NCBI taxid of each record. A table next to each database records the taxid of each sequence and how it was found. Both are licensed under CC BY 4.0: cite the release (the DOI is kept next to the database).</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/ncbi_blast_dbs.html">list_ncbi_blast_dbs</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># about 300 GB unpacked; use a disk with room for it</span></span>
+<span><span class="va">core_nt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ncbi_blast_dbs.html">download_blast_db</a></span><span class="op">(</span><span class="st">"core_nt"</span>, dir <span class="op">=</span> <span class="st">"/data/databases"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">its</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/reference_dbs.html">make_unite_db</a></span><span class="op">(</span><span class="st">"/data/databases"</span>, set <span class="op">=</span> <span class="st">"eukaryotes"</span><span class="op">)</span></span>
+<span><span class="va">ssu</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/reference_dbs.html">make_silva_db</a></span><span class="op">(</span><span class="st">"/data/databases"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span><span class="va">seqs</span>, db_path <span class="op">=</span> <span class="va">its</span>, total_cores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="making-local-custom-databeses">Making local custom databeses<a class="anchor" aria-label="anchor" href="#making-local-custom-databeses"></a>
 </h2>
 <p>You can turn any <em>.fasta</em> file with unique headers into a BLAST+ formated database using the BLASTr function <em>make_blast_db</em>. It is recomended that the unique identifier of each sequence do not contain <em>.</em>. You may provide a <em>.txt</em> with the same name as the DB’s <em>.fasta</em> file, formated <em>lcl|</em><sequenceid><taxonomyid><newline>.</newline></taxonomyid></sequenceid></p>
-<p>If you want to retrieve <em>subject Scientific name</em> on the results, you can download and extract the <em>taxdb</em> files from NCBI, as mentioned above.</p>
+<p>If you want to retrieve <em>subject Scientific name</em> on the results, BLAST needs the <em>taxdb</em> files of the NCBI (<code>download_blast_db("taxdb", ...)</code>, or with any database by <code><a href="reference/ncbi_blast_dbs.html">download_blast_db()</a></code>).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/heronoh/BLASTr" class="external-link">BLASTr</a></span><span class="op">)</span></span>
 <span></span>
@@ -267,6 +260,10 @@
 <span><span class="co"># or a database of your choice, built from a given taxdump if missing</span></span>
 <span><span class="va">taxonomy</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_tax.html">get_tax</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9606"</span>, <span class="st">"10090"</span><span class="op">)</span>, taxonomy_db <span class="op">=</span> <span class="st">"~/databases/taxonomy.sqlite"</span><span class="op">)</span></span>
 <span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">blast_results</span>, <span class="va">taxonomy</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>staxid <span class="op">=</span> <span class="st">"taxid"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Without the local database (or for a few taxa), <code><a href="reference/get_tax_online.html">get_tax_by_taxID()</a></code> and <code><a href="reference/get_tax_online.html">get_tax_by_name()</a></code> ask the NCBI online (E-utilities) and return the same columns as <code><a href="reference/get_tax.html">get_tax()</a></code>; <code><a href="reference/get_tax_online.html">get_tax_by_name()</a></code> finds the taxids of names, including synonyms and common names.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/get_tax_online.html">get_tax_by_taxID</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9606"</span>, <span class="st">"10090"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/get_tax_online.html">get_tax_by_name</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Salminus brasiliensis"</span>, <span class="st">"human"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
