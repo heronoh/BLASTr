@@ -2,10 +2,10 @@ Package: BLASTr
 Title: Parallel Taxonomic Classification of Metabarcoding Sequences
 Version: 0.1.7
 Authors@R: c(
+    person("Heron", "Hilário", , "heronoh@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-2548-1053")),
     person("Lucio", "Queiroz", , "luciorqueiroz@gmail.com", role = "aut",
-           comment = c(ORCID = "0000-0002-6090-1834")),
-    person("Heron", "Hilario", , "heronoh@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-2548-1053"))
+           comment = c(ORCID = "0000-0002-6090-1834"))
   )
 Description: Seamlessly run 'BLAST' searches within 'R', tailored for the
     taxonomic identification of amplicon sequences. This package offers a

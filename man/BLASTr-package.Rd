@@ -20,11 +20,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Heron Hilario \email{heronoh@gmail.com} (\href{https://orcid.org/0000-0002-2548-1053}{ORCID})
+\strong{Maintainer}: Heron Hilário \email{heronoh@gmail.com} (\href{https://orcid.org/0000-0002-2548-1053}{ORCID})
 
 Authors:
 \itemize{
-  \item Heron Hilario \email{heronoh@gmail.com} (\href{https://orcid.org/0000-0002-2548-1053}{ORCID})
+  \item Heron Hilário \email{heronoh@gmail.com} (\href{https://orcid.org/0000-0002-2548-1053}{ORCID})
   \item Lucio Queiroz \email{luciorqueiroz@gmail.com} (\href{https://orcid.org/0000-0002-6090-1834}{ORCID})
 }
 

@@ -4,14 +4,14 @@ bibentry(
   bibtype = "Manual",
   title = "{BLASTr}: Parallel Taxonomic Classification of Metabarcoding Sequences",
   author = c(
-    person("Lucio", "Queiroz", comment = c(ORCID = "0000-0002-6090-1834")),
-    person("Heron", "Hilario", comment = c(ORCID = "0000-0002-2548-1053"))
+    person("Heron", "Hilário", comment = c(ORCID = "0000-0002-2548-1053")),
+    person("Lucio", "Queiroz", comment = c(ORCID = "0000-0002-6090-1834"))
   ),
   year = "2026",
   note = paste("R package version", meta$Version),
   url = "https://github.com/heronoh/BLASTr",
   textVersion = paste0(
-    "Queiroz L, Hilario H (2026). BLASTr: Parallel Taxonomic Classification ",
+    "Hilário H, Queiroz L (2026). BLASTr: Parallel Taxonomic Classification ",
     "of Metabarcoding Sequences. R package version ", meta$Version, ". ",
     "https://github.com/heronoh/BLASTr"
   )
