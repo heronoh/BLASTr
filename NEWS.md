@@ -47,10 +47,32 @@
 * Summary columns `N hits at best identity` and `N taxids at best identity`
   were renamed to `N hits at best` and `N taxids at best` (they follow
   `rank_by`).
-* `get_tax_by_taxID()`, `parallel_get_tax()` and `get_tax_by_name()`
-  (online, `efetch`) are deprecated; they now call `get_tax()`.
+* `get_tax_by_taxID()` and `get_tax_by_name()` were rewritten: they ask the
+  NCBI online through the E-utilities over HTTP (no Entrez Direct), in
+  batches of 200 taxids and within the NCBI rate limit (optional API key),
+  and return the same columns as `get_tax()`, for when the local taxonomy
+  database is not there yet. `get_tax_by_name()` matches scientific names
+  first, then synonyms and common names (`matched_by`). `parallel_get_tax()`
+  is deprecated (use `get_tax_by_taxID()`).
+* `install_dependencies()` no longer installs Entrez Direct (`efetch`):
+  nothing uses it now.
+* The internal, unexported `search_primers_on_fq()` was removed; the check of
+  which primers are found in the reads is now `detect_primers()` in mtbrcdR.
 
 ### New features
+
+* Reference databases: `list_ncbi_blast_dbs()` lists the BLAST databases of
+  the NCBI with their sizes and dates; `download_blast_db()` downloads one
+  (e.g. `"core_nt"`), checking the md5 of each file, into a directory named
+  after its date, resumes interrupted downloads, and by default also gets
+  `taxdb` and builds the taxonomy database of `get_tax()` for that date.
+  `make_unite_db()` (UNITE general FASTA release, all eukaryotes or fungi)
+  and `make_silva_db()` (SILVA SSU Ref NR99) download and format them as
+  BLAST databases with NCBI taxids, so `get_tax()` and `blast_lca()` work as
+  with the NCBI databases; UNITE names are matched to the NCBI taxonomy (the
+  deepest name found; homonyms resolved by the higher ranks), SILVA gives
+  the NCBI taxid of each record. A table next to the database records the
+  taxid of each sequence and how it was found.
 
 * `parallel_blast()` results have a hit summary after `Sequence`:
   `Check ID` ("best ID" / "check ID", agreement of the taxids of the best

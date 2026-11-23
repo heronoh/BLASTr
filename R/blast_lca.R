@@ -82,7 +82,7 @@ blast_lca <- function(x, consensus = 0.9, named_first = TRUE, taxonomy = NULL, t
     }
   }
   k <- match(tied$taxid, taxonomy$taxid)
-  lin <- strsplit(ifelse(is.na(k), NA_character_, taxonomy$lineage_taxids[k]), "; ", fixed = TRUE)
+  lin <- strsplit(as.character(ifelse(is.na(k), NA_character_, taxonomy$lineage_taxids[k])), "; ", fixed = TRUE)
   known <- !vapply(lin, function(l) length(l) == 0L || all(is.na(l)), logical(1L))
   has_tax <- known
   # hits named only above genus ("Bacterium", "Entolomataceae sp.") do not

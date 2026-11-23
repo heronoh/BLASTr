@@ -26,8 +26,10 @@ dependency management.
   database size. Searches can run in the background, with progress and
   ETA.
 - **Automated Dependency Management:** `BLASTr` automatically installs
-  and manages BLAST+ and Entrez Direct dependencies using `condathis`,
-  ensuring a hassle-free setup.
+  and manages BLAST+ using `condathis`, ensuring a hassle-free setup.
+- **Reference Databases:** Download any BLAST database of the NCBI
+  (e.g. `core_nt`), or UNITE and SILVA formatted with NCBI taxids, ready
+  for `parallel_blast()`.
 - **Taxonomic Classification:** Retrieve detailed taxonomic information
   for your sequences using their NCBI Taxonomy IDs.
 - **Flexible and Easy to Use:** The package provides a set of intuitive
@@ -51,31 +53,38 @@ devtools::install_github("heronoh/BLASTr")
 Here’s a simple example of how to use `BLASTr` to perform a BLAST search
 and retrieve taxonomic information:
 
-## Obtain NCBI databases
+## Reference databases
 
-To obtain complet NCBI blast formated databases, procees as follows
+`download_blast_db()` downloads any BLAST database the NCBI publishes
+(see `list_ncbi_blast_dbs()` for their sizes and dates), checks the md5
+of each file and unpacks it into a directory named after the database
+and its date, so a new release does not overwrite the one older results
+were searched against. An interrupted download resumes where it stopped.
+By default it also downloads `taxdb` and builds the taxonomy database of
+`get_tax()` for the same date.
 
-``` bash
-#suggestion: use screen or tmux to emulate a terminal. The downloads usually takes long.
-#          tmux: https://tmuxcheatsheet.com/
-#          screen: https://kapeli.com/cheat_sheets/screen.docset/Contents/Resources/Documents/index
+`make_unite_db()` and `make_silva_db()` download UNITE (ITS, all
+eukaryotes or only fungi) and SILVA (SSU Ref NR99, 16S/18S) and format
+them as BLAST databases with NCBI taxids, so `get_tax()`, `blast_lca()`
+and the summaries work as with the NCBI databases. The UNITE or SILVA
+classification goes to the subject header. UNITE has no NCBI taxids:
+each sequence gets the taxid of the deepest name of its classification
+found in the NCBI taxonomy (in the release of 2026-11-20, 98% of the
+sequences named to species got the taxid of the species). SILVA gives
+the NCBI taxid of each record. A table next to each database records the
+taxid of each sequence and how it was found. Both are licensed under CC
+BY 4.0: cite the release (the DOI is kept next to the database).
 
-# download volumes and md5 check files 
-seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz -t 0 --show-progress;
-seq -w 000 150 | parallel wget https://ftp.ncbi.nlm.nih.gov/blast/db/nt.{}.tar.gz.md5 -t 0 --show-progress;
-wget https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz -t 0 --show-progress;
-wget https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb.tar.gz.md5 -t 0 --show-progress;
-wget https://ftp.ncbi.nlm.nih.gov/blast/db/taxdb-metadata.json -t 0 --show-progress;
-     # where 000 is the first volume and 150, the last (up to now).
-     
-ls *5 | parallel md5sum -c {} >> check.txt
-sort check.txt > check_sort.txt
+``` r
+list_ncbi_blast_dbs()
 
-ls *tar.gz | parallel tar -xvzf {} 
+# about 300 GB unpacked; use a disk with room for it
+core_nt <- download_blast_db("core_nt", dir = "/data/databases")
 
+its <- make_unite_db("/data/databases", set = "eukaryotes")
+ssu <- make_silva_db("/data/databases")
 
-
-  
+blast_results <- parallel_blast(seqs, db_path = its, total_cores = 8)
 ```
 
 ## Making local custom databeses
@@ -86,9 +95,9 @@ recomended that the unique identifier of each sequence do not contain
 *.*. You may provide a *.txt* with the same name as the DB’s *.fasta*
 file, formated *lcl\|*<SequenceId> <TaxonomyId><newline>.
 
-If you want to retrieve *subject Scientific name* on the results, you
-can download and extract the *taxdb* files from NCBI, as mentioned
-above.
+If you want to retrieve *subject Scientific name* on the results, BLAST
+needs the *taxdb* files of the NCBI (`download_blast_db("taxdb", ...)`,
+or with any database by `download_blast_db()`).
 
 ``` r
 library(BLASTr)
@@ -317,6 +326,16 @@ taxonomy <- get_tax(c("9606", "10090"), taxonomy_db = "~/databases/taxonomy.sqli
 dplyr::left_join(blast_results, taxonomy, by = c(staxid = "taxid"))
 ```
 
+Without the local database (or for a few taxa), `get_tax_by_taxID()` and
+`get_tax_by_name()` ask the NCBI online (E-utilities) and return the
+same columns as `get_tax()`; `get_tax_by_name()` finds the taxids of
+names, including synonyms and common names.
+
+``` r
+get_tax_by_taxID(c("9606", "10090"))
+get_tax_by_name(c("Salminus brasiliensis", "human"))
+```
+
 ## Performance
 
 In the development version, `parallel_blast()` groups the sequences in
@@ -412,4 +431,7 @@ guide](./.github/CONTRIBUTING.md) for more details.
 This project is licensed under the MIT License - see the
 [LICENSE.md](./LICENSE.md) file for details.
 
-The logo is from the metabarverse (Hilário 2026), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); its animal silhouettes are public domain, from [PhyloPic](https://www.phylopic.org/).
+The logo is from the metabarverse (Hilário 2026), licensed under [CC BY
+4.0](https://creativecommons.org/licenses/by/4.0/); its animal
+silhouettes are public domain, from
+[PhyloPic](https://www.phylopic.org/).

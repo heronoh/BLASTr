@@ -83,7 +83,6 @@ make_blast_db <- function(
     args <- c(args, "-taxid_map", taxid_map)
   }
 
-  print(args)
   # NOTE: attemp to remove phone home in blast
   withr::local_envvar(
     .new = list(

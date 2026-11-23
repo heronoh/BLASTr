@@ -19,7 +19,10 @@ Options include \code{"silent"}, \code{"cmd"}, \code{"output"}, or \code{"full"}
 Invisibly returns \code{TRUE} after attempting to install the dependencies.
 }
 \description{
-Installs the necessary command-line tools ('blast' and 'efetch') into conda environments if they are not already available. This ensures that all dependencies required by the package are present and up-to-date.
+Installs BLAST+ (\code{blastn}, \code{makeblastdb}, ...) into the conda environment
+\code{blastr-blast-env} if it is not already there. The online taxonomy
+functions (\code{\link[=get_tax_by_taxID]{get_tax_by_taxID()}}, \code{\link[=get_tax_by_name]{get_tax_by_name()}}) query the NCBI over
+HTTP and need no external tool.
 }
 \examples{
 \dontrun{

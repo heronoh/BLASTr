@@ -1,6 +1,9 @@
 #' Install Required Command-line Tool Dependencies
 #'
-#' Installs the necessary command-line tools ('blast' and 'efetch') into conda environments if they are not already available. This ensures that all dependencies required by the package are present and up-to-date.
+#' Installs BLAST+ (`blastn`, `makeblastdb`, ...) into the conda environment
+#' `blastr-blast-env` if it is not already there. The online taxonomy
+#' functions ([get_tax_by_taxID()], [get_tax_by_name()]) query the NCBI over
+#' HTTP and need no external tool.
 #'
 #' @param verbose A character string specifying the verbosity level during environment creation.
 #'   Options include `"silent"`, `"cmd"`, `"output"`, or `"full"`. Default is `"silent"`.
@@ -28,12 +31,6 @@ install_dependencies <- function(
   check_cmd(
     cmd = "blastn",
     env_name = "blastr-blast-env",
-    verbose = verbose,
-    force = force
-  )
-  check_cmd(
-    cmd = "efetch",
-    env_name = "blastr-entrez-env",
     verbose = verbose,
     force = force
   )
