@@ -94,7 +94,7 @@ picked the right taxon significantly more often than bitscore (genus:
 identification (uncultured, environmental, metagenomes, vectors, ...;
 see \code{\link[=uninformative_references]{uninformative_references()}}): the table shipped with BLASTr
 (default), a path to another one, a data frame, or \code{NULL} to treat all
-hits alike. The hits are flagged (\code{informative},
+hits alike (\code{informative} NA, not evaluated). The hits are flagged (\code{informative},
 \code{uninformative_category}) and ranked among the informative ones, so
 \code{rank}, \code{at_best}, \verb{Check ID} and \code{\link[=blast_lca]{blast_lca()}} use only those; a
 sequence whose hits are all uninformative keeps its best ones, ranked

@@ -55,7 +55,7 @@
 #'   identification (uncultured, environmental, metagenomes, vectors, ...;
 #'   see [uninformative_references()]): the table shipped with BLASTr
 #'   (default), a path to another one, a data frame, or `NULL` to treat all
-#'   hits alike. The hits are flagged (`informative`,
+#'   hits alike (`informative` NA, not evaluated). The hits are flagged (`informative`,
 #'   `uninformative_category`) and ranked among the informative ones, so
 #'   `rank`, `at_best`, `Check ID` and [blast_lca()] use only those; a
 #'   sequence whose hits are all uninformative keeps its best ones, ranked

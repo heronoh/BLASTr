@@ -21,7 +21,8 @@ as_blast_long(
 \item{perc_qcov_hsp}{Coverage under which a hit is flagged \code{low_qcov}.}
 
 \item{uninformative}{\code{NULL} (default) keeps the flags \code{informative} of
-\code{x} (all hits informative when \code{x} has none); a table of
+\code{x} (\code{NA}, not evaluated, when \code{x} has none; ranked as informative); a
+table of
 \code{\link[=uninformative_references]{uninformative_references()}} flags the hits again with it, and ranks
 them among the informative ones, as \code{\link[=parallel_blast]{parallel_blast()}} does.}
 }

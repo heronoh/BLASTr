@@ -287,7 +287,8 @@ blast_long <- function(hits, seq_ids, seqs, num_alignments = Inf, rank_by = "sim
     hits$uninformative_category <- uninformative_category(hits$subject, hits[["subject header"]], uninformative)
     hits$informative <- is.na(hits$uninformative_category)
   } else if (is.null(hits[["informative"]])) {
-    hits$informative <- rep(TRUE, nrow(hits))
+    # not evaluated: ranked as informative
+    hits$informative <- rep(NA, nrow(hits))
   }
   hits <- rank_blast_hits(hits, rank_by = rank_by, tolerance = tolerance)
   hits$low_qcov <- if (is.na(perc_qcov_hsp)) NA else as.numeric(hits[["qcovhsp"]]) < perc_qcov_hsp
@@ -390,7 +391,8 @@ widen_blast_hits <- function(long, summary, num_alignments) {
 #' @param rank_by,tolerance As in [check_hits()].
 #' @param perc_qcov_hsp Coverage under which a hit is flagged `low_qcov`.
 #' @param uninformative `NULL` (default) keeps the flags `informative` of
-#'   `x` (all hits informative when `x` has none); a table of
+#'   `x` (`NA`, not evaluated, when `x` has none; ranked as informative); a
+#'   table of
 #'   [uninformative_references()] flags the hits again with it, and ranks
 #'   them among the informative ones, as [parallel_blast()] does.
 #'

@@ -55,6 +55,7 @@ testthat::test_that("hits are ranked among the informative ones", {
   testthat::expect_equal(s$`Best uninformative score`, c(100, round(similarity_score(98, 100), 6)))
   # a long result without flags, flagged again
   plain <- blast_long(hits, seq_ids = c("q1", "q2"), seqs = c("AAA", "CCC"))
+  testthat::expect_true(all(is.na(plain$informative)))
   testthat::expect_equal(plain$subject[plain$Sequence == "AAA"][1], "s1")
   again <- as_blast_long(plain, uninformative = u)
   testthat::expect_equal(again$subject[again$Sequence == "AAA"][1], "s2")
