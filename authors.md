@@ -2,23 +2,23 @@
 
 ## Authors
 
-- **Lucio Queiroz**. Author. [](https://orcid.org/0000-0002-6090-1834)
-
-- **Heron Hilario**. Author, maintainer.
+- **Heron Hilário**. Author, maintainer.
   [](https://orcid.org/0000-0002-2548-1053)
+
+- **Lucio Queiroz**. Author. [](https://orcid.org/0000-0002-6090-1834)
 
 ## Citation
 
 Source:
 [`inst/CITATION`](https://github.com/heronoh/BLASTr/blob/main/inst/CITATION)
 
-Queiroz L, Hilario H (2026). BLASTr: Parallel Taxonomic Classification
+Hilário H, Queiroz L (2026). BLASTr: Parallel Taxonomic Classification
 of Metabarcoding Sequences. R package version 0.1.7.
 https://github.com/heronoh/BLASTr
 
     @Manual{,
       title = {{BLASTr}: Parallel Taxonomic Classification of Metabarcoding Sequences},
-      author = {Lucio Queiroz and Heron Hilario},
+      author = {Heron Hilário and Lucio Queiroz},
       year = {2026},
       note = {R package version 0.1.7},
       url = {https://github.com/heronoh/BLASTr},

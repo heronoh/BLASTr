@@ -18,12 +18,12 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Heron Hilario <heronoh@gmail.com>
+**Maintainer**: Heron Hilário <heronoh@gmail.com>
 ([ORCID](https://orcid.org/0000-0002-2548-1053))
 
 Authors:
 
-- Heron Hilario <heronoh@gmail.com>
+- Heron Hilário <heronoh@gmail.com>
   ([ORCID](https://orcid.org/0000-0002-2548-1053))
 
 - Lucio Queiroz <luciorqueiroz@gmail.com>
