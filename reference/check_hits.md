@@ -29,6 +29,16 @@ and `At best truncated` (`TRUE` when the last subject BLAST returned is
 at best: more tied subjects may exist beyond `search_alignments`; `NA`
 when `search_alignments` is unknown).
 
+With an `informative` column (see
+[`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)),
+all of this is computed among the informative hits, or among all the
+hits when a query has no informative one (and then `Check ID` is
+`"check ID"`). `N uninformative` counts the other hits and
+`Best uninformative score` is the best value of `rank_by` among them:
+above the best informative hit, the query is closer to an uncultured or
+environmental sequence than to any named organism (a sign of a taxon
+missing from the database).
+
 ## Usage
 
 ``` r
@@ -48,7 +58,7 @@ check_hits(
   Data frame with one row per hit and the columns `query`, `identity`,
   `staxid` and, as needed by `rank_by`, `qcovhsp` or `bitscore`. The
   BLAST order is taken from `blast_rank` or `rank`, or else from the row
-  order.
+  order. Optional: `informative` (logical).
 
 - check_n:
 
@@ -83,11 +93,12 @@ hits <- data.frame(
   staxid = c("9606", "9598", "9597")
 )
 check_hits(hits)
-#> # A tibble: 1 × 9
+#> # A tibble: 1 × 11
 #>   query `Check ID` `N hits` `N taxids` N hits same taxid as 1…¹ `N hits at best`
 #>   <chr> <chr>         <int>      <int>                    <int>            <int>
 #> 1 q1    best ID           3          3                        1                1
 #> # ℹ abbreviated name: ¹​`N hits same taxid as 1st`
-#> # ℹ 3 more variables: `N taxids at best` <int>, `Taxids at best` <chr>,
-#> #   `At best truncated` <lgl>
+#> # ℹ 5 more variables: `N taxids at best` <int>, `Taxids at best` <chr>,
+#> #   `At best truncated` <lgl>, `N uninformative` <int>,
+#> #   `Best uninformative score` <dbl>
 ```

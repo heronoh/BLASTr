@@ -49,3 +49,5 @@
   : Run BLAST
 - [`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)
   : Similarity score of BLAST hits
+- [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
+  : References that do not inform the identification

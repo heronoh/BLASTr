@@ -29,6 +29,7 @@ parallel_blast(
   check_n = 10L,
   check_tolerance = 0.5,
   rank_by = c("similarity", "identity", "bitscore"),
+  uninformative = uninformative_references(),
   output = c("long", "wide"),
   num_threads = NULL,
   batch_size = NULL,
@@ -129,6 +130,21 @@ parallel_blast(
   right taxon significantly more often than bitscore (genus: 72% and 76%
   against 62%), with no significant difference between them.
 
+- uninformative:
+
+  Table of the references that do not inform the identification
+  (uncultured, environmental, metagenomes, vectors, ...; see
+  [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)):
+  the table shipped with BLASTr (default), a path to another one, a data
+  frame, or `NULL` to treat all hits alike. The hits are flagged
+  (`informative`, `uninformative_category`) and ranked among the
+  informative ones, so `rank`, `at_best`, `Check ID` and
+  [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md)
+  use only those; a sequence whose hits are all uninformative keeps its
+  best ones, ranked among themselves. Uninformative hits take subjects
+  of the search, so a sequence of a poorly known group needs a larger
+  `search_alignments`.
+
 - output:
 
   `"long"` (default): one row per hit. `"wide"`: one row per sequence,
@@ -201,12 +217,15 @@ parallel_blast(
 With `output = "long"`, a tibble with one row per hit, best first:
 `Sequence`, `rank` (1 = best; tied hits share the rank), `tie` (the rank
 is shared), `at_best` (within `check_tolerance` of the best hit),
-`low_qcov` (`qcovhsp` below `perc_qcov_hsp`), `blast_rank` (order given
-by BLAST), `subject`, `subject header`, `staxid`, `identity`,
+`low_qcov` (`qcovhsp` below `perc_qcov_hsp`), `informative` and
+`uninformative_category` (see `uninformative`), `blast_rank` (order
+given by BLAST), `subject`, `subject header`, `staxid`, `identity`,
 `Similarity score`, `qcovhsp`, `nident`, `length`, `mismatches`, `gaps`,
 `query start`, `query end`, `subject start`, `subject end`,
 `subject strand`, `e-value` and `bitscore`. The first `num_alignments`
-hits are kept, plus all the hits at best. A sequence without hits has
+hits are kept (informative ones, when there are), plus all the hits at
+best and the uninformative hits among the first `num_alignments` of all
+(after the ranked ones, with `rank` `NA`). A sequence without hits has
 one row with `NA` hit fields. The summary per sequence (`Check ID`, ...)
 comes from
 [`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md).

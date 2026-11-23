@@ -7,8 +7,9 @@ mislabelled references among many tied hits (e.g. one &quot;Picramnia&quot; amon
 44 Picea) do not push the identification up to a high rank.
 The lineages come from get_tax() (lineage_taxids), so the ancestor is
 exact even with homonyms and clades without rank. Hits without a known
-taxid (0, empty, not in the taxonomy) do not vote. A hit with several
-taxids votes with the first one.
+taxid (0, empty, not in the taxonomy) do not vote, nor do the hits
+flagged as not informative (see uninformative_references()). A hit
+with several taxids votes with the first one.
 The default 0.9 was chosen on sequences of known taxonomy (see
 dev/benchmark/R/10_rank_calibration.R): compared with the strict
 ancestor it resolved 3 points more genera with almost no more errors,
@@ -22,8 +23,9 @@ mislabelled references among many tied hits (e.g. one &quot;Picramnia&quot; amon
 44 Picea) do not push the identification up to a high rank.
 The lineages come from get_tax() (lineage_taxids), so the ancestor is
 exact even with homonyms and clades without rank. Hits without a known
-taxid (0, empty, not in the taxonomy) do not vote. A hit with several
-taxids votes with the first one.
+taxid (0, empty, not in the taxonomy) do not vote, nor do the hits
+flagged as not informative (see uninformative_references()). A hit
+with several taxids votes with the first one.
 The default 0.9 was chosen on sequences of known taxonomy (see
 dev/benchmark/R/10_rank_calibration.R): compared with the strict
 ancestor it resolved 3 points more genera with almost no more errors,
@@ -82,8 +84,9 @@ mislabelled references among many tied hits (e.g. one "Picramnia" among
 44 <em>Picea</em>) do not push the identification up to a high rank.</p>
 <p>The lineages come from <code><a href="get_tax.html">get_tax()</a></code> (<code>lineage_taxids</code>), so the ancestor is
 exact even with homonyms and clades without rank. Hits without a known
-taxid (<code>0</code>, empty, not in the taxonomy) do not vote. A hit with several
-taxids votes with the first one.</p>
+taxid (<code>0</code>, empty, not in the taxonomy) do not vote, nor do the hits
+flagged as not <code>informative</code> (see <code><a href="uninformative_references.html">uninformative_references()</a></code>). A hit
+with several taxids votes with the first one.</p>
 <p>The default <code>0.9</code> was chosen on sequences of known taxonomy (see
 <code>dev/benchmark/R/10_rank_calibration.R</code>): compared with the strict
 ancestor it resolved 3 points more genera with almost no more errors,
@@ -97,6 +100,7 @@ the strict ancestor.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">blast_lca</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  consensus <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  named_first <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  taxonomy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  taxonomy_db <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  taxdump <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -117,9 +121,23 @@ the strict ancestor.</p>
 ancestor must contain, above 0.5. Defaults to <code>0.9</code>.</p></dd>
 
 
+<dt id="arg-named-first">named_first<a class="anchor" aria-label="anchor" href="#arg-named-first"></a></dt>
+<dd><p>If <code>TRUE</code> (default), the tied hits named only above
+genus (e.g. "Bacterium", "alpha proteobacterium XYZ", "Entolomataceae
+sp.") do not vote when a named species is tied with them: their lineage
+is right but shallow, and would pull the ancestor up. Hits in open
+nomenclature within a genus ("Picea sp.", "Carex cf. flava") still
+vote: they are other species of that genus (or of another one), and
+keep the ancestor at the genus (or above) instead of on the named
+species. They count in <code>N tied</code>; <code>LCA support</code> is among the voters.</p></dd>
+
+
 <dt id="arg-taxonomy">taxonomy<a class="anchor" aria-label="anchor" href="#arg-taxonomy"></a></dt>
 <dd><p>The table of <code><a href="get_tax.html">get_tax()</a></code> for the taxids of <code>x</code>. <code>NULL</code>
-(default) calls <code>get_tax(x, taxonomy_db, taxdump = taxdump)</code>.</p></dd>
+(default) calls <code>get_tax(x, taxonomy_db, taxdump = taxdump)</code>. Its rank
+columns define the ranks of <code>LCA ranked ...</code>: keep only some (e.g.
+<code>species</code>, <code>genus</code>, <code>family</code>, <code>order</code>) to place the ranked ancestor on
+them.</p></dd>
 
 
 <dt id="arg-taxonomy-db-taxdump">taxonomy_db, taxdump<a class="anchor" aria-label="anchor" href="#arg-taxonomy-db-taxdump"></a></dt>
@@ -133,7 +151,8 @@ ancestor must contain, above 0.5. Defaults to <code>0.9</code>.</p></dd>
 without one of the ranks of <code><a href="get_tax.html">get_tax()</a></code>, e.g. a clade or a superfamily),
 <code>LCA ranked taxid</code>, <code>LCA ranked name</code>, <code>LCA ranked rank</code> (the ancestor
 itself when it has one of those ranks, otherwise the deepest node above
-it that has one: for tables by rank), <code>LCA support</code> (fraction of the
+it that has one; a species in open nomenclature, e.g. "Picea sp. X",
+goes to its genus: for tables by rank), <code>LCA support</code> (fraction of the
 tied hits it contains), <code>N tied</code> (hits at best) and <code>N tied no taxid</code>.
 <code>NA</code> for sequences without hits. Join <code>get_tax(result$</code>LCA taxid<code>)</code> for
 its ranks and lineage.</p>

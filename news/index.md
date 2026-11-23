@@ -131,6 +131,29 @@
   one given), once, and kept in the BLASTr cache.
   [`make_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/make_taxonomy_db.md)
   builds it explicitly.
+- Uninformative references:
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+  gains `uninformative`, the table of
+  [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
+  (shipped in `inst/extdata/uninformative_references.tsv`: uncultured,
+  metagenomes and MAGs, environmental samples, synthetic constructs and
+  vectors, unidentified, chimeras, and wrong references by accession).
+  The hits are flagged (`informative`, `uninformative_category`) and
+  ranked among the informative ones, so `rank`, `at_best`, `Check ID`
+  and
+  [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md)
+  use only those; a sequence with only uninformative hits keeps its best
+  ones.
+  [`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md)
+  gains `N uninformative` and `Best uninformative score` (a sign of a
+  taxon missing from the database). The md5 of the table goes to the
+  metadata and to the log; `as_blast_long(uninformative = )` flags older
+  results.
+- [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md)
+  gains `named_first`: hits named only above genus (“Bacterium”,
+  “Entolomataceae sp.”) do not vote when a named species is tied with
+  them; and a species in open nomenclature (“Picea sp. X”) is ranked at
+  its genus in `LCA ranked ...`.
 - New
   [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md):
   consensus lowest common ancestor of the hits tied with the best one

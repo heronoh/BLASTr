@@ -213,7 +213,23 @@ closer reference that covers a bit less of the query is kept, not
 replaced by a worse one. Hits below `perc_qcov_hsp = 80` are flagged
 (`low_qcov`), and the coverage weighs in the Similarity score.
 
+References that say little about the query are set aside when ranking
+(`uninformative`, the table of
+[`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)):
+uncultured or unidentified organisms, metagenomes and MAGs,
+environmental samples, synthetic constructs and vectors, chimeras, and
+specific references known to be wrong. Their taxid is often only
+“Bacteria” or “environmental samples”, so they should not decide the
+identification when a named organism is also among the hits. The hits
+are flagged (`informative`, `uninformative_category`) and ranked among
+the informative ones; a sequence whose hits are all uninformative keeps
+its best ones, ranked among themselves. The table is versioned in the
+package (its md5 is in the metadata); `uninformative = NULL` treats all
+hits alike.
+
 - `rank`: 1 is the best hit; tied hits share the rank (`tie = TRUE`).
+  Uninformative hits, when there are informative ones, come last with
+  `rank` `NA`.
 - `at_best`: the hit is within `check_tolerance = 0.5` of the best one,
   a tied candidate for the identification. All hits at best are kept,
   even beyond `num_alignments` (10 by default).
@@ -239,6 +255,11 @@ gives one row per sequence:
   subjects BLAST returned (`search_alignments`).
 - `Best low qcov`: the best hit covers less than `perc_qcov_hsp` of the
   query.
+- `N uninformative` and `Best uninformative score`: uninformative hits
+  among the first `num_alignments`, and the best value of `rank_by`
+  among them. Above the best informative hit, the sequence is closer to
+  an uncultured or environmental sequence than to any named organism: a
+  sign of a taxon missing from the database.
 
 ``` r
 
@@ -278,14 +299,17 @@ a BLASTr result and returns one row per taxid, with the ranks, the full
 gives, for each sequence, the deepest taxon that holds at least 90% of
 the hits tied with the best one (`consensus`): one mislabelled reference
 among many tied hits does not push the identification up to a high rank,
-and with up to 9 tied hits all of them must agree. When that taxon has
-no standard rank (e.g. the clade “Heliantheae alliance”), `LCA name`
-keeps it and `LCA ranked name` / `LCA ranked rank` give the nearest
-ranked taxon above it (here the subfamily Asteroideae). If the database
-does not exist, it is built once from the NCBI taxdump: for a BLASTr
-result, the taxdump published right after the date of its BLAST
-database, so the taxonomy matches the database (about a minute, then
-kept in the BLASTr cache).
+and with up to 9 tied hits all of them must agree. Hits named only above
+genus (“Bacterium”, “Entolomataceae sp.”) do not vote when a named
+species is tied with them (`named_first`), while “Picea sp.” still does
+(another species of the genus). When that taxon has no standard rank
+(e.g. the clade “Heliantheae alliance”), `LCA name` keeps it and
+`LCA ranked name` / `LCA ranked rank` give the nearest ranked taxon
+above it (here the subfamily Asteroideae). If the database does not
+exist, it is built once from the NCBI taxdump: for a BLASTr result, the
+taxdump published right after the date of its BLAST database, so the
+taxonomy matches the database (about a minute, then kept in the BLASTr
+cache).
 
 ``` r
 
@@ -383,6 +407,8 @@ guarantee. `log_dir` keeps a log of your own searches (see
   Taxonomy of NCBI taxids from a local database.
 - [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md):
   Consensus lowest common ancestor of the best hits.
+- [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md):
+  The references set aside when ranking the hits.
 - [`run_blast()`](https://heronoh.github.io/BLASTr/reference/run_blast.md):
   A lower-level function to run a BLAST search and return the raw
   output.
@@ -468,6 +494,8 @@ details.
   : Run BLAST
 - [`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)
   : Similarity score of BLAST hits
+- [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
+  : References that do not inform the identification
 
 # Articles
 

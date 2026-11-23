@@ -18,7 +18,8 @@ as_blast_long(
   x,
   rank_by = c("similarity", "identity", "bitscore"),
   tolerance = 0.5,
-  perc_qcov_hsp = 80
+  perc_qcov_hsp = 80,
+  uninformative = NULL
 )
 ```
 
@@ -38,6 +39,16 @@ as_blast_long(
 
   Coverage under which a hit is flagged `low_qcov`.
 
+- uninformative:
+
+  `NULL` (default) keeps the flags `informative` of `x` (all hits
+  informative when `x` has none); a table of
+  [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
+  flags the hits again with it, and ranks them among the informative
+  ones, as
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+  does.
+
 ## Value
 
 Long results (see
@@ -53,13 +64,14 @@ wide <- data.frame(
   `2_qcovhsp` = 100, `2_staxid` = "9598", check.names = FALSE
 )
 as_blast_long(wide)
-#> # A tibble: 2 × 23
-#>   Sequence  rank tie   at_best low_qcov blast_rank subject `subject header`
-#>   <chr>    <int> <lgl> <lgl>   <lgl>         <int> <chr>   <chr>           
-#> 1 ACGT         1 FALSE TRUE    FALSE             2 A2      NA              
-#> 2 ACGT         2 FALSE FALSE   FALSE             1 A1      NA              
-#> # ℹ 15 more variables: staxid <chr>, identity <dbl>, `Similarity score` <dbl>,
-#> #   qcovhsp <dbl>, nident <dbl>, length <dbl>, mismatches <dbl>, gaps <dbl>,
+#> # A tibble: 2 × 25
+#>   Sequence  rank tie   at_best low_qcov informative uninformative_category
+#>   <chr>    <int> <lgl> <lgl>   <lgl>    <lgl>       <chr>                 
+#> 1 ACGT         1 FALSE TRUE    FALSE    TRUE        NA                    
+#> 2 ACGT         2 FALSE FALSE   FALSE    TRUE        NA                    
+#> # ℹ 18 more variables: blast_rank <int>, subject <chr>, `subject header` <chr>,
+#> #   staxid <chr>, identity <dbl>, `Similarity score` <dbl>, qcovhsp <dbl>,
+#> #   nident <dbl>, length <dbl>, mismatches <dbl>, gaps <dbl>,
 #> #   `query start` <dbl>, `query end` <dbl>, `subject start` <dbl>,
 #> #   `subject end` <dbl>, `subject strand` <chr>, `e-value` <dbl>,
 #> #   bitscore <dbl>

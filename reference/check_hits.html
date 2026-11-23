@@ -21,7 +21,14 @@ N taxids at best, Taxids at best (the known taxids of the hits at
 best, in rank order, separated by &quot;;&quot;, for a lowest common ancestor) and
 At best truncated (TRUE when the last subject BLAST returned is at
 best: more tied subjects may exist beyond search_alignments; NA when
-search_alignments is unknown)."><meta property="og:description" content="For each query sequence, orders its hits by rank_by, decides whether
+search_alignments is unknown).
+With an informative column (see uninformative_references()), all of
+this is computed among the informative hits, or among all the hits when
+a query has no informative one (and then Check ID is &quot;check ID&quot;).
+N uninformative counts the other hits and Best uninformative score
+is the best value of rank_by among them: above the best informative
+hit, the query is closer to an uncultured or environmental sequence than
+to any named organism (a sign of a taxon missing from the database)."><meta property="og:description" content="For each query sequence, orders its hits by rank_by, decides whether
 the best ones agree on the taxon (Check ID) and summarises all of them.
 The hits are ordered by rank_by (Similarity score, identity or
 bitscore) and then by identity, coverage, bitscore and BLAST order. Hits
@@ -43,7 +50,14 @@ N taxids at best, Taxids at best (the known taxids of the hits at
 best, in rank order, separated by &quot;;&quot;, for a lowest common ancestor) and
 At best truncated (TRUE when the last subject BLAST returned is at
 best: more tied subjects may exist beyond search_alignments; NA when
-search_alignments is unknown)."><meta property="og:image" content="https://heronoh.github.io/BLASTr/logo.png"></head><body>
+search_alignments is unknown).
+With an informative column (see uninformative_references()), all of
+this is computed among the informative hits, or among all the hits when
+a query has no informative one (and then Check ID is &quot;check ID&quot;).
+N uninformative counts the other hits and Best uninformative score
+is the best value of rank_by among them: above the best informative
+hit, the query is closer to an uncultured or environmental sequence than
+to any named organism (a sign of a taxon missing from the database)."><meta property="og:image" content="https://heronoh.github.io/BLASTr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -108,6 +122,13 @@ best, in rank order, separated by <code>";"</code>, for a lowest common ancestor
 <code>At best truncated</code> (<code>TRUE</code> when the last subject BLAST returned is at
 best: more tied subjects may exist beyond <code>search_alignments</code>; <code>NA</code> when
 <code>search_alignments</code> is unknown).</p>
+<p>With an <code>informative</code> column (see <code><a href="uninformative_references.html">uninformative_references()</a></code>), all of
+this is computed among the informative hits, or among all the hits when
+a query has no informative one (and then <code>Check ID</code> is <code>"check ID"</code>).
+<code>N uninformative</code> counts the other hits and <code>Best uninformative score</code>
+is the best value of <code>rank_by</code> among them: above the best informative
+hit, the query is closer to an uncultured or environmental sequence than
+to any named organism (a sign of a taxon missing from the database).</p>
     </div>
 
     <div class="section level2">
@@ -129,7 +150,7 @@ best: more tied subjects may exist beyond <code>search_alignments</code>; <code>
 <dd><p>Data frame with one row per hit and the columns <code>query</code>,
 <code>identity</code>, <code>staxid</code> and, as needed by <code>rank_by</code>, <code>qcovhsp</code> or
 <code>bitscore</code>. The BLAST order is taken from <code>blast_rank</code> or <code>rank</code>, or
-else from the row order.</p></dd>
+else from the row order. Optional: <code>informative</code> (logical).</p></dd>
 
 
 <dt id="arg-check-n">check_n<a class="anchor" aria-label="anchor" href="#arg-check-n"></a></dt>
@@ -164,13 +185,14 @@ compute <code>At best truncated</code>.</p></dd>
 <span class="r-in"><span>  staxid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9606"</span>, <span class="st">"9598"</span>, <span class="st">"9597"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">check_hits</span><span class="op">(</span><span class="va">hits</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 11</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   query `Check ID` `N hits` `N taxids` N hits same taxid as 1…¹ `N hits at best`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> q1    best ID           3          3                        1                1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ abbreviated name: ¹​`N hits same taxid as 1st`</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: `N taxids at best` &lt;int&gt;, `Taxids at best` &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `At best truncated` &lt;lgl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: `N taxids at best` &lt;int&gt;, `Taxids at best` &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `At best truncated` &lt;lgl&gt;, `N uninformative` &lt;int&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `Best uninformative score` &lt;dbl&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
