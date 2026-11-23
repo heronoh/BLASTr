@@ -8,7 +8,8 @@ as_blast_long(
   x,
   rank_by = c("similarity", "identity", "bitscore"),
   tolerance = 0.5,
-  perc_qcov_hsp = 80
+  perc_qcov_hsp = 80,
+  uninformative = NULL
 )
 }
 \arguments{
@@ -18,6 +19,11 @@ as_blast_long(
 \item{rank_by, tolerance}{As in \code{\link[=check_hits]{check_hits()}}.}
 
 \item{perc_qcov_hsp}{Coverage under which a hit is flagged \code{low_qcov}.}
+
+\item{uninformative}{\code{NULL} (default) keeps the flags \code{informative} of
+\code{x} (all hits informative when \code{x} has none); a table of
+\code{\link[=uninformative_references]{uninformative_references()}} flags the hits again with it, and ranks
+them among the informative ones, as \code{\link[=parallel_blast]{parallel_blast()}} does.}
 }
 \value{
 Long results (see \code{\link[=parallel_blast]{parallel_blast()}}), with all the hits of \code{x}.

@@ -100,6 +100,22 @@
   matching the date of the BLAST database of the search (or the one given),
   once, and kept in the BLASTr cache. `make_taxonomy_db()` builds it
   explicitly.
+* Uninformative references: `parallel_blast()` gains `uninformative`, the
+  table of `uninformative_references()` (shipped in
+  `inst/extdata/uninformative_references.tsv`: uncultured, metagenomes and
+  MAGs, environmental samples, synthetic constructs and vectors,
+  unidentified, chimeras, and wrong references by accession). The hits are
+  flagged (`informative`, `uninformative_category`) and ranked among the
+  informative ones, so `rank`, `at_best`, `Check ID` and `blast_lca()` use
+  only those; a sequence with only uninformative hits keeps its best ones.
+  `blast_summary()` gains `N uninformative` and `Best uninformative score`
+  (a sign of a taxon missing from the database). The md5 of the table goes
+  to the metadata and to the log; `as_blast_long(uninformative = )` flags
+  older results.
+* `blast_lca()` gains `named_first`: hits named only above genus
+  ("Bacterium", "Entolomataceae sp.") do not vote when a named species is
+  tied with them; and a species in open nomenclature ("Picea sp. X") is
+  ranked at its genus in `LCA ranked ...`.
 * New `blast_lca()`: consensus lowest common ancestor of the hits tied with
   the best one (by default the deepest taxon holding 90% of them, so a few
   mislabelled references do not push the identification up), from the

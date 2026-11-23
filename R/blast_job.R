@@ -590,7 +590,8 @@ collect_blast_job <- function(job) {
       num_alignments = m$num_alignments,
       rank_by = rank_by,
       tolerance = m$check_tolerance,
-      perc_qcov_hsp = if (is.null(m$perc_qcov_hsp)) NA else m$perc_qcov_hsp
+      perc_qcov_hsp = if (is.null(m$perc_qcov_hsp)) NA else m$perc_qcov_hsp,
+      uninformative = m$uninformative
     )
     summ <- blast_summary(
       long,

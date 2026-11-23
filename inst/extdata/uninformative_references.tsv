@@ -1,0 +1,15 @@
+field	pattern	category	note
+header	(?i:uncultured)	uncultured	uncultured organism
+header	^MAG	metagenome	metagenome-assembled genome
+header	(?i:metagenome)	metagenome	metagenome (GenBank)
+header	(?i:\benvironmental (sample|DNA)\b)	environmental	environmental sample (e.g. Chordata environmental sample)
+header	^Leaf litter	environmental	environmental (earlier analyses)
+header	16S rRNA amplicon fragment	environmental	environmental (earlier analyses)
+header	Complete LGCome-Assembled	environmental	environmental (earlier analyses)
+header	root endophyte	environmental	environmental (earlier analyses)
+header	root associated fungus	environmental	environmental (earlier analyses)
+header	(?i:synthetic construct)	synthetic	synthetic construct
+header	(?i:\b(cloning|expression|shuttle|transformation|binary) vector\b)	synthetic	vector (GenBank)
+header	(?i:\bunidentified\b)	unidentified	unidentified organism (GenBank)
+header	(?i:\bchimeric\b)	chimeric	chimera (GenBank)
+accession	XR_004027927.1	bad reference	PREDICTED: Nomascus leucogenys uncharacterized LOC115832432

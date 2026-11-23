@@ -10,8 +10,9 @@
 #'
 #' The lineages come from [get_tax()] (`lineage_taxids`), so the ancestor is
 #' exact even with homonyms and clades without rank. Hits without a known
-#' taxid (`0`, empty, not in the taxonomy) do not vote. A hit with several
-#' taxids votes with the first one.
+#' taxid (`0`, empty, not in the taxonomy) do not vote, nor do the hits
+#' flagged as not `informative` (see [uninformative_references()]). A hit
+#' with several taxids votes with the first one.
 #'
 #' The default `0.9` was chosen on sequences of known taxonomy (see
 #' `dev/benchmark/R/10_rank_calibration.R`): compared with the strict
@@ -24,8 +25,19 @@
 #'   (converted with [as_blast_long()]).
 #' @param consensus Fraction of the tied hits (with known taxid) that the
 #'   ancestor must contain, above 0.5. Defaults to `0.9`.
+#' @param named_first If `TRUE` (default), the tied hits named only above
+#'   genus (e.g. "Bacterium", "alpha proteobacterium XYZ", "Entolomataceae
+#'   sp.") do not vote when a named species is tied with them: their lineage
+#'   is right but shallow, and would pull the ancestor up. Hits in open
+#'   nomenclature within a genus ("Picea sp.", "Carex cf. flava") still
+#'   vote: they are other species of that genus (or of another one), and
+#'   keep the ancestor at the genus (or above) instead of on the named
+#'   species. They count in `N tied`; `LCA support` is among the voters.
 #' @param taxonomy The table of [get_tax()] for the taxids of `x`. `NULL`
-#'   (default) calls `get_tax(x, taxonomy_db, taxdump = taxdump)`.
+#'   (default) calls `get_tax(x, taxonomy_db, taxdump = taxdump)`. Its rank
+#'   columns define the ranks of `LCA ranked ...`: keep only some (e.g.
+#'   `species`, `genus`, `family`, `order`) to place the ranked ancestor on
+#'   them.
 #' @param taxonomy_db,taxdump Passed to [get_tax()].
 #'
 #' @returns A tibble with one row per sequence: `Sequence`, `LCA taxid`,
@@ -33,7 +45,8 @@
 #'   without one of the ranks of [get_tax()], e.g. a clade or a superfamily),
 #'   `LCA ranked taxid`, `LCA ranked name`, `LCA ranked rank` (the ancestor
 #'   itself when it has one of those ranks, otherwise the deepest node above
-#'   it that has one: for tables by rank), `LCA support` (fraction of the
+#'   it that has one; a species in open nomenclature, e.g. "Picea sp. X",
+#'   goes to its genus: for tables by rank), `LCA support` (fraction of the
 #'   tied hits it contains), `N tied` (hits at best) and `N tied no taxid`.
 #'   `NA` for sequences without hits. Join `get_tax(result$`LCA taxid`)` for
 #'   its ranks and lineage.
@@ -45,14 +58,16 @@
 #' dplyr::left_join(lca, get_tax(lca$`LCA taxid`), by = c(`LCA taxid` = "taxid"))
 #' }
 #' @export
-blast_lca <- function(x, consensus = 0.9, taxonomy = NULL, taxonomy_db = NULL, taxdump = NULL) {
+blast_lca <- function(x, consensus = 0.9, named_first = TRUE, taxonomy = NULL, taxonomy_db = NULL, taxdump = NULL) {
   if (!is.numeric(consensus) || length(consensus) != 1L || consensus <= 0.5 || consensus > 1) {
     cli::cli_abort(c(`x` = "{.arg consensus} must be a number above 0.5 and at most 1."))
   }
   meta <- attr(x, "BLASTr_metadata")
   x <- as_blast_long(x)
   seqs <- unique(x$Sequence)
-  tied <- x[!is.na(x$at_best) & x$at_best, c("Sequence", "staxid"), drop = FALSE]
+  voter <- !is.na(x$at_best) & x$at_best
+  if (!is.null(x[["informative"]])) voter <- voter & !(x[["informative"]] %in% FALSE)
+  tied <- x[voter, c("Sequence", "staxid"), drop = FALSE]
   tied$taxid <- trimws(sub(";.*", "", as.character(tied$staxid)))
   tied$taxid[is.na(tied$taxid) | tied$taxid %in% unknown_taxids] <- NA_character_
 
@@ -69,22 +84,40 @@ blast_lca <- function(x, consensus = 0.9, taxonomy = NULL, taxonomy_db = NULL, t
   k <- match(tied$taxid, taxonomy$taxid)
   lin <- strsplit(ifelse(is.na(k), NA_character_, taxonomy$lineage_taxids[k]), "; ", fixed = TRUE)
   known <- !vapply(lin, function(l) length(l) == 0L || all(is.na(l)), logical(1L))
+  has_tax <- known
+  # hits named only above genus ("Bacterium", "Entolomataceae sp.") do not
+  # vote when a named species is tied with them; "Picea sp." still votes
+  # (another species of Picea)
+  if (isTRUE(named_first) && nrow(tied) > 0L) {
+    sp <- if (!is.null(taxonomy[["species"]])) {
+      taxonomy$species[k]
+    } else if (!is.null(taxonomy[["sci_name"]]) && !is.null(taxonomy[["rank"]])) {
+      ifelse(taxonomy$rank[k] %in% "species", taxonomy$sci_name[k], NA_character_)
+    } else {
+      rep("named", length(k))
+    }
+    named <- known & !is.na(sp) & !grepl(open_nomenclature_pattern, sp, perl = TRUE)
+    in_genus <- if (!is.null(taxonomy[["genus"]])) !is.na(taxonomy$genus[k]) else rep(TRUE, length(k))
+    has_named <- stats::ave(named, factor(tied$Sequence), FUN = any)
+    known <- known & (named | in_genus | !has_named)
+  }
 
   # node names and ranks, for the ancestors found
   by_seq <- split(seq_len(nrow(tied)), factor(tied$Sequence, levels = seqs))
   res <- lapply(seqs, function(s) {
     i <- by_seq[[s]]
     n_tied <- length(i)
+    n_unknown <- sum(!has_tax[i])
     i <- i[known[i]]
     n <- length(i)
     if (n == 0L) {
-      return(list(taxid = NA_character_, support = NA_real_, n_tied = n_tied, n_unknown = n_tied))
+      return(list(taxid = NA_character_, support = NA_real_, n_tied = n_tied, n_unknown = n_unknown))
     }
     l <- lin[i]
     counts <- table(unlist(lapply(l, unique)))
     ok <- names(counts)[counts >= ceiling(consensus * n - 1e-9)]
     if (length(ok) == 0L) {
-      return(list(taxid = NA_character_, support = NA_real_, n_tied = n_tied, n_unknown = n_tied - n))
+      return(list(taxid = NA_character_, support = NA_real_, n_tied = n_tied, n_unknown = n_unknown))
     }
     # nodes held by more than half of the hits lie on one path: the deepest
     depth <- vapply(ok, function(t) max(vapply(l, function(p) {
@@ -92,7 +125,7 @@ blast_lca <- function(x, consensus = 0.9, taxonomy = NULL, taxonomy_db = NULL, t
       if (is.na(m)) 0L else m
     }, integer(1L))), integer(1L))
     best <- ok[which.max(depth)]
-    list(taxid = best, support = as.numeric(counts[[best]]) / n, n_tied = n_tied, n_unknown = n_tied - n)
+    list(taxid = best, support = as.numeric(counts[[best]]) / n, n_tied = n_tied, n_unknown = n_unknown)
   })
   out <- tibble::tibble(
     Sequence = seqs,
@@ -122,7 +155,11 @@ blast_lca <- function(x, consensus = 0.9, taxonomy = NULL, taxonomy_db = NULL, t
         }
         rk <- rank_of(p)
         q <- p
-        while (q > 0L && !rank_of(q) %in% rank_cols) q <- q - 1L
+        # a species in open nomenclature ("Picea sp. X") is placed on its genus
+        while (q > 0L && (!rank_of(q) %in% rank_cols ||
+          (rank_of(q) %in% "species" && grepl(open_nomenclature_pattern, nms[q], perl = TRUE)))) {
+          q <- q - 1L
+        }
         if (q == 0L) return(c(nms[p], rk, NA_character_, NA_character_, NA_character_))
         return(c(nms[p], rk, lin[[h]][q], nms[q], rank_of(q)))
       }

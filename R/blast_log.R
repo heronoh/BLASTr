@@ -194,6 +194,7 @@ write_blast_log <- function(job, res, st, b, seqs, summ = NULL) {
     check_tolerance = st$meta$check_tolerance,
     rank_by = if (is.null(st$meta$rank_by)) NA_character_ else st$meta$rank_by,
     output = if (is.null(st$meta$output)) NA_character_ else st$meta$output,
+    uninformative_md5 = if (is.null(st$meta$uninformative_md5)) NA_character_ else st$meta$uninformative_md5,
     wall_s = round(wall, 1),
     cpu_s = round(cpu, 1),
     cpu_h = round(cpu / 3600, 4),

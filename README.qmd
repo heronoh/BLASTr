@@ -217,7 +217,12 @@ In a calibration with sequences of known taxonomy (87 plant barcodes, ITS2 and r
 
 BLAST searches with a low coverage cutoff (`search_qcov_hsp = 50`): a closer reference that covers a bit less of the query is kept, not replaced by a worse one. Hits below `perc_qcov_hsp = 80` are flagged (`low_qcov`), and the coverage weighs in the Similarity score.
 
-- `rank`: 1 is the best hit; tied hits share the rank (`tie = TRUE`).
+References that say little about the query are set aside when ranking (`uninformative`, the table of `uninformative_references()`): uncultured or unidentified organisms, metagenomes and MAGs, environmental samples, synthetic constructs and vectors, chimeras, and specific references known to be wrong.
+Their taxid is often only "Bacteria" or "environmental samples", so they should not decide the identification when a named organism is also among the hits.
+The hits are flagged (`informative`, `uninformative_category`) and ranked among the informative ones; a sequence whose hits are all uninformative keeps its best ones, ranked among themselves.
+The table is versioned in the package (its md5 is in the metadata); `uninformative = NULL` treats all hits alike.
+
+- `rank`: 1 is the best hit; tied hits share the rank (`tie = TRUE`). Uninformative hits, when there are informative ones, come last with `rank` `NA`.
 - `at_best`: the hit is within `check_tolerance = 0.5` of the best one, a tied candidate for the identification. All hits at best are kept, even beyond `num_alignments` (10 by default).
 - `blast_rank`: the order given by BLAST.
 - The hit fields: `subject`, `subject header`, `staxid`, `identity`, `Similarity score`, `qcovhsp`, `nident`, `length`, `mismatches`, `gaps`, `query start`, `query end`, `subject start`, `subject end`, `subject strand`, `e-value` and `bitscore`.
@@ -229,6 +234,7 @@ A sequence without hits has one row with empty hit fields.
 - `N hits`, `N taxids`, `N hits same taxid as 1st`, `N hits at best` and `N taxids at best`. `N hits at best = 1` means the `"best ID"` rests on a single reference; several hits with one taxid at best mean several references agreeing.
 - `Taxids at best`: the taxids tied with the best hit, for a lowest common ancestor; `At best truncated`: the tie may go beyond the subjects BLAST returned (`search_alignments`).
 - `Best low qcov`: the best hit covers less than `perc_qcov_hsp` of the query.
+- `N uninformative` and `Best uninformative score`: uninformative hits among the first `num_alignments`, and the best value of `rank_by` among them. Above the best informative hit, the sequence is closer to an uncultured or environmental sequence than to any named organism: a sign of a taxon missing from the database.
 
 ```{r}
 #| label: blastr-summary
@@ -257,6 +263,7 @@ print(exit_code_df[c("exit_code", "stderr")])
 `get_tax()` reads the NCBI taxonomy from a local SQLite database.
 It takes taxids or a BLASTr result and returns one row per taxid, with the ranks, the full `lineage` and its `lineage_taxids`.
 `blast_lca()` gives, for each sequence, the deepest taxon that holds at least 90% of the hits tied with the best one (`consensus`): one mislabelled reference among many tied hits does not push the identification up to a high rank, and with up to 9 tied hits all of them must agree.
+Hits named only above genus ("Bacterium", "Entolomataceae sp.") do not vote when a named species is tied with them (`named_first`), while "Picea sp." still does (another species of the genus).
 When that taxon has no standard rank (e.g. the clade "Heliantheae alliance"), `LCA name` keeps it and `LCA ranked name` / `LCA ranked rank` give the nearest ranked taxon above it (here the subfamily Asteroideae).
 If the database does not exist, it is built once from the NCBI taxdump: for a BLASTr result, the taxdump published right after the date of its BLAST database, so the taxonomy matches the database (about a minute, then kept in the BLASTr cache).
 
@@ -313,6 +320,7 @@ Times depend on the machine and on the load of a shared server; they are a guide
 - `exit_codes()`: Retrieve the exit codes and STDERR messages from BLAST searches.
 - `get_tax()`, `make_taxonomy_db()`: Taxonomy of NCBI taxids from a local database.
 - `blast_lca()`: Consensus lowest common ancestor of the best hits.
+- `uninformative_references()`: The references set aside when ranking the hits.
 - `run_blast()`: A lower-level function to run a BLAST search and return the raw output.
 - `parse_fasta()`: Extracts sequences from a FASTA file.
 - `get_fasta_header()`: Retrieves the full header of a sequence from a BLAST database.

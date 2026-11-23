@@ -7,6 +7,7 @@
 blast_lca(
   x,
   consensus = 0.9,
+  named_first = TRUE,
   taxonomy = NULL,
   taxonomy_db = NULL,
   taxdump = NULL
@@ -19,8 +20,20 @@ blast_lca(
 \item{consensus}{Fraction of the tied hits (with known taxid) that the
 ancestor must contain, above 0.5. Defaults to \code{0.9}.}
 
+\item{named_first}{If \code{TRUE} (default), the tied hits named only above
+genus (e.g. "Bacterium", "alpha proteobacterium XYZ", "Entolomataceae
+sp.") do not vote when a named species is tied with them: their lineage
+is right but shallow, and would pull the ancestor up. Hits in open
+nomenclature within a genus ("Picea sp.", "Carex cf. flava") still
+vote: they are other species of that genus (or of another one), and
+keep the ancestor at the genus (or above) instead of on the named
+species. They count in \verb{N tied}; \verb{LCA support} is among the voters.}
+
 \item{taxonomy}{The table of \code{\link[=get_tax]{get_tax()}} for the taxids of \code{x}. \code{NULL}
-(default) calls \code{get_tax(x, taxonomy_db, taxdump = taxdump)}.}
+(default) calls \code{get_tax(x, taxonomy_db, taxdump = taxdump)}. Its rank
+columns define the ranks of \verb{LCA ranked ...}: keep only some (e.g.
+\code{species}, \code{genus}, \code{family}, \code{order}) to place the ranked ancestor on
+them.}
 
 \item{taxonomy_db, taxdump}{Passed to \code{\link[=get_tax]{get_tax()}}.}
 }
@@ -30,7 +43,8 @@ A tibble with one row per sequence: \code{Sequence}, \verb{LCA taxid},
 without one of the ranks of \code{\link[=get_tax]{get_tax()}}, e.g. a clade or a superfamily),
 \verb{LCA ranked taxid}, \verb{LCA ranked name}, \verb{LCA ranked rank} (the ancestor
 itself when it has one of those ranks, otherwise the deepest node above
-it that has one: for tables by rank), \verb{LCA support} (fraction of the
+it that has one; a species in open nomenclature, e.g. "Picea sp. X",
+goes to its genus: for tables by rank), \verb{LCA support} (fraction of the
 tied hits it contains), \verb{N tied} (hits at best) and \verb{N tied no taxid}.
 \code{NA} for sequences without hits. Join \verb{get_tax(result$}LCA taxid\verb{)} for
 its ranks and lineage.
@@ -45,8 +59,9 @@ mislabelled references among many tied hits (e.g. one "Picramnia" among
 
 The lineages come from \code{\link[=get_tax]{get_tax()}} (\code{lineage_taxids}), so the ancestor is
 exact even with homonyms and clades without rank. Hits without a known
-taxid (\code{0}, empty, not in the taxonomy) do not vote. A hit with several
-taxids votes with the first one.
+taxid (\code{0}, empty, not in the taxonomy) do not vote, nor do the hits
+flagged as not \code{informative} (see \code{\link[=uninformative_references]{uninformative_references()}}). A hit
+with several taxids votes with the first one.
 
 The default \code{0.9} was chosen on sequences of known taxonomy (see
 \verb{dev/benchmark/R/10_rank_calibration.R}): compared with the strict

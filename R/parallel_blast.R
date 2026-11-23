@@ -51,6 +51,16 @@
 #'   searched without themselves, ranking by Similarity score or identity
 #'   picked the right taxon significantly more often than bitscore (genus:
 #'   72% and 76% against 62%), with no significant difference between them.
+#' @param uninformative Table of the references that do not inform the
+#'   identification (uncultured, environmental, metagenomes, vectors, ...;
+#'   see [uninformative_references()]): the table shipped with BLASTr
+#'   (default), a path to another one, a data frame, or `NULL` to treat all
+#'   hits alike. The hits are flagged (`informative`,
+#'   `uninformative_category`) and ranked among the informative ones, so
+#'   `rank`, `at_best`, `Check ID` and [blast_lca()] use only those; a
+#'   sequence whose hits are all uninformative keeps its best ones, ranked
+#'   among themselves. Uninformative hits take subjects of the search, so a
+#'   sequence of a poorly known group needs a larger `search_alignments`.
 #' @param output `"long"` (default): one row per hit. `"wide"`: one row per
 #'   sequence, with the summary of [blast_summary()] and the first
 #'   `num_alignments` hits side by side (`1_` is the best one).
@@ -89,13 +99,16 @@
 #' @returns With `output = "long"`, a tibble with one row per hit, best
 #'   first: `Sequence`, `rank` (1 = best; tied hits share the rank), `tie`
 #'   (the rank is shared), `at_best` (within `check_tolerance` of the best
-#'   hit), `low_qcov` (`qcovhsp` below `perc_qcov_hsp`), `blast_rank`
+#'   hit), `low_qcov` (`qcovhsp` below `perc_qcov_hsp`), `informative`
+#'   and `uninformative_category` (see `uninformative`), `blast_rank`
 #'   (order given by BLAST), `subject`, `subject header`,
 #'   `staxid`, `identity`, `Similarity score`, `qcovhsp`, `nident`,
 #'   `length`, `mismatches`, `gaps`, `query start`, `query end`,
 #'   `subject start`, `subject end`, `subject strand`, `e-value` and
-#'   `bitscore`. The first `num_alignments` hits are kept, plus all the hits
-#'   at best. A sequence without hits has one row with `NA` hit fields. The
+#'   `bitscore`. The first `num_alignments` hits are kept (informative
+#'   ones, when there are), plus all the hits at best and the uninformative
+#'   hits among the first `num_alignments` of all (after the ranked ones,
+#'   with `rank` `NA`). A sequence without hits has one row with `NA` hit fields. The
 #'   summary per sequence (`Check ID`, ...) comes from [blast_summary()].
 #'
 #'   With `output = "wide"`, one row per sequence: `Sequence`, the summary
@@ -148,6 +161,7 @@ parallel_blast <- function(
   check_n = 10L,
   check_tolerance = 0.5,
   rank_by = c("similarity", "identity", "bitscore"),
+  uninformative = uninformative_references(),
   output = c("long", "wide"),
   num_threads = NULL,
   batch_size = NULL,
@@ -177,6 +191,7 @@ parallel_blast <- function(
   verbose <- rlang::arg_match(verbose)
   rank_by <- rlang::arg_match(rank_by)
   output <- rlang::arg_match(output)
+  if (!is.null(uninformative)) uninformative <- uninformative_references(uninformative)
   if (!is.null(mt_mode)) {
     mt_mode <- rlang::arg_match(as.character(mt_mode), c("0", "1", "2"))
   }
@@ -250,6 +265,8 @@ parallel_blast <- function(
     blast_type = blast_type,
     check_n = as.integer(check_n),
     check_tolerance = check_tolerance,
+    uninformative = uninformative,
+    uninformative_md5 = if (is.null(uninformative)) NA_character_ else attr(uninformative, "md5"),
     n_input = length(query_seqs),
     total_cores = as.integer(total_cores),
     background = isTRUE(background),

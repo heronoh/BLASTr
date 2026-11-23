@@ -28,7 +28,7 @@ testthat::test_that("parallel_blast works", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 9L + 4L * 19L)
+  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * 21L)
 
   exit_codes_df <- exit_codes(blast_res)
   testthat::expect_s3_class(exit_codes_df, "data.frame")
@@ -160,7 +160,7 @@ testthat::test_that("parallel_blast - single thread", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 9L + 4L * 19L)
+  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * 21L)
 })
 
 testthat::test_that("parallel blast - empty args", {
@@ -206,7 +206,7 @@ testthat::test_that("parallel_blast - depracated arguments", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 9L + 4L * 19L)
+  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * 21L)
 })
 
 testthat::test_that("parallel_blast long output: one row per hit, best first", {

@@ -18,6 +18,7 @@ parallel_blast(
   check_n = 10L,
   check_tolerance = 0.5,
   rank_by = c("similarity", "identity", "bitscore"),
+  uninformative = uninformative_references(),
   output = c("long", "wide"),
   num_threads = NULL,
   batch_size = NULL,
@@ -89,6 +90,17 @@ searched without themselves, ranking by Similarity score or identity
 picked the right taxon significantly more often than bitscore (genus:
 72\% and 76\% against 62\%), with no significant difference between them.}
 
+\item{uninformative}{Table of the references that do not inform the
+identification (uncultured, environmental, metagenomes, vectors, ...;
+see \code{\link[=uninformative_references]{uninformative_references()}}): the table shipped with BLASTr
+(default), a path to another one, a data frame, or \code{NULL} to treat all
+hits alike. The hits are flagged (\code{informative},
+\code{uninformative_category}) and ranked among the informative ones, so
+\code{rank}, \code{at_best}, \verb{Check ID} and \code{\link[=blast_lca]{blast_lca()}} use only those; a
+sequence whose hits are all uninformative keeps its best ones, ranked
+among themselves. Uninformative hits take subjects of the search, so a
+sequence of a poorly known group needs a larger \code{search_alignments}.}
+
 \item{output}{\code{"long"} (default): one row per hit. \code{"wide"}: one row per
 sequence, with the summary of \code{\link[=blast_summary]{blast_summary()}} and the first
 \code{num_alignments} hits side by side (\verb{1_} is the best one).}
@@ -136,13 +148,16 @@ directory.}
 With \code{output = "long"}, a tibble with one row per hit, best
 first: \code{Sequence}, \code{rank} (1 = best; tied hits share the rank), \code{tie}
 (the rank is shared), \code{at_best} (within \code{check_tolerance} of the best
-hit), \code{low_qcov} (\code{qcovhsp} below \code{perc_qcov_hsp}), \code{blast_rank}
+hit), \code{low_qcov} (\code{qcovhsp} below \code{perc_qcov_hsp}), \code{informative}
+and \code{uninformative_category} (see \code{uninformative}), \code{blast_rank}
 (order given by BLAST), \code{subject}, \verb{subject header},
 \code{staxid}, \code{identity}, \verb{Similarity score}, \code{qcovhsp}, \code{nident},
 \code{length}, \code{mismatches}, \code{gaps}, \verb{query start}, \verb{query end},
 \verb{subject start}, \verb{subject end}, \verb{subject strand}, \code{e-value} and
-\code{bitscore}. The first \code{num_alignments} hits are kept, plus all the hits
-at best. A sequence without hits has one row with \code{NA} hit fields. The
+\code{bitscore}. The first \code{num_alignments} hits are kept (informative
+ones, when there are), plus all the hits at best and the uninformative
+hits among the first \code{num_alignments} of all (after the ranked ones,
+with \code{rank} \code{NA}). A sequence without hits has one row with \code{NA} hit fields. The
 summary per sequence (\verb{Check ID}, ...) comes from \code{\link[=blast_summary]{blast_summary()}}.
 
 With \code{output = "wide"}, one row per sequence: \code{Sequence}, the summary

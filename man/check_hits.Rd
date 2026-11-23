@@ -16,7 +16,7 @@ check_hits(
 \item{hits}{Data frame with one row per hit and the columns \code{query},
 \code{identity}, \code{staxid} and, as needed by \code{rank_by}, \code{qcovhsp} or
 \code{bitscore}. The BLAST order is taken from \code{blast_rank} or \code{rank}, or
-else from the row order.}
+else from the row order. Optional: \code{informative} (logical).}
 
 \item{check_n}{Number of best hits used by \verb{Check ID}.}
 
@@ -60,6 +60,14 @@ best, in rank order, separated by \code{";"}, for a lowest common ancestor) and
 \verb{At best truncated} (\code{TRUE} when the last subject BLAST returned is at
 best: more tied subjects may exist beyond \code{search_alignments}; \code{NA} when
 \code{search_alignments} is unknown).
+
+With an \code{informative} column (see \code{\link[=uninformative_references]{uninformative_references()}}), all of
+this is computed among the informative hits, or among all the hits when
+a query has no informative one (and then \verb{Check ID} is \code{"check ID"}).
+\verb{N uninformative} counts the other hits and \verb{Best uninformative score}
+is the best value of \code{rank_by} among them: above the best informative
+hit, the query is closer to an uncultured or environmental sequence than
+to any named organism (a sign of a taxon missing from the database).
 }
 \examples{
 hits <- data.frame(
