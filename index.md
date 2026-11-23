@@ -442,3 +442,10 @@ details.
 This project is licensed under the MIT License - see the
 [LICENSE.md](https://heronoh.github.io/BLASTr/LICENSE.md) file for
 details.
+
+The logo is from the
+[metabarverse](https://github.com/heronoh/metabarverse) (Hilário 2026),
+licensed under [CC BY
+4.0](https://creativecommons.org/licenses/by/4.0/); its animal
+silhouettes are public domain, from
+[PhyloPic](https://www.phylopic.org/).
