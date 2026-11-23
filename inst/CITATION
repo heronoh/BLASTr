@@ -1,0 +1,44 @@
+citHeader("To cite BLASTr in publications, please use:")
+
+bibentry(
+  bibtype = "Manual",
+  title = "{BLASTr}: Parallel Taxonomic Classification of Metabarcoding Sequences",
+  author = c(
+    person("Lucio", "Queiroz", comment = c(ORCID = "0000-0002-6090-1834")),
+    person("Heron", "Hilario", comment = c(ORCID = "0000-0002-2548-1053"))
+  ),
+  year = "2026",
+  note = paste("R package version", meta$Version),
+  url = "https://github.com/heronoh/BLASTr",
+  textVersion = paste0(
+    "Queiroz L, Hilario H (2026). BLASTr: Parallel Taxonomic Classification ",
+    "of Metabarcoding Sequences. R package version ", meta$Version, ". ",
+    "https://github.com/heronoh/BLASTr"
+  )
+)
+
+citFooter("BLASTr runs BLAST+; please also cite:")
+
+bibentry(
+  bibtype = "Article",
+  title = "{BLAST+}: architecture and applications",
+  author = c(
+    person("Christiam", "Camacho"),
+    person("George", "Coulouris"),
+    person("Vahram", "Avagyan"),
+    person("Ning", "Ma"),
+    person("Jason", "Papadopoulos"),
+    person("Kevin", "Bealer"),
+    person(c("Thomas", "L."), "Madden")
+  ),
+  journal = "BMC Bioinformatics",
+  year = "2009",
+  volume = "10",
+  pages = "421",
+  doi = "10.1186/1471-2105-10-421",
+  textVersion = paste(
+    "Camacho C, Coulouris G, Avagyan V, Ma N, Papadopoulos J, Bealer K,",
+    "Madden TL (2009). BLAST+: architecture and applications.",
+    "BMC Bioinformatics, 10, 421. doi:10.1186/1471-2105-10-421"
+  )
+)
