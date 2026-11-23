@@ -80,10 +80,38 @@
 <div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/heronoh/BLASTr" class="external-link">BLASTr</a></span><span class="op">)</span></span></code></pre></div>
 </div>
-
-
-
-<script id="quarto-html-after-body" type="application/javascript">
+<section class="level2"><h2 id="searching-in-the-background">Searching in the background<a class="anchor" aria-label="anchor" href="#searching-in-the-background"></a>
+</h2>
+<p>Large searches (thousands of sequences against <code>core_nt</code>) can take hours. With <code>background = TRUE</code>, <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code> starts the search in a separate process and returns a job at once, so the R session stays free. The job keeps its batches and results in a directory (<code>job_dir</code>; by default a new directory in the BLASTr cache), so it goes on even if the R session ends, and can be opened again from another session.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span></span>
+<span>  query_seqs <span class="op">=</span> <span class="va">seqs</span>,</span>
+<span>  db_path <span class="op">=</span> <span class="st">"/data/databases/core_nt_2026-11-17/core_nt"</span>,</span>
+<span>  total_cores <span class="op">=</span> <span class="fl">32</span>,</span>
+<span>  background <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  job_dir <span class="op">=</span> <span class="st">"~/blast_jobs/run_01"</span> <span class="co"># a fixed place, to find it again</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/blast_job.html">blast_job_status</a></span><span class="op">(</span><span class="va">job</span><span class="op">)</span> <span class="co"># batches done, progress and estimated time left</span></span></code></pre></div>
+</div>
+<p>To get the results, <code><a href="../reference/blast_job.html">blast_job_result()</a></code> waits for the end (with a progress bar in interactive sessions) and returns the same table as <code><a href="../reference/parallel_blast.html">parallel_blast()</a></code>; with <code>wait = FALSE</code> it returns <code>NULL</code> while the job is not finished.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blast_job.html">blast_job_result</a></span><span class="op">(</span><span class="va">job</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># later, or in another R session</span></span>
+<span><span class="va">job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blast_job.html">blast_job</a></span><span class="op">(</span><span class="st">"~/blast_jobs/run_01"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/blast_job.html">blast_job_status</a></span><span class="op">(</span><span class="va">job</span><span class="op">)</span></span>
+<span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blast_job.html">blast_job_result</a></span><span class="op">(</span><span class="va">job</span>, wait <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<p><code><a href="../reference/blast_job.html">blast_job_cancel()</a></code> stops a job. If the process running it stopped (for example, the machine was restarted), <code><a href="../reference/blast_job.html">blast_job_status()</a></code> reports the job as stopped and <code><a href="../reference/blast_job.html">blast_job_resume()</a></code> restarts it: the batches already finished are kept and only the others are searched again.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/blast_job.html">blast_job_cancel</a></span><span class="op">(</span><span class="va">job</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/blast_job.html">blast_job_resume</a></span><span class="op">(</span><span class="st">"~/blast_jobs/run_01"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
