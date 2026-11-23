@@ -191,7 +191,7 @@ picked the right taxon significantly more often than bitscore (genus:
 identification (uncultured, environmental, metagenomes, vectors, ...;
 see <code><a href="uninformative_references.html">uninformative_references()</a></code>): the table shipped with BLASTr
 (default), a path to another one, a data frame, or <code>NULL</code> to treat all
-hits alike. The hits are flagged (<code>informative</code>,
+hits alike (<code>informative</code> NA, not evaluated). The hits are flagged (<code>informative</code>,
 <code>uninformative_category</code>) and ranked among the informative ones, so
 <code>rank</code>, <code>at_best</code>, <code>Check ID</code> and <code><a href="blast_lca.html">blast_lca()</a></code> use only those; a
 sequence whose hits are all uninformative keeps its best ones, ranked

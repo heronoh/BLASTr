@@ -92,7 +92,8 @@ older results, from <code>k</code>. Long results are returned as they are.</p>
 
 <dt id="arg-uninformative">uninformative<a class="anchor" aria-label="anchor" href="#arg-uninformative"></a></dt>
 <dd><p><code>NULL</code> (default) keeps the flags <code>informative</code> of
-<code>x</code> (all hits informative when <code>x</code> has none); a table of
+<code>x</code> (<code>NA</code>, not evaluated, when <code>x</code> has none; ranked as informative); a
+table of
 <code><a href="uninformative_references.html">uninformative_references()</a></code> flags the hits again with it, and ranks
 them among the informative ones, as <code><a href="parallel_blast.html">parallel_blast()</a></code> does.</p></dd>
 
@@ -113,8 +114,8 @@ them among the informative ones, as <code><a href="parallel_blast.html">parallel
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 25</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Sequence  rank tie   at_best low_qcov informative uninformative_category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ACGT         1 FALSE TRUE    FALSE    TRUE        <span style="color: #BB0000;">NA</span>                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ACGT         2 FALSE FALSE   FALSE    TRUE        <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ACGT         1 FALSE TRUE    FALSE    <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ACGT         2 FALSE FALSE   FALSE    <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18 more variables: blast_rank &lt;int&gt;, subject &lt;chr&gt;, `subject header` &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   staxid &lt;chr&gt;, identity &lt;dbl&gt;, `Similarity score` &lt;dbl&gt;, qcovhsp &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   nident &lt;dbl&gt;, length &lt;dbl&gt;, mismatches &lt;dbl&gt;, gaps &lt;dbl&gt;,</span></span>

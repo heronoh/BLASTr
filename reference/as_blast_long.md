@@ -41,8 +41,8 @@ as_blast_long(
 
 - uninformative:
 
-  `NULL` (default) keeps the flags `informative` of `x` (all hits
-  informative when `x` has none); a table of
+  `NULL` (default) keeps the flags `informative` of `x` (`NA`, not
+  evaluated, when `x` has none; ranked as informative); a table of
   [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
   flags the hits again with it, and ranks them among the informative
   ones, as
@@ -67,8 +67,8 @@ as_blast_long(wide)
 #> # A tibble: 2 × 25
 #>   Sequence  rank tie   at_best low_qcov informative uninformative_category
 #>   <chr>    <int> <lgl> <lgl>   <lgl>    <lgl>       <chr>                 
-#> 1 ACGT         1 FALSE TRUE    FALSE    TRUE        NA                    
-#> 2 ACGT         2 FALSE FALSE   FALSE    TRUE        NA                    
+#> 1 ACGT         1 FALSE TRUE    FALSE    NA          NA                    
+#> 2 ACGT         2 FALSE FALSE   FALSE    NA          NA                    
 #> # ℹ 18 more variables: blast_rank <int>, subject <chr>, `subject header` <chr>,
 #> #   staxid <chr>, identity <dbl>, `Similarity score` <dbl>, qcovhsp <dbl>,
 #> #   nident <dbl>, length <dbl>, mismatches <dbl>, gaps <dbl>,

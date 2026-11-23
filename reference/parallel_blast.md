@@ -136,9 +136,10 @@ parallel_blast(
   (uncultured, environmental, metagenomes, vectors, ...; see
   [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)):
   the table shipped with BLASTr (default), a path to another one, a data
-  frame, or `NULL` to treat all hits alike. The hits are flagged
-  (`informative`, `uninformative_category`) and ranked among the
-  informative ones, so `rank`, `at_best`, `Check ID` and
+  frame, or `NULL` to treat all hits alike (`informative` NA, not
+  evaluated). The hits are flagged (`informative`,
+  `uninformative_category`) and ranked among the informative ones, so
+  `rank`, `at_best`, `Check ID` and
   [`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md)
   use only those; a sequence whose hits are all uninformative keeps its
   best ones, ranked among themselves. Uninformative hits take subjects
