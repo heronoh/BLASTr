@@ -308,6 +308,14 @@
   and
   [`make_silva_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
   still bring it with the BLAST databases.
+- New
+  [`has_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/has_taxonomy_db.md):
+  whether
+  [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+  has its taxonomy database, without downloading or building anything;
+  with `db_path`, the database of the date of the BLAST database(s) to
+  be searched. A pipeline can check it at the start instead of stopping
+  after the BLAST search.
 
 ### Documentation
 

@@ -91,6 +91,7 @@ current taxid; needs a database with the table `merged`, as built by
 
 Other taxonomy functions:
 [`get_tax_online`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md),
+[`has_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/has_taxonomy_db.md),
 [`make_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/make_taxonomy_db.md)
 
 ## Examples
@@ -112,7 +113,7 @@ writeLines(c(
   dmp(9598, "Pan troglodytes", "", "scientific name")
 ), file.path(taxdump, "names.dmp"))
 tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
-#> ✔ Taxonomy database: /tmp/RtmpWKof0T/file19b74ca37d9a.sqlite (7 taxa).
+#> ✔ Taxonomy database: /tmp/RtmpYW6x5r/file19ca5649bc5b.sqlite (7 taxa).
 
 # 1234 is not in this taxonomy: found = FALSE, with a warning
 get_tax(c("9606", "9598", "1234"), taxonomy_db = tax_db)

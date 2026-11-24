@@ -37,6 +37,8 @@
   : Taxonomy from the NCBI online, without a local database
 - [`has_blast()`](https://heronoh.github.io/BLASTr/reference/has_blast.md)
   : Is BLAST+ ready for BLASTr?
+- [`has_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/has_taxonomy_db.md)
+  : Is there a taxonomy database for get_tax()?
 - [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md)
   : Install BLAST+ in a conda environment
 - [`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md)

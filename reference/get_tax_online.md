@@ -82,6 +82,7 @@ them, `name` (as given) and `matched_by` (`"scientific name"`,
 
 Other taxonomy functions:
 [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md),
+[`has_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/has_taxonomy_db.md),
 [`make_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/make_taxonomy_db.md)
 
 ## Examples

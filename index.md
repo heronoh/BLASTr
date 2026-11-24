@@ -336,6 +336,10 @@ database (about a minute, then kept in the BLASTr cache). Without
 `download = TRUE`,
 [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
 does not download anything (in an interactive session it asks).
+[`has_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/has_taxonomy_db.md)
+tells, without downloading anything, whether the database is there (with
+`db_path`, the one for the results of a search in that BLAST database),
+so a pipeline can check it before the search.
 
 ``` r
 

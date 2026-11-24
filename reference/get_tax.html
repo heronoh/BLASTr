@@ -174,6 +174,7 @@ current taxid; needs a database with the table <code>merged</code>, as built by
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other taxonomy functions:
 <code><a href="get_tax_online.html">get_tax_online</a></code>,
+<code><a href="has_taxonomy_db.html">has_taxonomy_db()</a></code>,
 <code><a href="make_taxonomy_db.html">make_taxonomy_db()</a></code></p></div>
     </div>
 
@@ -195,7 +196,7 @@ current taxid; needs a database with the table <code>merged</code>, as built by
 <span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">9598</span>, <span class="st">"Pan troglodytes"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">taxdump</span>, <span class="st">"names.dmp"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tax_db</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_taxonomy_db.html">make_taxonomy_db</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".sqlite"</span><span class="op">)</span>, taxdump <span class="op">=</span> <span class="va">taxdump</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Taxonomy database: <span style="color: #0000BB;">/tmp/RtmpWKof0T/file19b74ca37d9a.sqlite</span> (7 taxa).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Taxonomy database: <span style="color: #0000BB;">/tmp/RtmpYW6x5r/file19ca5649bc5b.sqlite</span> (7 taxa).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 1234 is not in this taxonomy: found = FALSE, with a warning</span></span></span>
 <span class="r-in"><span><span class="fu">get_tax</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9606"</span>, <span class="st">"9598"</span>, <span class="st">"1234"</span><span class="op">)</span>, taxonomy_db <span class="op">=</span> <span class="va">tax_db</span><span class="op">)</span></span></span>
