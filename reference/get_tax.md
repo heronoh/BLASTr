@@ -112,7 +112,7 @@ writeLines(c(
   dmp(9598, "Pan troglodytes", "", "scientific name")
 ), file.path(taxdump, "names.dmp"))
 tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
-#> ✔ Taxonomy database: /tmp/Rtmp39IRAe/file19211b790915.sqlite (7 taxa).
+#> ✔ Taxonomy database: /tmp/RtmpWKof0T/file19b74ca37d9a.sqlite (7 taxa).
 
 # 1234 is not in this taxonomy: found = FALSE, with a warning
 get_tax(c("9606", "9598", "1234"), taxonomy_db = tax_db)

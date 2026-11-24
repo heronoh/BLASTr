@@ -63,7 +63,7 @@ writeLines(c(
   dmp(9598, "Pan troglodytes", "", "scientific name")
 ), file.path(taxdump, "names.dmp"))
 tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
-#> ✔ Taxonomy database: /tmp/Rtmp39IRAe/file1921601b5b2d.sqlite (7 taxa).
+#> ✔ Taxonomy database: /tmp/RtmpWKof0T/file19b750e1387e.sqlite (7 taxa).
 get_tax("9606", taxonomy_db = tax_db)
 #> # A tibble: 1 × 19
 #>   taxid found sci_name     rank   domain kingdom phylum subphylum class subclass

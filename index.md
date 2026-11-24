@@ -79,10 +79,10 @@ BY 4.0: cite the release (the DOI is kept next to the database).
 list_ncbi_blast_dbs()
 
 # about 300 GB unpacked; use a disk with room for it
-core_nt <- download_blast_db("core_nt", dir = "/data/databases")
+core_nt <- download_blast_db("core_nt", dir = "/path/to/blast_dbs")
 
-its <- make_unite_db("/data/databases", set = "eukaryotes")
-ssu <- make_silva_db("/data/databases")
+its <- make_unite_db("/path/to/blast_dbs", set = "eukaryotes")
+ssu <- make_silva_db("/path/to/blast_dbs")
 
 blast_results <- parallel_blast(seqs, db_path = its, total_cores = 8)
 ```
@@ -139,7 +139,7 @@ file.exists(paste0(db_path, ".ndb"))
 
 # For `ssciname` (subject scientific name) to work, BLAST must find the
 #  taxdb files: export BLASTDB pointing to their directory, e.g.
-#  export BLASTDB=/data/databases/core_nt:$BLASTDB
+#  export BLASTDB=/path/to/blast_dbs/core_nt:$BLASTDB
 ```
 
 ``` r
@@ -170,7 +170,7 @@ shows the plan without running BLAST:
 
 blast_strategy(
   n_seqs = 2000,
-  db_path = "/data/databases/core_nt/core_nt",
+  db_path = "/path/to/blast_dbs/core_nt/core_nt",
   total_cores = 32,
   ram_gb = 256
 )

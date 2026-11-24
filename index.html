@@ -115,10 +115,10 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ncbi_blast_dbs.html">list_ncbi_blast_dbs</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># about 300 GB unpacked; use a disk with room for it</span></span>
-<span><span class="va">core_nt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ncbi_blast_dbs.html">download_blast_db</a></span><span class="op">(</span><span class="st">"core_nt"</span>, dir <span class="op">=</span> <span class="st">"/data/databases"</span><span class="op">)</span></span>
+<span><span class="va">core_nt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ncbi_blast_dbs.html">download_blast_db</a></span><span class="op">(</span><span class="st">"core_nt"</span>, dir <span class="op">=</span> <span class="st">"/path/to/blast_dbs"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">its</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/reference_dbs.html">make_unite_db</a></span><span class="op">(</span><span class="st">"/data/databases"</span>, set <span class="op">=</span> <span class="st">"eukaryotes"</span><span class="op">)</span></span>
-<span><span class="va">ssu</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/reference_dbs.html">make_silva_db</a></span><span class="op">(</span><span class="st">"/data/databases"</span><span class="op">)</span></span>
+<span><span class="va">its</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/reference_dbs.html">make_unite_db</a></span><span class="op">(</span><span class="st">"/path/to/blast_dbs"</span>, set <span class="op">=</span> <span class="st">"eukaryotes"</span><span class="op">)</span></span>
+<span><span class="va">ssu</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/reference_dbs.html">make_silva_db</a></span><span class="op">(</span><span class="st">"/path/to/blast_dbs"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span><span class="va">seqs</span>, db_path <span class="op">=</span> <span class="va">its</span>, total_cores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -165,7 +165,7 @@
 <span></span>
 <span><span class="co"># For `ssciname` (subject scientific name) to work, BLAST must find the</span></span>
 <span><span class="co">#  taxdb files: export BLASTDB pointing to their directory, e.g.</span></span>
-<span><span class="co">#  export BLASTDB=/data/databases/core_nt:$BLASTDB</span></span></code></pre></div>
+<span><span class="co">#  export BLASTDB=/path/to/blast_dbs/core_nt:$BLASTDB</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run BLAST in parallel</span></span>
 <span><span class="va">blast_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parallel_blast.html">parallel_blast</a></span><span class="op">(</span></span>
@@ -182,7 +182,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/blast_strategy.html">blast_strategy</a></span><span class="op">(</span></span>
 <span>  n_seqs <span class="op">=</span> <span class="fl">2000</span>,</span>
-<span>  db_path <span class="op">=</span> <span class="st">"/data/databases/core_nt/core_nt"</span>,</span>
+<span>  db_path <span class="op">=</span> <span class="st">"/path/to/blast_dbs/core_nt/core_nt"</span>,</span>
 <span>  total_cores <span class="op">=</span> <span class="fl">32</span>,</span>
 <span>  ram_gb <span class="op">=</span> <span class="fl">256</span></span>
 <span><span class="op">)</span></span></code></pre></div>
