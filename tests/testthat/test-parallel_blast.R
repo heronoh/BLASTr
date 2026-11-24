@@ -1,6 +1,5 @@
 testthat::test_that("parallel_blast works", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   seqs_test <- readLines(fs::path_package(
     "BLASTr",
@@ -36,8 +35,7 @@ testthat::test_that("parallel_blast works", {
 })
 
 testthat::test_that("parallel_blast - query with no hits", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   fail_query_seq <- "AGAGTACTACAAGTGCTAGCCATAAACTTAAATGAAGCTATACTAAACTCGTTCGCCAAAGCTTAAAACTCATAGGACTTGGCGGTGTTTCAGACCCAC"
 
@@ -57,8 +55,7 @@ testthat::test_that("parallel_blast - query with no hits", {
 })
 
 testthat::test_that("parallel_blast - query that errors", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   fail_query_seq <- ">XAVADADAA"
 
@@ -108,8 +105,7 @@ testthat::test_that("parallel_blast - query that errors", {
 
 
 testthat::test_that("parallel_blast - 2 threads works", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   seqs_test <- readLines(fs::path_package(
     "BLASTr",
@@ -137,8 +133,7 @@ testthat::test_that("parallel_blast - 2 threads works", {
 
 
 testthat::test_that("parallel_blast - single thread", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   seqs_test <- readLines(
     fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt")
@@ -164,8 +159,7 @@ testthat::test_that("parallel_blast - single thread", {
 })
 
 testthat::test_that("parallel blast - empty args", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
   parallel_blast(query_seqs = NULL, db_path = NULL) |>
     expect_error(class = "blastr_no_query_seqs_error")
 
@@ -177,8 +171,7 @@ testthat::test_that("parallel blast - empty args", {
 })
 
 testthat::test_that("parallel_blast - depracated arguments", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   withr::local_options(list(lifecycle_verbosity = "warning"))
 
@@ -210,7 +203,7 @@ testthat::test_that("parallel_blast - depracated arguments", {
 })
 
 testthat::test_that("parallel_blast long output: one row per hit, best first", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   seqs_test <- readLines(fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt"))
   res <- parallel_blast(seqs_test, tmp_blast_db_path, num_alignments = 4, verbose = "silent")
   testthat::expect_equal(names(res), long_cols)

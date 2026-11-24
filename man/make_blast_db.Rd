@@ -47,7 +47,7 @@ searches report \code{staxid}.
 }
 \examples{
 # needs BLAST+ (see install_dependencies())
-if (nzchar(Sys.which("blastn"))) {
+if (has_blast()) {
   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
   make_blast_db(fasta, db_path = file.path(tempdir(), "minimal_db_blast"))
 

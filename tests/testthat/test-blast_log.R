@@ -10,7 +10,7 @@ testthat::test_that("no log unless a log directory is set", {
 })
 
 testthat::test_that("foreground and background searches add one line each", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   withr::local_options(BLASTr.log_dir = NULL)
   withr::local_envvar(BLASTR_LOG_DIR = "")
   seqs_test <- readLines(fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt"))

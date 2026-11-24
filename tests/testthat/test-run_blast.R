@@ -1,6 +1,5 @@
 testthat::test_that("run_blast works", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   seqs_test <- readLines(fs::path_package(
     "BLASTr",
@@ -20,8 +19,7 @@ testthat::test_that("run_blast works", {
 })
 
 testthat::test_that("run_blast fails", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   seqs_test <- readLines(fs::path_package(
     "BLASTr",

@@ -13,14 +13,20 @@ install_dependencies(
 \item{verbose}{A character string specifying the verbosity level during environment creation.
 Options include \code{"silent"}, \code{"cmd"}, \code{"output"}, or \code{"full"}. Default is \code{"silent"}.}
 
-\item{force}{A logical value indicating whether to force the re-creation of the Conda environments even if they already exist. Default is \code{FALSE}.}
+\item{force}{Recreate the conda environment even if it exists. Default
+is \code{FALSE}.}
 }
 \value{
 Invisibly returns \code{TRUE} after attempting to install the dependencies.
 }
 \description{
-Installs BLAST+ (\code{blastn}, \code{makeblastdb}, ...) into the conda environment
-\code{blastr-blast-env} if it is not already there. The online taxonomy
+Installs BLAST+ 2.17.0 (\code{blastn}, \code{makeblastdb}, ...) from bioconda into
+the conda environment \code{blastr-blast-env}, through the condathis package.
+BLASTr runs BLAST+ from this environment; without it, from the system,
+if it is BLAST+ 2.16.0 or newer (see \code{\link[=has_blast]{has_blast()}}). When the environment
+exists with another version of BLAST+ (created by an older BLASTr), BLAST+
+is updated in place. Searches never install or update BLAST+: only this
+function does. The online taxonomy
 functions (\code{\link[=get_tax_by_taxID]{get_tax_by_taxID()}}, \code{\link[=get_tax_by_name]{get_tax_by_name()}}) query the NCBI over
 HTTP and need no external tool.
 }
@@ -38,6 +44,7 @@ install_dependencies(force = TRUE)
 }
 \seealso{
 Other setup functions:
-\code{\link[=get_blastr_cache]{get_blastr_cache()}}
+\code{\link[=get_blastr_cache]{get_blastr_cache()}},
+\code{\link[=has_blast]{has_blast()}}
 }
 \concept{setup functions}

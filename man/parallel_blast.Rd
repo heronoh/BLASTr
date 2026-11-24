@@ -190,7 +190,7 @@ separate process and the function returns at once; see \code{\link[=blast_job]{b
 }
 \examples{
 # needs BLAST+ (see install_dependencies())
-if (nzchar(Sys.which("blastn"))) {
+if (has_blast()) {
   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
   db <- file.path(tempdir(), "minimal_db_blast")
   make_blast_db(fasta, db_path = db)

@@ -6,7 +6,7 @@ fasta_test <- function() {
 }
 
 testthat::test_that("search_alignments keeps the num_alignments best hits", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   s <- seqs_test()
   r2 <- parallel_blast(s, tmp_blast_db_path, num_alignments = 2, verbose = "silent")
   r10 <- parallel_blast(s, tmp_blast_db_path, num_alignments = 10, verbose = "silent")
@@ -19,14 +19,14 @@ testthat::test_that("search_alignments keeps the num_alignments best hits", {
 })
 
 testthat::test_that("task is passed to BLAST", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   r <- parallel_blast(seqs_test(), tmp_blast_db_path, task = "dc-megablast", verbose = "silent")
   testthat::expect_equal(attr(r, "BLASTr_metadata")$task, "dc-megablast")
   testthat::expect_true(all(exit_codes(r)$exit_code == 0L))
 })
 
 testthat::test_that("parallel_blast_hsps returns every HSP with typed fields", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   s <- seqs_test()
   h <- parallel_blast_hsps(s, tmp_blast_db_path, total_cores = 2, verbose = "silent")
   testthat::expect_s3_class(h, "tbl_df")
@@ -55,7 +55,7 @@ testthat::test_that("parallel_blast_hsps returns every HSP with typed fields", {
 })
 
 testthat::test_that("parallel_blast_hsps searches a FASTA with -subject", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   withr::local_options(BLASTr.log_dir = NULL)
   withr::local_envvar(BLASTR_LOG_DIR = "")
   log_dir <- withr::local_tempdir()
@@ -82,7 +82,7 @@ testthat::test_that("parallel_blast_hsps checks its target", {
 })
 
 testthat::test_that("log rewritten with the union of columns when they change", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   withr::local_options(BLASTr.log_dir = NULL)
   withr::local_envvar(BLASTR_LOG_DIR = "")
   log_dir <- withr::local_tempdir()

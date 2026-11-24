@@ -119,7 +119,7 @@ background jobs and log as \code{\link[=parallel_blast]{parallel_blast()}}. Inst
 }
 \examples{
 # needs BLAST+ (see install_dependencies())
-if (nzchar(Sys.which("blastn"))) {
+if (has_blast()) {
   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
   db <- file.path(tempdir(), "minimal_db_blast")
   make_blast_db(fasta, db_path = db)

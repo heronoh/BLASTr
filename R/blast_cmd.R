@@ -23,26 +23,18 @@ blast_cmd <- function(
     ),
     action = "replace"
   )
-  blast_res <- condathis::run_bin(
+  blast_res <- run_blast_program(
     blast_type,
-    "-db",
-    db_path,
-    "-query",
-    query_path,
-    "-outfmt",
-    "6 std qcovhsp staxid stitle",
-    "-max_hsps",
-    "1",
-    "-perc_identity",
-    perc_id,
-    "-qcov_hsp_perc",
-    perc_qcov_hsp,
-    "-num_alignments",
-    num_alignments,
-    "-num_threads",
-    num_threads,
-    "-mt_mode",
-    mt_mode,
+    c(
+      "-db", db_path, "-query", query_path,
+      "-outfmt", "6 std qcovhsp staxid stitle",
+      "-max_hsps", "1",
+      "-perc_identity", perc_id,
+      "-qcov_hsp_perc", perc_qcov_hsp,
+      "-num_alignments", num_alignments,
+      "-num_threads", num_threads,
+      "-mt_mode", mt_mode
+    ),
     env_name = env_name,
     verbose = verbose,
     error = "continue"

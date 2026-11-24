@@ -10,8 +10,7 @@ local_fasta_copy <- function(env = parent.frame()) {
 }
 
 testthat::test_that("`make_blast_db()` works", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
   fasta_path <- fs::path_package(
     "BLASTr",
     "extdata",
@@ -32,8 +31,7 @@ testthat::test_that("`make_blast_db()` works", {
 })
 
 testthat::test_that("`make_blast_db()` fails with wrong db_type", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   fasta_path <- fs::path_package(
     "BLASTr",
@@ -55,8 +53,7 @@ testthat::test_that("`make_blast_db()` fails with wrong db_type", {
 })
 
 testthat::test_that("`make_blast_db()` works with `taxid_map`", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   db_path <- fs::file_temp("minimal_db_blast_")
   fasta_path <- local_fasta_copy()
@@ -76,8 +73,7 @@ testthat::test_that("`make_blast_db()` works with `taxid_map`", {
 })
 
 testthat::test_that("`make_blast_db()` works with `parse_seqids`", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   db_path <- fs::file_temp("minimal_db_blast_")
   fasta_path <- local_fasta_copy()
@@ -97,8 +93,7 @@ testthat::test_that("`make_blast_db()` works with `parse_seqids`", {
 })
 
 testthat::test_that("`make_blast_db()` output has valid taxid", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
   # TODO: @luciorq Remove `skip` when example fasta actually
   # + have taxid in the header
   testthat::skip("The example fasta does not have taxid in the header")
@@ -132,8 +127,7 @@ testthat::test_that("`make_blast_db()` output has valid taxid", {
 })
 
 testthat::test_that("`make_blast_db()` defaults `db_path` to `fasta_path`", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   fasta_path <- local_fasta_copy()
 
@@ -144,7 +138,6 @@ testthat::test_that("`make_blast_db()` defaults `db_path` to `fasta_path`", {
 })
 
 testthat::test_that("`make_blast_db()` stops if the FASTA directory is not writable", {
-  testthat::skip_on_cran()
   testthat::skip_on_os("windows")
   # root ignores write permissions
   testthat::skip_if(identical(unname(Sys.info()[["user"]]), "root"))
@@ -164,7 +157,7 @@ testthat::test_that("`make_blast_db()` stops if the FASTA directory is not writa
   )
 
   # with a writable `db_path` it works
-  testthat::skip_if_offline()
+  skip_if_no_blast()
   db_path <- fs::file_temp("minimal_db_blast_")
   db_res <- make_blast_db(
     fasta_path = fasta_path,
@@ -176,7 +169,6 @@ testthat::test_that("`make_blast_db()` stops if the FASTA directory is not writa
 })
 
 testthat::test_that("`make_blast_db()` stops if `db_path` is not writable", {
-  testthat::skip_on_cran()
   testthat::skip_on_os("windows")
   testthat::skip_if(identical(unname(Sys.info()[["user"]]), "root"))
 
@@ -207,7 +199,7 @@ testthat::test_that("`make_blast_db()` stops if `db_path` is not writable", {
 })
 
 testthat::test_that("`make_blast_db()` takes a `taxid_map` with any name and is silent", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
 
   db_path <- fs::file_temp("minimal_db_blast_")
   fasta_path <- local_fasta_copy()

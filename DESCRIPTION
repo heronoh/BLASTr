@@ -44,8 +44,10 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder:
     quarto
-SystemRequirements: BLAST+ (blastn, makeblastdb, blastdbcmd; installed in a
-    conda environment by install_dependencies()), Quarto (for the vignettes)
+SystemRequirements: BLAST+ (>= 2.16.0; blastn, makeblastdb, blastdbcmd):
+    BLAST+ 2.17.0 is installed in a conda environment (through condathis
+    and micromamba) by install_dependencies(), or BLAST+ on the system is
+    used; Quarto (for the vignettes)
 biocViews: Metagenomics, Sequencing, Alignment, Classification
 Config/Needs/website: quarto
 Config/testthat/edition: 3

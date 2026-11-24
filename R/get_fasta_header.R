@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' # needs BLAST+ (see install_dependencies())
-#' if (nzchar(Sys.which("blastn"))) {
+#' if (has_blast()) {
 #'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
 #'   db <- file.path(tempdir(), "minimal_db_blast")
 #'   make_blast_db(fasta, db_path = db)
@@ -45,14 +45,9 @@ get_fasta_header <- function(
     action = "replace"
   )
 
-  blastdbcmd_res <- condathis::run_bin(
+  blastdbcmd_res <- run_blast_program(
     "blastdbcmd",
-    "-db",
-    db_path,
-    "-entry",
-    id,
-    "-outfmt",
-    "%t",
+    c("-db", db_path, "-entry", id, "-outfmt", "%t"),
     env_name = env_name,
     verbose = verbose
   )

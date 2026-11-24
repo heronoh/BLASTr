@@ -1,52 +1,28 @@
-#' Determine if a Command is Available and Install if Necessary
+#' Check that a BLAST+ program is available
 #'
-#' Checks if a BLAST+ command-line tool (`blastn`, `makeblastdb`, ...) is available
-#'   on the system.
-#'   If not, it creates a conda environment and installs the required tool.
+#' Checks that a BLAST+ command-line tool (`blastn`, `makeblastdb`, ...) of
+#'   version `blast_version_min` or newer is available: in the conda
+#'   environment of BLASTr or, without it, on the system (see blast_bin.R).
+#'   Nothing is installed: without BLAST+ it stops and says to run
+#'   install_dependencies(). Tells once per session when the BLAST+ used is
+#'   not the version installed by install_dependencies().
 #'
-#' @param cmd Character string specifying the command-line tool to check for.
-#'   BLAST+ programs (`"blastn"`, `"tblastn"`, `"makeblastdb"`, ...). Default is `"blastn"`.
-#' @param env_name Character string specifying the name of the conda
-#'   environment to create or use.
-#'   Default is `"blastr-blast-env"`.
-#' @param verbose Character string specifying the verbosity level during
-#'   environment creation.
-#'   Options are `"silent"`, `"output"`, "cmd", or "full".
-#'   Default is `"silent"`.
-#' @param force Logical indicating whether to force the re-creation of the
-#'   conda environment even if it exists.
-#'   Default is `FALSE`.
+#' @param cmd BLAST+ program (`"blastn"`, `"tblastn"`, `"makeblastdb"`, ...).
+#' @param env_name Name of the conda environment of BLASTr.
+#' @param verbose Ignored (kept for the callers).
 #'
-#' @returns Invisibly returns `TRUE` if the command is available
-#'   or successfully installed.
-#'
-#' @examples
-#' \dontrun{
-#' # Check if 'blastn' command is available, and install it if not
-#' check_cmd("blastn", env_name = "blastr-blast-env")
-#'
-#' # Force re-creation of the conda environment and re-install 'blastn'
-#' check_cmd("blastn", env_name = "blastr-blast-env", force = TRUE)
-#' }
+#' @returns `TRUE`, invisibly, or an error of class
+#'   `blastr_error_blast_not_found`.
 #'
 #' @keywords internal
 #' @noRd
 check_cmd <- function(
   cmd = "blastn",
   env_name = "blastr-blast-env",
-  verbose = c("silent", "cmd", "output", "full"),
-  force = FALSE
+  verbose = c("silent", "cmd", "output", "full")
 ) {
   verbose <- rlang::arg_match(verbose)
-  packages_to_install <- NULL
-  # supported_archs <- names(conda_packages_list)
-  # Check if operational system is in the included list of available systems
-  # if (isTRUE(stringr::str_detect(condathis::get_sys_arch(), pattern = "^Windows"))) {
-  # }
-
-  if (stringr::str_detect(string = cmd, pattern = "^(t?)blast|makeblastdb")) {
-    packages_to_install <- "bioconda::blast==2.16"
-  } else {
+  if (!stringr::str_detect(string = cmd, pattern = "^(t?)blast|makeblastdb")) {
     cli::cli_abort(
       message = c(
         `x` = "Unsupported command: only BLAST+ programs ('blastn', 'tblastn', 'makeblastdb', ...) are supported."
@@ -54,28 +30,21 @@ check_cmd <- function(
       class = "blastr_check_cmd_unsupported_cmd"
     )
   }
-
-  if (isTRUE(force)) {
-    condathis::create_env(
-      packages = packages_to_install,
-      channels = c("conda-forge", "bioconda"),
-      env_name = env_name,
-      verbose = verbose,
-      overwrite = force
-    )
-  } else if (isFALSE(condathis::env_exists(env_name))) {
-    condathis::create_env(
-      packages = packages_to_install,
-      channels = c("conda-forge", "bioconda"),
-      env_name = env_name,
-      verbose = verbose
-    )
+  b <- resolve_blast_bin(cmd, env_name)
+  key <- paste(b$path, b$version)
+  if (!key %in% blastr_state$notified) {
+    if (identical(b$source, "system")) {
+      cli::cli_inform(c(
+        `i` = "Using the BLAST+ {b$version} of the system ({.path {b$path}}): the conda environment {.val {env_name}} has no BLAST+ {blast_version_min} or newer.",
+        `i` = "{.code install_dependencies()} installs BLAST+ {blast_version_pinned} there."
+      ))
+    } else if (!identical(b$version, blast_version_pinned)) {
+      cli::cli_inform(c(
+        `i` = "BLAST+ {b$version} in the conda environment {.val {env_name}}; BLASTr is tested with {blast_version_pinned}.",
+        `i` = "{.code install_dependencies()} updates it."
+      ))
+    }
+    blastr_state$notified <- c(blastr_state$notified, key)
   }
-  # else if (isFALSE(condathis::env_exists(env_name))) {
-  #  condathis::create_env(
-  #    env_name = env_name,
-  #    verbose = verbose
-  #  )
-  # }
   invisible(TRUE)
 }

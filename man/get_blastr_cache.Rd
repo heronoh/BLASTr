@@ -34,6 +34,7 @@ get_blastr_cache("taxonomy", "taxonomy_2026-01-01", ext = "sqlite")
 }
 \seealso{
 Other setup functions:
+\code{\link[=has_blast]{has_blast()}},
 \code{\link[=install_dependencies]{install_dependencies()}}
 }
 \concept{setup functions}

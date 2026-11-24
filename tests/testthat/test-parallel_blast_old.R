@@ -1,6 +1,5 @@
 testthat::test_that("new parallel_blast generates same output as old", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   withr::local_options(list(lifecycle_verbosity = "quiet"))
 
@@ -53,8 +52,7 @@ testthat::test_that("new parallel_blast generates same output as old", {
 
 
 testthat::test_that("parallel_blast_old - query with no hits", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   withr::local_options(list(lifecycle_verbosity = "quiet"))
 
@@ -72,8 +70,7 @@ testthat::test_that("parallel_blast_old - query with no hits", {
 })
 
 testthat::test_that("parallel_blast_old - query that errors", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   withr::local_options(list(lifecycle_verbosity = "quiet"))
 
@@ -91,8 +88,7 @@ testthat::test_that("parallel_blast_old - query that errors", {
 
 
 testthat::test_that("OLD - parallel blast - single thread", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
 
   withr::local_options(list(lifecycle_verbosity = "quiet"))
 
@@ -117,8 +113,7 @@ testthat::test_that("OLD - parallel blast - single thread", {
 })
 
 testthat::test_that("OLD - parallel blast - empty args", {
-  testthat::skip_on_cran()
-  testthat::skip_if_offline()
+  skip_if_no_blast()
   withr::local_options(list(lifecycle_verbosity = "warning"))
 
   testthat::expect_warning(

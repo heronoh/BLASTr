@@ -21,7 +21,7 @@ library(BLASTr)
 
 ## Install
 
-BLASTr is installed from GitHub; BLAST+ is installed by `install_dependencies()` in a conda environment of its own (`blastr-blast-env`), through the condathis package, so it does not depend on what is installed on the system.
+BLASTr is installed from GitHub; BLAST+ 2.17.0 is installed by `install_dependencies()` in a conda environment of its own (`blastr-blast-env`), through the condathis package. Without it, BLASTr uses the BLAST+ of the system, if it is 2.16.0 or newer.
 
 ```{r}
 #| label: install
@@ -31,12 +31,12 @@ pak::pak("heronoh/BLASTr")
 BLASTr::install_dependencies()
 ```
 
-The code below runs only where BLAST+ is available.
+The code below runs only where BLAST+ is ready (`has_blast()`).
 
 ```{r}
 #| label: has-blast
-has_blast <- nzchar(Sys.which("blastn"))
-has_blast
+blast_ready <- has_blast()
+blast_ready
 ```
 
 ## A BLAST database from a FASTA file
@@ -47,7 +47,7 @@ For real analyses, `download_blast_db()` downloads any database of the NCBI (suc
 
 ```{r}
 #| label: make-db
-#| eval: !expr has_blast
+#| eval: !expr blast_ready
 fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
 db <- file.path(tempdir(), "minimal_db_blast")
 make_blast_db(fasta, db_path = db)
@@ -60,7 +60,7 @@ It chooses how to split the search (how many `blastn` processes, threads per pro
 
 ```{r}
 #| label: search
-#| eval: !expr has_blast
+#| eval: !expr blast_ready
 seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
 length(seqs)
 blast_strategy(n_seqs = length(seqs), db_path = db, total_cores = 2)
@@ -75,7 +75,7 @@ The result has one row per hit, best first, and one row with empty hit fields fo
 
 ```{r}
 #| label: columns
-#| eval: !expr has_blast
+#| eval: !expr blast_ready
 res[, c("Sequence", "rank", "tie", "at_best", "subject", "identity", "qcovhsp", "Similarity score", "low_qcov")]
 ```
 
@@ -91,7 +91,7 @@ res[, c("Sequence", "rank", "tie", "at_best", "subject", "identity", "qcovhsp", 
 
 ```{r}
 #| label: summary
-#| eval: !expr has_blast
+#| eval: !expr blast_ready
 blast_summary(res)
 ```
 

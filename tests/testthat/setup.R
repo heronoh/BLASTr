@@ -7,6 +7,11 @@ withr::local_options(
   .local_envir = testthat::teardown_env()
 )
 
+# The conda environment of BLASTr (with BLAST+) is the one already installed:
+# keep its data directory when HOME and the other user directories are moved
+# to temporary ones below.
+conda_data_home <- fs::path_dir(fs::path_dir(fs::path_dir(fs::path_dir(conda_env_dir("x")))))
+
 tmp_home_path <- withr::local_tempdir(
   pattern = "tmp-home",
   .local_envir = testthat::teardown_env()
@@ -46,8 +51,8 @@ withr::local_envvar(
     `USERPROFILE` = tmp_home_path,
     `LOCALAPPDATA` = tmp_data_path,
     `APPDATA` = tmp_data_path,
-    `R_USER_DATA_DIR` = tmp_data_path,
-    `XDG_DATA_HOME` = tmp_data_path,
+    `R_USER_DATA_DIR` = conda_data_home,
+    `XDG_DATA_HOME` = conda_data_home,
     `R_USER_CACHE_DIR` = tmp_cache_path,
     `XDG_CACHE_HOME` = tmp_cache_path
   ),
@@ -62,22 +67,12 @@ base::rm(tmp_home_path)
 base::rm(tmp_data_path)
 base::rm(tmp_cache_path)
 base::rm(tmp_wd_path)
+base::rm(conda_data_home)
 
 
-# This is the check used inside skip_if_cran
-if (!(!interactive() && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false"))))) {
-  cli::cli_inform(c(`!` = "Setting up test environment for {.pkg BLASTr} ..."))
-
-  testthat::expect_true(install_dependencies(verbose = "silent", force = FALSE))
-
-  testthat::expect_true(check_cmd("blastn", env_name = "blastr-blast-env"))
-
-  testthat::expect_true(check_cmd("tblastn", env_name = "blastr-blast-env"))
-
-  testthat::expect_true(check_cmd("makeblastdb", env_name = "blastr-blast-env"))
-
-  # For local testing use:
-  # + `tmp_blast_db_path <- fs::file_temp("minimal_db_blast_")`
+# The tests that run BLAST+ use the conda environment of BLASTr as it is
+# (they are skipped without it; see helper-blast.R): nothing is installed here.
+if (isTRUE(has_blast())) {
   fs::file_copy(
     path = fs::path_package(
       "BLASTr",
@@ -93,7 +88,6 @@ if (!(!interactive() && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false"))))) {
     db_type = "nucl",
     verbose = "silent"
   )
-
   testthat::expect_true(
     fs::file_exists(fs::path(tmp_blast_db_path, ext = "nsq"))
   )

@@ -184,6 +184,26 @@
   sequences whose ties with the best hit were cut at the limit (170 to 94)
   and those whose ancestor differs from a search with 500 subjects (37 to
   18), for 3% to 18% more time.
+* BLAST+ 2.17.0 (was 2.16.0), installed by `install_dependencies()` from
+  bioconda in the conda environment `blastr-blast-env`; an environment
+  created by an older BLASTr is updated in place. On 300 GenBank references
+  searched in `core_nt`, 2.17.0 gave the same hits, summary and ancestors
+  as 2.16.0, in about the same time.
+* Which BLAST+ is used: the one of the conda environment; without it, the
+  one of the system, only if it is 2.16.0 or newer (BLAST+ 2.12, for
+  example, does not accept `-mt_mode 2`, used on large databases);
+  otherwise an error that says to run `install_dependencies()`. Searches no
+  longer install or update BLAST+. The source is kept in
+  `BLASTr_metadata$blast_source` (`"conda"` or `"system"`).
+* New `has_blast()`: whether BLAST+ 2.16.0 or newer is ready (conda
+  environment or system), without installing anything. The examples and
+  the vignette run their BLAST code only when it is `TRUE`.
+* Tests: the ones that run BLAST+ use the BLAST+ already installed and are
+  skipped without it (before, they were skipped on CRAN, and the test setup
+  created a new conda environment at each run). A real BLAST+ output
+  (`inst/extdata/blast_output_example.tsv`, made by
+  `data-raw/blast_output_example.R`) tests reading, ranking and summary
+  where BLAST+ is not installed.
 
 ### Documentation
 

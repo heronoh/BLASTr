@@ -1,5 +1,5 @@
 testthat::test_that("background job gives the same results as the foreground", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   seqs_test <- readLines(fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt"))
   fg <- parallel_blast(seqs_test, tmp_blast_db_path, total_cores = 2, num_alignments = 4, verbose = "silent")
 
@@ -21,7 +21,7 @@ testthat::test_that("background job gives the same results as the foreground", {
 })
 
 testthat::test_that("job directory must be new", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   d <- withr::local_tempdir()
   writeLines("x", fs::path(d, "other.txt"))
   parallel_blast("ACGT", tmp_blast_db_path, job_dir = d, background = TRUE, verbose = "silent") |>
@@ -30,7 +30,7 @@ testthat::test_that("job directory must be new", {
 })
 
 testthat::test_that("cancel and resume a background job", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   seqs_test <- readLines(fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt"))
   job_dir <- fs::path(withr::local_tempdir(), "job")
   job <- parallel_blast(
@@ -55,7 +55,7 @@ testthat::test_that("cancel and resume a background job", {
 })
 
 testthat::test_that("searching several databases together", {
-  testthat::skip_on_cran()
+  skip_if_no_blast()
   seqs_test <- readLines(fs::path_package("BLASTr", "extdata", "seqs_test", ext = "txt"))
   res <- parallel_blast(
     seqs_test, c(tmp_blast_db_path, tmp_blast_db_path),

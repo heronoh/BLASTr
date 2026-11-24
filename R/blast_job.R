@@ -67,9 +67,12 @@ new_blast_job <- function(
     sep = "\t", quote = FALSE, row.names = FALSE
   )
 
-  blast_bin <- blast_bin_path(blast_type, env_name)
+  bin <- resolve_blast_bin(blast_type, env_name)
+  blast_bin <- bin$path
   meta$blast_cmd <- blast_cmd_line(blast_type, blast_args, strategy$threads)
   meta$blast_version <- blast_version(blast_bin)
+  # "conda" (the environment of BLASTr) or "system"
+  meta$blast_source <- bin$source
   meta$db_dates <- db_dates(strategy$db_path)
   saveRDS(
     list(
@@ -94,16 +97,6 @@ new_blast_job <- function(
 
 is_valid_seq <- function(seqs) {
   nzchar(seqs) & grepl("^[A-Za-z*-]+$", seqs)
-}
-
-blast_bin_path <- function(cmd, env_name) {
-  exe <- if (identical(.Platform$OS.type, "windows")) paste0(cmd, ".exe") else cmd
-  env_dir <- condathis::get_env_dir(env_name = env_name)
-  path <- fs::path(env_dir, "bin", exe)
-  if (!fs::file_exists(path) && nzchar(Sys.which(cmd))) {
-    path <- normalizePath(Sys.which(cmd), mustWork = FALSE)
-  }
-  as.character(path)
 }
 
 # The scheduler. Self-contained (base R + processx): in background mode its
@@ -282,7 +275,7 @@ launch_scheduler_bg <- function(job) {
 #'
 #' @examples
 #' # needs BLAST+ (see install_dependencies())
-#' if (nzchar(Sys.which("blastn"))) {
+#' if (has_blast()) {
 #'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
 #'   db <- file.path(tempdir(), "minimal_db_blast")
 #'   make_blast_db(fasta, db_path = db)

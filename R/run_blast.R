@@ -23,7 +23,7 @@
 #'
 #' @examples
 #' # needs BLAST+ (see install_dependencies())
-#' if (nzchar(Sys.which("blastn"))) {
+#' if (has_blast()) {
 #'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
 #'   db <- file.path(tempdir(), "minimal_db_blast")
 #'   make_blast_db(fasta, db_path = db)
@@ -60,25 +60,17 @@ run_blast <- function(
     action = "replace"
   )
 
-  blast_res <- condathis::run_bin(
+  blast_res <- run_blast_program(
     blast_type,
-    "-db",
-    db_path,
-    "-query",
-    query_path,
-    "-outfmt",
-    "6 std qcovhsp staxid",
-    # "6 std qcovhsp staxid ssciname",
-    "-max_hsps",
-    "1",
-    "-perc_identity",
-    perc_id,
-    "-qcov_hsp_perc",
-    perc_qcov_hsp,
-    "-num_threads",
-    as.character(num_threads),
-    "-num_alignments",
-    as.character(num_alignments),
+    c(
+      "-db", db_path, "-query", query_path,
+      "-outfmt", "6 std qcovhsp staxid",
+      "-max_hsps", "1",
+      "-perc_identity", perc_id,
+      "-qcov_hsp_perc", perc_qcov_hsp,
+      "-num_threads", as.character(num_threads),
+      "-num_alignments", as.character(num_alignments)
+    ),
     env_name = env_name,
     verbose = verbose,
     error = "continue"
