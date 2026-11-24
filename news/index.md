@@ -316,6 +316,9 @@
   with `db_path`, the database of the date of the BLAST database(s) to
   be searched. A pipeline can check it at the start instead of stopping
   after the BLAST search.
+- [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+  takes `taxonomy_db = NA` (or `""`) as not set, like `NULL`: before,
+  `NA` was used as the path of the database.
 
 ### Documentation
 

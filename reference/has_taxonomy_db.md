@@ -27,9 +27,9 @@ has_taxonomy_db(taxonomy_db = NULL, db_path = NULL)
 
   Path to the SQLite taxonomy database, as in
   [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md).
-  `NULL` uses the option `BLASTr.taxonomy_db` or the environment
-  variable `BLASTR_TAXONOMY_DB`; with none set, a database in the BLASTr
-  cache.
+  `NULL` (or `NA` or `""`) uses the option `BLASTr.taxonomy_db` or the
+  environment variable `BLASTR_TAXONOMY_DB`; with none set, a database
+  in the BLASTr cache.
 
 - db_path:
 
@@ -67,7 +67,7 @@ x <- has_taxonomy_db(file.path(tempdir(), "taxonomy.sqlite"))
 x
 #> [1] FALSE
 #> attr(,"path")
-#> [1] "/tmp/RtmpYW6x5r/taxonomy.sqlite"
+#> [1] "/tmp/RtmpQHmQ5B/taxonomy.sqlite"
 attr(x, "path")
-#> [1] "/tmp/RtmpYW6x5r/taxonomy.sqlite"
+#> [1] "/tmp/RtmpQHmQ5B/taxonomy.sqlite"
 ```

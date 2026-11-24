@@ -133,10 +133,11 @@ BLAST database: taxids newer than the taxdump are not found.</p>
 
 
 <dt id="arg-taxonomy-db">taxonomy_db<a class="anchor" aria-label="anchor" href="#arg-taxonomy-db"></a></dt>
-<dd><p>Path to the SQLite taxonomy database. <code>NULL</code> uses the
-option <code>BLASTr.taxonomy_db</code> or the environment variable
-<code>BLASTR_TAXONOMY_DB</code>; with none set, a database in the BLASTr cache
-(see below). If the file does not exist, it is built.</p></dd>
+<dd><p>Path to the SQLite taxonomy database. <code>NULL</code> (or <code>NA</code>
+or <code>""</code>) uses the option <code>BLASTr.taxonomy_db</code> or the environment
+variable <code>BLASTR_TAXONOMY_DB</code>; with none set, a database in the BLASTr
+cache (see below). If the file does not exist, it is built only when
+asked (see <code>download</code>).</p></dd>
 
 
 <dt id="arg-ranks">ranks<a class="anchor" aria-label="anchor" href="#arg-ranks"></a></dt>
@@ -196,7 +197,7 @@ current taxid; needs a database with the table <code>merged</code>, as built by
 <span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">9598</span>, <span class="st">"Pan troglodytes"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">taxdump</span>, <span class="st">"names.dmp"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tax_db</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_taxonomy_db.html">make_taxonomy_db</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".sqlite"</span><span class="op">)</span>, taxdump <span class="op">=</span> <span class="va">taxdump</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Taxonomy database: <span style="color: #0000BB;">/tmp/RtmpYW6x5r/file19ca5649bc5b.sqlite</span> (7 taxa).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Taxonomy database: <span style="color: #0000BB;">/tmp/RtmpQHmQ5B/file1a0558778049.sqlite</span> (7 taxa).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 1234 is not in this taxonomy: found = FALSE, with a warning</span></span></span>
 <span class="r-in"><span><span class="fu">get_tax</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9606"</span>, <span class="st">"9598"</span>, <span class="st">"1234"</span><span class="op">)</span>, taxonomy_db <span class="op">=</span> <span class="va">tax_db</span><span class="op">)</span></span></span>

@@ -118,7 +118,7 @@ writeLines(c(
   dmp(9598, "Pan troglodytes", "", "scientific name")
 ), file.path(taxdump, "names.dmp"))
 tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
-#> ✔ Taxonomy database: /tmp/RtmpYW6x5r/file19ca3186f2a1.sqlite (7 taxa).
+#> ✔ Taxonomy database: /tmp/RtmpQHmQ5B/file1a0575fec0d4.sqlite (7 taxa).
 
 # hits of two sequences: the first one tied between Homo and Pan
 wide <- data.frame(

@@ -118,6 +118,8 @@
 <li>
 <code><a href="../reference/get_tax.html">get_tax()</a></code> no longer downloads the NCBI taxdump on its own: without the taxonomy database it stops and says how to get it, or asks in an interactive session. The new argument <code>download = TRUE</code> downloads the taxdump (about 80 MB) and builds the database, for those who use only <code><a href="../reference/get_tax.html">get_tax()</a></code>; <code><a href="../reference/ncbi_blast_dbs.html">download_blast_db()</a></code> (<code>taxonomy = TRUE</code>), <code><a href="../reference/reference_dbs.html">make_unite_db()</a></code> and <code><a href="../reference/reference_dbs.html">make_silva_db()</a></code> still bring it with the BLAST databases.</li>
 <li>New <code><a href="../reference/has_taxonomy_db.html">has_taxonomy_db()</a></code>: whether <code><a href="../reference/get_tax.html">get_tax()</a></code> has its taxonomy database, without downloading or building anything; with <code>db_path</code>, the database of the date of the BLAST database(s) to be searched. A pipeline can check it at the start instead of stopping after the BLAST search.</li>
+<li>
+<code><a href="../reference/get_tax.html">get_tax()</a></code> takes <code>taxonomy_db = NA</code> (or <code>""</code>) as not set, like <code>NULL</code>: before, <code>NA</code> was used as the path of the database.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>

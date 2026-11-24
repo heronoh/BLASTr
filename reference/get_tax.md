@@ -51,10 +51,11 @@ get_tax(
 
 - taxonomy_db:
 
-  Path to the SQLite taxonomy database. `NULL` uses the option
-  `BLASTr.taxonomy_db` or the environment variable `BLASTR_TAXONOMY_DB`;
-  with none set, a database in the BLASTr cache (see below). If the file
-  does not exist, it is built.
+  Path to the SQLite taxonomy database. `NULL` (or `NA` or `""`) uses
+  the option `BLASTr.taxonomy_db` or the environment variable
+  `BLASTR_TAXONOMY_DB`; with none set, a database in the BLASTr cache
+  (see below). If the file does not exist, it is built only when asked
+  (see `download`).
 
 - ranks:
 
@@ -113,7 +114,7 @@ writeLines(c(
   dmp(9598, "Pan troglodytes", "", "scientific name")
 ), file.path(taxdump, "names.dmp"))
 tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
-#> ✔ Taxonomy database: /tmp/RtmpYW6x5r/file19ca5649bc5b.sqlite (7 taxa).
+#> ✔ Taxonomy database: /tmp/RtmpQHmQ5B/file1a0558778049.sqlite (7 taxa).
 
 # 1234 is not in this taxonomy: found = FALSE, with a warning
 get_tax(c("9606", "9598", "1234"), taxonomy_db = tax_db)
