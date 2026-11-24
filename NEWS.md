@@ -204,6 +204,12 @@
   (`inst/extdata/blast_output_example.tsv`, made by
   `data-raw/blast_output_example.R`) tests reading, ranking and summary
   where BLAST+ is not installed.
+* `get_tax()` no longer downloads the NCBI taxdump on its own: without the
+  taxonomy database it stops and says how to get it, or asks in an
+  interactive session. The new argument `download = TRUE` downloads the
+  taxdump (about 80 MB) and builds the database, for those who use only
+  `get_tax()`; `download_blast_db()` (`taxonomy = TRUE`), `make_unite_db()`
+  and `make_silva_db()` still bring it with the BLAST databases.
 
 ### Documentation
 

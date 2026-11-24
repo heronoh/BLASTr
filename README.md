@@ -309,14 +309,19 @@ species is tied with them (`named_first`), while “Picea sp.” still does
 (another species of the genus). When that taxon has no standard rank
 (e.g. the clade “Heliantheae alliance”), `LCA name` keeps it and
 `LCA ranked name` / `LCA ranked rank` give the nearest ranked taxon
-above it (here the subfamily Asteroideae). If the database does not
-exist, it is built once from the NCBI taxdump: for a BLASTr result, the
-taxdump published right after the date of its BLAST database, so the
-taxonomy matches the database (about a minute, then kept in the BLASTr
-cache).
+above it (here the subfamily Asteroideae). The database comes with the
+BLAST databases of `download_blast_db()`. For the results of other
+databases, or to use only `get_tax()`, `get_tax(..., download = TRUE)`
+downloads the NCBI taxdump once (about 80 MB) and builds it: for a
+BLASTr result, the taxdump published right after the date of its BLAST
+database, so the taxonomy matches the database (about a minute, then
+kept in the BLASTr cache). Without `download = TRUE`, `get_tax()` does
+not download anything (in an interactive session it asks).
 
 ``` r
 taxonomy <- get_tax(blast_results)
+# the first time, for a database not downloaded by download_blast_db():
+# taxonomy <- get_tax(blast_results, download = TRUE)
 
 # taxon shared by the hits tied with the best one (90% consensus)
 lca <- blast_lca(blast_results)

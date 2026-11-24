@@ -100,7 +100,7 @@ blast_summary(res)
 
 ## Taxonomy and the lowest common ancestor
 
-With a database that has taxids (`download_blast_db()`, `make_unite_db()`, `make_silva_db()`, or `make_blast_db(taxid_map = )`), `get_tax()` adds the NCBI taxonomy of each taxid from a local SQLite database, built once from the NCBI taxdump of the date of the BLAST database, and `blast_lca()` gives the deepest taxon that contains at least 90% of the hits tied with the best one:
+With a database that has taxids (`download_blast_db()`, `make_unite_db()`, `make_silva_db()`, or `make_blast_db(taxid_map = )`), `get_tax()` adds the NCBI taxonomy of each taxid from a local SQLite database (it comes with `download_blast_db()`; otherwise `get_tax(res, download = TRUE)` downloads the NCBI taxdump of the date of the BLAST database once), and `blast_lca()` gives the deepest taxon that contains at least 90% of the hits tied with the best one:
 
 ```{r}
 #| label: taxonomy

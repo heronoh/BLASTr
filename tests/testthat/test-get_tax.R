@@ -71,3 +71,16 @@ testthat::test_that("extract_taxids reads `Taxids at best` of wide results (and 
   names(wide)[2] <- "Taxids at best identity"
   testthat::expect_equal(extract_taxids(wide), c("9606", "9598"))
 })
+
+testthat::test_that("get_tax() downloads the taxdump only when asked", {
+  db <- fs::path(withr::local_tempdir(), "taxonomy.sqlite")
+  # not interactive, no taxdump, no download = TRUE: stops, nothing downloaded
+  testthat::expect_error(get_tax("9606", taxonomy_db = db), class = "blastr_error_no_taxonomy_db")
+  testthat::expect_error(get_tax("9606", taxonomy_db = db), regexp = "download = TRUE")
+  testthat::expect_false(fs::file_exists(db))
+  # a taxdump given is a request: the database is built from it
+  dir <- tiny_taxdump(withr::local_tempdir())
+  res <- suppressMessages(get_tax("9606", taxonomy_db = db, taxdump = dir))
+  testthat::expect_equal(res$sci_name, "Homo sapiens")
+  testthat::expect_true(fs::file_exists(db))
+})

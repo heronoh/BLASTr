@@ -4,7 +4,13 @@
 \alias{get_tax}
 \title{Taxonomy of NCBI taxids from a local database}
 \usage{
-get_tax(x, taxonomy_db = NULL, ranks = tax_ranks_default, taxdump = NULL)
+get_tax(
+  x,
+  taxonomy_db = NULL,
+  ranks = tax_ranks_default,
+  taxdump = NULL,
+  download = FALSE
+)
 }
 \arguments{
 \item{x}{Taxids (character or numeric) or a BLASTr result.}
@@ -21,6 +27,10 @@ option \code{BLASTr.taxonomy_db} or the environment variable
 \code{\link[=make_taxonomy_db]{make_taxonomy_db()}}). \code{NULL}: the taxdump matching the BLAST database
 of \code{x} (the first monthly NCBI archive after its date), or the current
 one.}
+
+\item{download}{Download the NCBI taxdump and build the database when it
+does not exist. \code{FALSE} (default) stops with a message instead (or asks,
+in an interactive session).}
 }
 \value{
 A tibble with one row per taxid: \code{taxid}, \code{found} (\code{FALSE} when
@@ -45,13 +55,16 @@ or wide) or \code{\link[=parallel_blast_hsps]{parallel_blast_hsps()}}: the taxid
 \code{staxid}, \code{k_staxid} and \verb{Taxids at best} columns. Unknown
 taxids (\code{0}, empty, \code{N/A}) are dropped.
 
-When the database does not exist, it is built from the NCBI taxdump
-(downloaded once, then reused). If \code{x} is a BLASTr result, the taxdump is
-the first one the NCBI published after the date of its BLAST database, so
-the taxonomy matches the database; the database is kept in the BLASTr
-cache as \verb{taxonomy_<database date>.sqlite}. With only taxids and no
-database set, the newest database in the cache is used, or one is built
-from the current taxdump.
+The database comes with the BLAST databases downloaded by
+\code{\link[=download_blast_db]{download_blast_db()}} (\code{taxonomy = TRUE}). Without it, \code{get_tax()} builds
+it only when asked (\code{download = TRUE}, a \code{taxdump}, or a yes in an
+interactive session), from the NCBI taxdump (about 80 MB, downloaded once,
+then reused); otherwise it stops and says how. If \code{x} is a BLASTr result,
+the taxdump is the first one the NCBI published after the date of its
+BLAST database, so the taxonomy matches the database; the database is kept
+in the BLASTr cache as \verb{taxonomy_<database date>.sqlite}. With only taxids
+and no database set, the newest database in the cache is used, or one is
+built from the current taxdump.
 
 The database has the tables \code{nodes} (\code{id}, \code{rank}, \code{parent}) and
 \code{names} (\code{id}, \code{name}, \code{scientific}, \code{type}), as built by

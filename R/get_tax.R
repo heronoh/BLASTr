@@ -17,13 +17,16 @@ tax_ranks_default <- c(
 #' `staxid`, `k_staxid` and `Taxids at best` columns. Unknown
 #' taxids (`0`, empty, `N/A`) are dropped.
 #'
-#' When the database does not exist, it is built from the NCBI taxdump
-#' (downloaded once, then reused). If `x` is a BLASTr result, the taxdump is
-#' the first one the NCBI published after the date of its BLAST database, so
-#' the taxonomy matches the database; the database is kept in the BLASTr
-#' cache as `taxonomy_<database date>.sqlite`. With only taxids and no
-#' database set, the newest database in the cache is used, or one is built
-#' from the current taxdump.
+#' The database comes with the BLAST databases downloaded by
+#' [download_blast_db()] (`taxonomy = TRUE`). Without it, `get_tax()` builds
+#' it only when asked (`download = TRUE`, a `taxdump`, or a yes in an
+#' interactive session), from the NCBI taxdump (about 80 MB, downloaded once,
+#' then reused); otherwise it stops and says how. If `x` is a BLASTr result,
+#' the taxdump is the first one the NCBI published after the date of its
+#' BLAST database, so the taxonomy matches the database; the database is kept
+#' in the BLASTr cache as `taxonomy_<database date>.sqlite`. With only taxids
+#' and no database set, the newest database in the cache is used, or one is
+#' built from the current taxdump.
 #'
 #' The database has the tables `nodes` (`id`, `rank`, `parent`) and
 #' `names` (`id`, `name`, `scientific`, `type`), as built by
@@ -40,6 +43,9 @@ tax_ranks_default <- c(
 #'   [make_taxonomy_db()]). `NULL`: the taxdump matching the BLAST database
 #'   of `x` (the first monthly NCBI archive after its date), or the current
 #'   one.
+#' @param download Download the NCBI taxdump and build the database when it
+#'   does not exist. `FALSE` (default) stops with a message instead (or asks,
+#'   in an interactive session).
 #' @param ranks Ranks returned as columns. `"domain"` is also filled from
 #'   `"superkingdom"`, its name in taxdumps before 2025.
 #'
@@ -90,9 +96,9 @@ tax_ranks_default <- c(
 #'
 #' @family taxonomy functions
 #' @export
-get_tax <- function(x, taxonomy_db = NULL, ranks = tax_ranks_default, taxdump = NULL) {
+get_tax <- function(x, taxonomy_db = NULL, ranks = tax_ranks_default, taxdump = NULL, download = FALSE) {
   taxids <- extract_taxids(x)
-  db <- resolve_taxonomy_db(taxonomy_db, taxdump = taxdump, db_dates = attr(x, "BLASTr_metadata")$db_dates)
+  db <- resolve_taxonomy_db(taxonomy_db, taxdump = taxdump, db_dates = attr(x, "BLASTr_metadata")$db_dates, download = download)
   ranks <- as.character(ranks)
 
   con <- DBI::dbConnect(RSQLite::SQLite(), db, flags = RSQLite::SQLITE_RO)
@@ -216,7 +222,7 @@ extract_taxids <- function(x) {
 # BLASTR_TAXONOMY_DB) or else one in the BLASTr cache, named after the date
 # of the BLAST database(s) of the search (`db_dates`), or the newest one
 # there.
-resolve_taxonomy_db <- function(taxonomy_db = NULL, taxdump = NULL, db_dates = NULL) {
+resolve_taxonomy_db <- function(taxonomy_db = NULL, taxdump = NULL, db_dates = NULL, download = FALSE) {
   db <- if (is.null(taxonomy_db)) getOption("BLASTr.taxonomy_db") else taxonomy_db
   if (is.null(db) || !nzchar(db)) db <- Sys.getenv("BLASTR_TAXONOMY_DB")
   db_date <- latest_date(db_dates)
@@ -232,7 +238,25 @@ resolve_taxonomy_db <- function(taxonomy_db = NULL, taxdump = NULL, db_dates = N
     }
   }
   if (!fs::file_exists(db)) {
+    # build it only when asked: a taxdump given, `download = TRUE`, or a yes
+    # in an interactive session; never a download nobody asked for
+    explicit <- !is.null(taxdump) || isTRUE(download)
     if (is.null(taxdump)) taxdump <- taxdump_url(db_date)
+    if (!explicit && interactive()) {
+      explicit <- isTRUE(utils::askYesNo(paste0(
+        "No taxonomy database at ", db, ". Download the NCBI taxdump (about 80 MB) and build it?"
+      )))
+    }
+    if (!explicit) {
+      cli::cli_abort(
+        c(
+          `x` = "No taxonomy database at {.path {db}}.",
+          `i` = "BLAST databases downloaded with {.fn download_blast_db} come with their taxonomy.",
+          `>` = "To download the NCBI taxdump ({.url {taxdump}}, about 80 MB) and build it, run {.code get_tax(..., download = TRUE)} once, or set {.arg taxonomy_db} to an existing database."
+        ),
+        class = "blastr_error_no_taxonomy_db"
+      )
+    }
     cli::cli_inform(c(`i` = "Building the taxonomy database {.path {db}} from {.path {taxdump}}."))
     make_taxonomy_db(db, taxdump = taxdump)
   }

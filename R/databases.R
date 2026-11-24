@@ -127,7 +127,7 @@ download_blast_db <- function(
     cli::cli_inform(c(`v` = "{basename(u)} ({nrow(done)}/{length(files)})"))
   }
   writeLines(read_text_url(meta_url), fs::path(out_dir, paste0(db, "-metadata.json")))
-  if (isTRUE(taxonomy)) resolve_taxonomy_db(db_dates = date)
+  if (isTRUE(taxonomy)) resolve_taxonomy_db(db_dates = date, download = TRUE)
   cli::cli_inform(c(`v` = "BLAST database ready: {.path {db_path}}"))
   invisible(as.character(db_path))
 }
@@ -386,7 +386,8 @@ names_to_taxids <- function(levels, taxonomy_db = NULL) {
   u <- !duplicated(key)
   ul <- levels[u]
   all_names <- unique(stats::na.omit(unlist(ul)))
-  db <- resolve_taxonomy_db(taxonomy_db)
+  # make_unite_db() and make_silva_db() download anyway: the taxonomy too
+  db <- resolve_taxonomy_db(taxonomy_db, download = TRUE)
   con <- DBI::dbConnect(RSQLite::SQLite(), db, flags = RSQLite::SQLITE_RO)
   on.exit(DBI::dbDisconnect(con), add = TRUE)
   cand <- do.call(rbind, lapply(split(all_names, ceiling(seq_along(all_names) / 5000L)), function(p) {
