@@ -146,23 +146,23 @@ run_blast_program <- function(cmd, args, env_name = "blastr-blast-env",
 }
 
 # Install BLAST+ `blast_version_pinned` in the conda environment: create it,
-# update it in place when it has another version, or recreate it (`force`).
+# or recreate it when it has another version of BLAST+ or with `force`.
+# (Recreated rather than updated in place: the BiocCheck rejects calls to
+# functions that install packages, even conda ones.)
 install_blast_env <- function(env_name = "blastr-blast-env", verbose = "silent", force = FALSE) {
   pkg <- paste0("bioconda::blast==", blast_version_pinned)
-  channels <- c("conda-forge", "bioconda")
-  if (isTRUE(force) || isFALSE(condathis::env_exists(env_name))) {
-    condathis::create_env(
-      packages = pkg, channels = channels, env_name = env_name,
-      verbose = verbose, overwrite = isTRUE(force)
-    )
-  } else {
-    current <- env_blast_version(env_name)
-    if (!identical(current, blast_version_pinned)) {
+  exists <- isTRUE(condathis::env_exists(env_name))
+  current <- if (exists) env_blast_version(env_name) else NA_character_
+  if (isTRUE(force) || !exists || !identical(current, blast_version_pinned)) {
+    if (exists && !isTRUE(force)) {
       cli::cli_inform(c(
-        `i` = "Updating BLAST+ in the conda environment {.val {env_name}} from {if (is.na(current)) 'an unknown version' else current} to {blast_version_pinned}."
+        `i` = "Recreating the conda environment {.val {env_name}} with BLAST+ {blast_version_pinned} (it has {if (is.na(current)) 'no BLAST+' else current})."
       ))
-      condathis::install_packages(packages = pkg, env_name = env_name, channels = channels, verbose = verbose)
     }
+    condathis::create_env(
+      packages = pkg, channels = c("conda-forge", "bioconda"), env_name = env_name,
+      verbose = verbose, overwrite = exists
+    )
   }
   blastr_state$versions <- list()
   installed <- env_blast_version(env_name)

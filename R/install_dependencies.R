@@ -5,8 +5,8 @@
 #' the conda environment `blastr-blast-env`, through the condathis package.
 #' BLASTr runs BLAST+ from this environment; without it, from the system,
 #' if it is BLAST+ 2.16.0 or newer (see [has_blast()]). When the environment
-#' exists with another version of BLAST+ (created by an older BLASTr), BLAST+
-#' is updated in place. Searches never install or update BLAST+: only this
+#' exists with another version of BLAST+ (created by an older BLASTr), it is
+#' recreated with BLAST+ 2.17.0. Searches never install or update BLAST+: only this
 #' function does. The online taxonomy
 #' functions ([get_tax_by_taxID()], [get_tax_by_name()]) query the NCBI over
 #' HTTP and need no external tool.

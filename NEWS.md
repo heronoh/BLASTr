@@ -186,7 +186,7 @@
   18), for 3% to 18% more time.
 * BLAST+ 2.17.0 (was 2.16.0), installed by `install_dependencies()` from
   bioconda in the conda environment `blastr-blast-env`; an environment
-  created by an older BLASTr is updated in place. On 300 GenBank references
+  created by an older BLASTr is recreated. On 300 GenBank references
   searched in `core_nt`, 2.17.0 gave the same hits, summary and ancestors
   as 2.16.0, in about the same time.
 * Which BLAST+ is used: the one of the conda environment; without it, the
