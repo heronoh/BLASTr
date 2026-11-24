@@ -380,8 +380,8 @@ guarantee. `log_dir` keeps a log of your own searches (see
 
 ## Main Functions
 
-- `install_dependencies()`: Installs BLAST+ and Entrez Direct if they
-  are not found on your system.
+- `install_dependencies()`: Installs BLAST+ in a conda environment of
+  its own.
 - `make_blast_db()`: Creates a BLAST database from a FASTA file.
 - `parallel_blast()`: Runs BLAST searches for multiple sequences in
   parallel, in the foreground or in the background.
@@ -411,12 +411,12 @@ guarantee. `log_dir` keeps a log of your own searches (see
 
 ## Dependency Management
 
-`BLASTr` uses the `condathis` package to manage its dependencies (BLAST+
-and Entrez Direct). When you run a function that requires one of these
-tools, `BLASTr` will automatically check if it’s installed. If not, it
-will create a Conda environment and install the necessary software. This
-ensures that you always have the correct versions of the dependencies
-without having to install them manually.
+`BLASTr` uses the `condathis` package to manage its dependency, BLAST+.
+When you run a function that requires one of these tools, `BLASTr` will
+automatically check if it’s installed. If not, it will create a Conda
+environment and install the necessary software. This ensures that you
+always have the correct versions of the dependencies without having to
+install them manually.
 
 You can control the installation process with the `force` and `verbose`
 arguments in the `install_dependencies()` function.

@@ -74,8 +74,6 @@ if (!(!interactive() && !isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false"))))) {
 
   testthat::expect_true(check_cmd("tblastn", env_name = "blastr-blast-env"))
 
-  testthat::expect_true(check_cmd("efetch", env_name = "blastr-entrez-env"))
-
   testthat::expect_true(check_cmd("makeblastdb", env_name = "blastr-blast-env"))
 
   # For local testing use:

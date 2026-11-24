@@ -1,11 +1,11 @@
 #' Determine if a Command is Available and Install if Necessary
 #'
-#' Checks if a specified command-line tool ('blastn' or 'efetch') is available
+#' Checks if a BLAST+ command-line tool (`blastn`, `makeblastdb`, ...) is available
 #'   on the system.
 #'   If not, it creates a conda environment and installs the required tool.
 #'
 #' @param cmd Character string specifying the command-line tool to check for.
-#'   Supported commands are `"blastn"` and `"efetch"`. Default is `"blastn"`.
+#'   BLAST+ programs (`"blastn"`, `"tblastn"`, `"makeblastdb"`, ...). Default is `"blastn"`.
 #' @param env_name Character string specifying the name of the conda
 #'   environment to create or use.
 #'   Default is `"blastr-blast-env"`.
@@ -24,9 +24,6 @@
 #' \dontrun{
 #' # Check if 'blastn' command is available, and install it if not
 #' check_cmd("blastn", env_name = "blastr-blast-env")
-#'
-#' # Check if 'efetch' command is available, and install it if not
-#' check_cmd("efetch", env_name = "blastr-entrez-env")
 #'
 #' # Force re-creation of the conda environment and re-install 'blastn'
 #' check_cmd("blastn", env_name = "blastr-blast-env", force = TRUE)
@@ -49,12 +46,10 @@ check_cmd <- function(
 
   if (stringr::str_detect(string = cmd, pattern = "^(t?)blast|makeblastdb")) {
     packages_to_install <- "bioconda::blast==2.16"
-  } else if (stringr::str_detect(string = cmd, pattern = "^efetch")) {
-    packages_to_install <- "bioconda::entrez-direct==24.0"
   } else {
     cli::cli_abort(
       message = c(
-        `x` = "Unsupported command: only 'blast' variants, 'makeblastdb', and 'efetch' are supported."
+        `x` = "Unsupported command: only BLAST+ programs ('blastn', 'tblastn', 'makeblastdb', ...) are supported."
       ),
       class = "blastr_check_cmd_unsupported_cmd"
     )
