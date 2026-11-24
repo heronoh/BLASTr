@@ -52,11 +52,39 @@
 #'   its ranks and lineage.
 #'
 #' @examples
-#' \dontrun{
-#' res <- parallel_blast(seqs, db_path)
-#' lca <- blast_lca(res)
-#' dplyr::left_join(lca, get_tax(lca$`LCA taxid`), by = c(`LCA taxid` = "taxid"))
-#' }
+#' # a simplified NCBI taxdump: Hominidae with the genera Homo and Pan
+#' taxdump <- file.path(tempdir(), "taxdump")
+#' dir.create(taxdump, showWarnings = FALSE)
+#' dmp <- function(...) paste0(paste(..., sep = "\t|\t"), "\t|")
+#' writeLines(c(
+#'   dmp(1, 1, "no rank"), dmp(2759, 1, "superkingdom"), dmp(9604, 2759, "family"),
+#'   dmp(9605, 9604, "genus"), dmp(9606, 9605, "species"),
+#'   dmp(9596, 9604, "genus"), dmp(9598, 9596, "species")
+#' ), file.path(taxdump, "nodes.dmp"))
+#' writeLines(c(
+#'   dmp(1, "root", "", "scientific name"), dmp(2759, "Eukaryota", "", "scientific name"),
+#'   dmp(9604, "Hominidae", "", "scientific name"), dmp(9605, "Homo", "", "scientific name"),
+#'   dmp(9606, "Homo sapiens", "", "scientific name"), dmp(9596, "Pan", "", "scientific name"),
+#'   dmp(9598, "Pan troglodytes", "", "scientific name")
+#' ), file.path(taxdump, "names.dmp"))
+#' tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
+#'
+#' # hits of two sequences: the first one tied between Homo and Pan
+#' wide <- data.frame(
+#'   Sequence = c("ACGT", "TTGA"),
+#'   `1_subject` = c("A1", "B1"), `1_identity` = c(100, 99), `1_qcovhsp` = 100,
+#'   `1_staxid` = "9606",
+#'   `2_subject` = c("A2", "B2"), `2_identity` = c(99.8, 90), `2_qcovhsp` = 100,
+#'   `2_staxid` = "9598",
+#'   check.names = FALSE
+#' )
+#' hits <- as_blast_long(wide)
+#' lca <- blast_lca(hits, taxonomy_db = tax_db)
+#' lca
+#' # ranks and lineage of each ancestor
+#' dplyr::left_join(lca, get_tax(lca$`LCA taxid`, taxonomy_db = tax_db), by = c(`LCA taxid` = "taxid"))
+#'
+#' @family result functions
 #' @export
 blast_lca <- function(x, consensus = 0.9, named_first = TRUE, taxonomy = NULL, taxonomy_db = NULL, taxdump = NULL) {
   if (!is.numeric(consensus) || length(consensus) != 1L || consensus <= 0.5 || consensus > 1) {

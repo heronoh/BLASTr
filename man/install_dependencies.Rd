@@ -2,7 +2,7 @@
 % Please edit documentation in R/install_dependencies.R
 \name{install_dependencies}
 \alias{install_dependencies}
-\title{Install Required Command-line Tool Dependencies}
+\title{Install BLAST+ in a conda environment}
 \usage{
 install_dependencies(
   verbose = c("silent", "cmd", "output", "full"),
@@ -36,3 +36,8 @@ install_dependencies(verbose = "output")
 install_dependencies(force = TRUE)
 }
 }
+\seealso{
+Other setup functions:
+\code{\link[=get_blastr_cache]{get_blastr_cache()}}
+}
+\concept{setup functions}

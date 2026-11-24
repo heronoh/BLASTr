@@ -65,8 +65,18 @@ or in the environment variable \code{ENTREZ_KEY} or \code{NCBI_API_KEY}. Taxids 
 sent in batches of 200.
 }
 \examples{
-\dontrun{
-get_tax_by_taxID(c("9606", "10090"))
-get_tax_by_name(c("Homo sapiens", "Salminus brasiliensis"))
+\donttest{
+# needs internet
+if (requireNamespace("curl", quietly = TRUE) && curl::has_internet()) {
+  get_tax_by_taxID(c("9606", "10090"))
+  get_tax_by_name(c("Homo sapiens", "Salminus brasiliensis"))
 }
 }
+
+}
+\seealso{
+Other taxonomy functions:
+\code{\link[=get_tax]{get_tax()}},
+\code{\link[=make_taxonomy_db]{make_taxonomy_db()}}
+}
+\concept{taxonomy functions}

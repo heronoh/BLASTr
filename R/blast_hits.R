@@ -74,6 +74,7 @@ hit_count_cols <- c("N hits", "N taxids", "N uninformative", "N hits same taxid 
 #'
 #' @examples
 #' similarity_score(identity = c(100, 98.5), qcovhsp = c(100, 85))
+#' @family result functions
 #' @export
 similarity_score <- function(identity, qcovhsp) {
   (10 * as.numeric(identity) + as.numeric(qcovhsp)) / 11
@@ -188,6 +189,7 @@ rank_blast_hits <- function(hits, rank_by = "similarity", tolerance = 0.5) {
 #'   staxid = c("9606", "9598", "9597")
 #' )
 #' check_hits(hits)
+#' @family result functions
 #' @export
 check_hits <- function(
   hits,
@@ -346,10 +348,29 @@ blast_long <- function(hits, seq_ids, seqs, num_alignments = Inf, rank_by = "sim
 #' @returns A tibble with `Sequence` and the summary columns.
 #'
 #' @examples
-#' \dontrun{
-#' res <- parallel_blast(seqs, db_path)
-#' dplyr::left_join(blast_summary(res), res[res$rank %in% 1L, ], by = "Sequence")
+#' # hits of two sequences: the first one tied between Homo and Pan
+#' wide <- data.frame(
+#'   Sequence = c("ACGT", "TTGA"),
+#'   `1_subject` = c("A1", "B1"), `1_identity` = c(100, 99), `1_qcovhsp` = 100,
+#'   `1_staxid` = "9606",
+#'   `2_subject` = c("A2", "B2"), `2_identity` = c(99.8, 90), `2_qcovhsp` = 100,
+#'   `2_staxid` = "9598",
+#'   check.names = FALSE
+#' )
+#' hits <- as_blast_long(wide)
+#' blast_summary(hits)
+#'
+#' # needs BLAST+ (see install_dependencies())
+#' if (nzchar(Sys.which("blastn"))) {
+#'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+#'   db <- file.path(tempdir(), "minimal_db_blast")
+#'   make_blast_db(fasta, db_path = db)
+#'   seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+#'   res <- parallel_blast(seqs, db)
+#'   blast_summary(res)
 #' }
+#'
+#' @family result functions
 #' @export
 blast_summary <- function(x, check_n = NULL, tolerance = NULL, rank_by = NULL, search_alignments = NULL) {
   meta <- attr(x, "BLASTr_metadata")
@@ -432,6 +453,7 @@ widen_blast_hits <- function(long, summary, num_alignments) {
 #'   `2_qcovhsp` = 100, `2_staxid` = "9598", check.names = FALSE
 #' )
 #' as_blast_long(wide)
+#' @family result functions
 #' @export
 as_blast_long <- function(x, rank_by = c("similarity", "identity", "bitscore"), tolerance = 0.5, perc_qcov_hsp = 80,
                           uninformative = NULL) {

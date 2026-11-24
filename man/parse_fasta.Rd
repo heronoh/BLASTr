@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse_fasta.R
 \name{parse_fasta}
 \alias{parse_fasta}
-\title{Parsing fasta file to sequences only}
+\title{Read the sequences of a FASTA file}
 \usage{
 parse_fasta(file_path)
 }
@@ -13,7 +13,8 @@ parse_fasta(file_path)
 vector containing the sequences.
 }
 \description{
-Extract sequences From FASTA file
+Reads a FASTA file and returns its sequences, without the
+headers, to pass to \code{\link[=parallel_blast]{parallel_blast()}}
 }
 \examples{
 fasta_path <- fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta")

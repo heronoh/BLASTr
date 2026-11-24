@@ -35,11 +35,20 @@
 #'   `db_path` of [parallel_blast()]), invisibly.
 #'
 #' @examples
+#' \donttest{
+#' # needs internet
+#' if (requireNamespace("curl", quietly = TRUE) && curl::has_internet()) {
+#'   dbs <- list_ncbi_blast_dbs()
+#'   dbs[dbs$download_gb < 1, c("db", "type", "description", "download_gb")]
+#' }
+#' }
 #' \dontrun{
-#' list_ncbi_blast_dbs()
-#' db <- download_blast_db("16S_ribosomal_RNA", dir = "/data/databases")
+#' # downloads the database and the taxonomy of the same date
+#' db <- download_blast_db("16S_ribosomal_RNA", dir = "~/blast_databases")
 #' parallel_blast(seqs, db_path = db, total_cores = 8)
 #' }
+#'
+#' @family database functions
 #' @name ncbi_blast_dbs
 NULL
 
@@ -168,10 +177,13 @@ download_blast_db <- function(
 #'
 #' @examples
 #' \dontrun{
-#' its <- make_unite_db("/data/databases")
-#' ssu <- make_silva_db("/data/databases")
+#' # downloads UNITE and SILVA and builds the BLAST databases
+#' its <- make_unite_db("~/blast_databases")
+#' ssu <- make_silva_db("~/blast_databases")
 #' parallel_blast(seqs, db_path = its, total_cores = 8)
 #' }
+#'
+#' @family database functions
 #' @name reference_dbs
 NULL
 

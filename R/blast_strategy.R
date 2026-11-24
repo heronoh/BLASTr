@@ -51,14 +51,17 @@
 #'   `db_gb`, `db_volumes`, `ram_gb`, `fits_ram`) and `reason`.
 #'
 #' @examples
-#' \dontrun{
-#' blast_strategy(
-#'   n_seqs = 2000,
-#'   db_path = "/data/databases/core_nt/core_nt",
-#'   total_cores = 32,
-#'   ram_gb = 256
-#' )
+#' # needs BLAST+ (see install_dependencies())
+#' if (nzchar(Sys.which("blastn"))) {
+#'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+#'   db <- file.path(tempdir(), "minimal_db_blast")
+#'   make_blast_db(fasta, db_path = db)
+#'   seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+#'   # a small database: one single-threaded process per core
+#'   blast_strategy(n_seqs = 2000, db_path = db, total_cores = 8)
 #' }
+#'
+#' @family search functions
 #' @export
 blast_strategy <- function(
   n_seqs,

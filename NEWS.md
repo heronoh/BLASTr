@@ -177,6 +177,18 @@
 * The documentation of `search_alignments` in `parallel_blast()` named
   `-max_target_seqs`; the option passed to BLAST is `-num_alignments`.
 
+### Documentation
+
+* Examples that run in 22 of the 25 help pages of exported functions (5
+  before), with the small database in `inst/extdata` and a small taxonomy
+  written in the example; they run only where `blastn` is found and write
+  only to `tempdir()`. Titles, families of functions and the package page
+  (`?BLASTr`) were rewritten.
+* New vignette "Get started with BLASTr" (`vignette("BLASTr")`); the
+  vignette on searches in the background is now
+  `vignette("background-searches")`.
+* `DESCRIPTION`: `SystemRequirements` (BLAST+, Quarto) and `biocViews`.
+
 ## BLASTr 0.1.7
 
 Release Date: 2025-11-04

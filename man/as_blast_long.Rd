@@ -45,3 +45,12 @@ wide <- data.frame(
 )
 as_blast_long(wide)
 }
+\seealso{
+Other result functions:
+\code{\link[=blast_lca]{blast_lca()}},
+\code{\link[=blast_summary]{blast_summary()}},
+\code{\link[=check_hits]{check_hits()}},
+\code{\link[=similarity_score]{similarity_score()}},
+\code{\link[=uninformative_references]{uninformative_references()}}
+}
+\concept{result functions}

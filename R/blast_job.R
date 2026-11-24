@@ -281,13 +281,22 @@ launch_scheduler_bg <- function(job) {
 #'   `blast_job_cancel()` the job, invisibly.
 #'
 #' @examples
-#' \dontrun{
-#' job <- parallel_blast(seqs, db_path, total_cores = 32, background = TRUE)
-#' blast_job_status(job)
-#' # ... later, or in another R session:
-#' job <- blast_job(job$dir)
-#' res <- blast_job_result(job)
+#' # needs BLAST+ (see install_dependencies())
+#' if (nzchar(Sys.which("blastn"))) {
+#'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+#'   db <- file.path(tempdir(), "minimal_db_blast")
+#'   make_blast_db(fasta, db_path = db)
+#'   seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+#'   job_dir <- tempfile("blastr_job_")
+#'   job <- parallel_blast(seqs, db, background = TRUE, job_dir = job_dir)
+#'   blast_job_status(job)
+#'   # later, or in another R session:
+#'   job <- blast_job(job_dir)
+#'   res <- blast_job_result(job)
+#'   res
 #' }
+#'
+#' @family search functions
 #' @name blast_job
 NULL
 

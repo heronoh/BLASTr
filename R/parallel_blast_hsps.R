@@ -15,7 +15,7 @@ hsp_numeric_fields <- c(
   "sframe", "btop_len"
 )
 
-#' @title Run Parallelized BLAST and return every HSP
+#' @title Search sequences with BLAST and return every HSP
 #'
 #' @description
 #' Like [parallel_blast()], but returns the raw BLAST hits in long format:
@@ -55,18 +55,20 @@ hsp_numeric_fields <- c(
 #'   `background = TRUE`, a `blastr_job` (see [blast_job()]).
 #'
 #' @examples
-#' \dontrun{
-#' hsps <- parallel_blast_hsps(
-#'   query_seqs = seqs,
-#'   db_path = "/data/databases/core_nt/core_nt",
-#'   total_cores = 30,
-#'   perc_id = 80
-#' )
+#' # needs BLAST+ (see install_dependencies())
+#' if (nzchar(Sys.which("blastn"))) {
+#'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+#'   db <- file.path(tempdir(), "minimal_db_blast")
+#'   make_blast_db(fasta, db_path = db)
+#'   seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+#'   hsps <- parallel_blast_hsps(seqs, db, perc_id = 80)
+#'   hsps[, c("Sequence", "saccver", "pident", "qcovhsp", "evalue")]
 #'
-#' # against the sequences of a FASTA file, as BLAST -subject
-#' parallel_blast_hsps(seqs, subject = "controls.fasta", task = "blastn",
-#'   extra_args = c("-dust", "no"))
+#'   # against the sequences of a FASTA file, as BLAST -subject
+#'   parallel_blast_hsps(seqs[1], subject = fasta, task = "blastn")
 #' }
+#'
+#' @family search functions
 #' @export
 parallel_blast_hsps <- function(
   query_seqs,

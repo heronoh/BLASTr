@@ -1,6 +1,7 @@
-#' @title Parsing fasta file to sequences only
+#' @title Read the sequences of a FASTA file
 #'
-#' @description Extract sequences From FASTA file
+#' @description Reads a FASTA file and returns its sequences, without the
+#'   headers, to pass to [parallel_blast()]
 #'
 #' @param file_path Path to FASTA file.
 #'

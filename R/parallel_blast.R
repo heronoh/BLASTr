@@ -1,4 +1,4 @@
-#' @title Run Parallelized BLAST
+#' @title Search sequences with BLAST in parallel
 #'
 #' @description
 #' Search a set of sequences against one or more BLAST databases, using the
@@ -123,31 +123,22 @@
 #'   `blastr_job`.
 #'
 #' @examples
-#' \dontrun{
-#' dna_fasta_path <- fs::path_package(
-#'   "BLASTr", "extdata", "minimal_db_blast",
-#'   ext = "fasta"
-#' )
-#' temp_db_path <- fs::path_temp("minimal_db_blast")
-#' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-#' query_seqs_string <- c(
-#'   "CTAGCCATAAACTTAAATGAAGCTATACTAA",
-#'   "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
-#' )
-#' blast_res <- parallel_blast(
-#'   query_seqs = query_seqs_string,
-#'   db_path = temp_db_path
-#' )
-#' blast_res
-#'
-#' # in the background
-#' job <- parallel_blast(query_seqs_string, temp_db_path, background = TRUE)
-#' blast_job_status(job)
-#' blast_res <- blast_job_result(job)
+#' # needs BLAST+ (see install_dependencies())
+#' if (nzchar(Sys.which("blastn"))) {
+#'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+#'   db <- file.path(tempdir(), "minimal_db_blast")
+#'   make_blast_db(fasta, db_path = db)
+#'   seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+#'   res <- parallel_blast(seqs, db)
+#'   # one row per hit, best first; one row with NA hit fields for a sequence without hits
+#'   res[, c("Sequence", "rank", "at_best", "subject", "identity", "qcovhsp", "Similarity score")]
+#'   # one row per sequence
+#'   blast_summary(res)
 #' }
 #'
 #' @importFrom lifecycle deprecated
 #'
+#' @family search functions
 #' @export
 parallel_blast <- function(
   query_seqs,

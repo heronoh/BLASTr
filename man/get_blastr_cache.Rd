@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_blastr_cache.R
 \name{get_blastr_cache}
 \alias{get_blastr_cache}
-\title{Retrieve System-Dependent Cache Path for BLASTr}
+\title{Path in the BLASTr cache directory}
 \usage{
 get_blastr_cache(..., ext = NULL)
 }
@@ -26,3 +26,14 @@ directory specification.
 This function uses the \verb{[tools::R_user_dir()]} function to determine the
 user cache directory.
 }
+\examples{
+get_blastr_cache()
+# where get_tax() keeps the taxonomy of a BLAST database of a given date
+get_blastr_cache("taxonomy", "taxonomy_2026-01-01", ext = "sqlite")
+
+}
+\seealso{
+Other setup functions:
+\code{\link[=install_dependencies]{install_dependencies()}}
+}
+\concept{setup functions}

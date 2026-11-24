@@ -76,3 +76,12 @@ hits <- data.frame(
 )
 check_hits(hits)
 }
+\seealso{
+Other result functions:
+\code{\link[=as_blast_long]{as_blast_long()}},
+\code{\link[=blast_lca]{blast_lca()}},
+\code{\link[=blast_summary]{blast_summary()}},
+\code{\link[=similarity_score]{similarity_score()}},
+\code{\link[=uninformative_references]{uninformative_references()}}
+}
+\concept{result functions}

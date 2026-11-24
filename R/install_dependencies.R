@@ -1,5 +1,6 @@
-#' Install Required Command-line Tool Dependencies
+#' @title Install BLAST+ in a conda environment
 #'
+#' @description
 #' Installs BLAST+ (`blastn`, `makeblastdb`, ...) into the conda environment
 #' `blastr-blast-env` if it is not already there. The online taxonomy
 #' functions ([get_tax_by_taxID()], [get_tax_by_name()]) query the NCBI over
@@ -22,6 +23,7 @@
 #' # Force re-installation of dependencies
 #' install_dependencies(force = TRUE)
 #' }
+#' @family setup functions
 #' @export
 install_dependencies <- function(
   verbose = c("silent", "cmd", "output", "full"),

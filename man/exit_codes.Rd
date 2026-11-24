@@ -2,17 +2,39 @@
 % Please edit documentation in R/exit_codes.R
 \name{exit_codes}
 \alias{exit_codes}
-\title{Retrieve Exit Codes and Standard Error from BLASTr Results}
+\title{Exit codes and standard error of the BLAST runs}
 \usage{
 exit_codes(blast_res)
 }
 \arguments{
-\item{blast_res}{A data frame containing the results of a BLAST search.}
+\item{blast_res}{Results of \code{\link[=parallel_blast]{parallel_blast()}}.}
 }
 \value{
-A data frame with the exit codes and standard error messages.
+A tibble with one row per sequence: \code{query_seq}, \code{exit_code} of
+the \code{blastn} run of its batch (\code{NA} when cancelled) and \code{stderr}.
 }
 \description{
 This function extracts the exit codes and standard error messages from the
 results of a BLAST search performed using the \code{\link[=parallel_blast]{parallel_blast()}} function.
 }
+\examples{
+# needs BLAST+ (see install_dependencies())
+if (nzchar(Sys.which("blastn"))) {
+  fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+  db <- file.path(tempdir(), "minimal_db_blast")
+  make_blast_db(fasta, db_path = db)
+  seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+  res <- parallel_blast(seqs, db)
+  exit_codes(res)
+}
+
+}
+\seealso{
+Other search functions:
+\code{\link[=blast_job]{blast_job()}},
+\code{\link[=blast_log_path]{blast_log_path()}},
+\code{\link[=blast_strategy]{blast_strategy()}},
+\code{\link[=parallel_blast]{parallel_blast()}},
+\code{\link[=parallel_blast_hsps]{parallel_blast_hsps()}}
+}
+\concept{search functions}

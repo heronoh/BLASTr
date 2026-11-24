@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_blast_db.R
 \name{make_blast_db}
 \alias{make_blast_db}
-\title{Make BLAST Database}
+\title{Build a BLAST database from a FASTA file}
 \usage{
 make_blast_db(
   fasta_path,
@@ -41,26 +41,27 @@ With \code{"silent"} (default) nothing is printed.}
 The result of the \code{makeblastdb} command.
 }
 \description{
-Create a BLAST database from a FASTA file.
+Formats a FASTA file as a BLAST database with \code{makeblastdb},
+optionally with the taxid of each sequence (\code{taxid_map}), so that the
+searches report \code{staxid}.
 }
 \examples{
-\dontrun{
-make_blast_db(
-  fasta_path = fs::path_package(
-    "BLASTr", "extdata", "minimal_db_blast",
-    ext = "fasta"
-  ),
-  db_path = fs::path_temp("minimal_db_blast"),
-  db_type = "nucl"
-)
+# needs BLAST+ (see install_dependencies())
+if (nzchar(Sys.which("blastn"))) {
+  fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+  make_blast_db(fasta, db_path = file.path(tempdir(), "minimal_db_blast"))
 
-# Without `db_path`, the database is written next to the FASTA file:
-fasta_copy <- fs::path_temp("my_db", ext = "fasta")
-fs::file_copy(
-  fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta"),
-  fasta_copy
-)
-make_blast_db(fasta_path = fasta_copy)
+  # without `db_path`, the database is written next to the FASTA file
+  fasta_copy <- file.path(tempdir(), "my_db.fasta")
+  file.copy(fasta, fasta_copy, overwrite = TRUE)
+  make_blast_db(fasta_copy)
+  list.files(tempdir(), pattern = "^my_db")
 }
 
 }
+\seealso{
+Other database functions:
+\code{\link{ncbi_blast_dbs}},
+\code{\link{reference_dbs}}
+}
+\concept{database functions}

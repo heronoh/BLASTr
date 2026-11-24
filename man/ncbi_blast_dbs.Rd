@@ -59,9 +59,23 @@ offline.
 GB, unpacked one at a time); see \code{list_ncbi_blast_dbs()} for the sizes.
 }
 \examples{
+\donttest{
+# needs internet
+if (requireNamespace("curl", quietly = TRUE) && curl::has_internet()) {
+  dbs <- list_ncbi_blast_dbs()
+  dbs[dbs$download_gb < 1, c("db", "type", "description", "download_gb")]
+}
+}
 \dontrun{
-list_ncbi_blast_dbs()
-db <- download_blast_db("16S_ribosomal_RNA", dir = "/data/databases")
+# downloads the database and the taxonomy of the same date
+db <- download_blast_db("16S_ribosomal_RNA", dir = "~/blast_databases")
 parallel_blast(seqs, db_path = db, total_cores = 8)
 }
+
 }
+\seealso{
+Other database functions:
+\code{\link[=make_blast_db]{make_blast_db()}},
+\code{\link{reference_dbs}}
+}
+\concept{database functions}

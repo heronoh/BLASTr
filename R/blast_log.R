@@ -47,11 +47,20 @@
 #'   tibble.
 #'
 #' @examples
-#' \dontrun{
-#' options(BLASTr.log_dir = "~/analyses")
-#' res <- parallel_blast(query_seqs = seqs, db_path = db, total_cores = 8)
-#' read_blast_log()
+#' log_dir <- tempfile("blastr_logs_")
+#' blast_log_path(log_dir)
+#'
+#' # needs BLAST+ (see install_dependencies())
+#' if (nzchar(Sys.which("blastn"))) {
+#'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+#'   db <- file.path(tempdir(), "minimal_db_blast")
+#'   make_blast_db(fasta, db_path = db)
+#'   seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+#'   res <- parallel_blast(seqs, db, log_dir = log_dir)
+#'   read_blast_log(log_dir)
 #' }
+#'
+#' @family search functions
 #' @export
 blast_log_path <- function(log_dir = NULL) {
   log_dir <- resolve_log_dir(log_dir)

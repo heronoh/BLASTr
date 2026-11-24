@@ -41,3 +41,12 @@ them.
 \examples{
 uninformative_references()
 }
+\seealso{
+Other result functions:
+\code{\link[=as_blast_long]{as_blast_long()}},
+\code{\link[=blast_lca]{blast_lca()}},
+\code{\link[=blast_summary]{blast_summary()}},
+\code{\link[=check_hits]{check_hits()}},
+\code{\link[=similarity_score]{similarity_score()}}
+}
+\concept{result functions}

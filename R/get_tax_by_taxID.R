@@ -35,10 +35,15 @@
 #'   taxid.
 #'
 #' @examples
-#' \dontrun{
-#' get_tax_by_taxID(c("9606", "10090"))
-#' get_tax_by_name(c("Homo sapiens", "Salminus brasiliensis"))
+#' \donttest{
+#' # needs internet
+#' if (requireNamespace("curl", quietly = TRUE) && curl::has_internet()) {
+#'   get_tax_by_taxID(c("9606", "10090"))
+#'   get_tax_by_name(c("Homo sapiens", "Salminus brasiliensis"))
 #' }
+#' }
+#'
+#' @family taxonomy functions
 #' @name get_tax_online
 NULL
 

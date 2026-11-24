@@ -30,6 +30,7 @@
 #'
 #' @examples
 #' uninformative_references()
+#' @family result functions
 #' @export
 uninformative_references <- function(x = NULL) {
   if (is.null(x)) {

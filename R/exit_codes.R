@@ -1,11 +1,25 @@
-#' Retrieve Exit Codes and Standard Error from BLASTr Results
+#' @title Exit codes and standard error of the BLAST runs
 #'
 #' @description
 #' This function extracts the exit codes and standard error messages from the
 #' results of a BLAST search performed using the [parallel_blast()] function.
 #'
-#' @param blast_res A data frame containing the results of a BLAST search.
-#' @returns A data frame with the exit codes and standard error messages.
+#' @param blast_res Results of [parallel_blast()].
+#' @returns A tibble with one row per sequence: `query_seq`, `exit_code` of
+#'   the `blastn` run of its batch (`NA` when cancelled) and `stderr`.
+#'
+#' @examples
+#' # needs BLAST+ (see install_dependencies())
+#' if (nzchar(Sys.which("blastn"))) {
+#'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+#'   db <- file.path(tempdir(), "minimal_db_blast")
+#'   make_blast_db(fasta, db_path = db)
+#'   seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+#'   res <- parallel_blast(seqs, db)
+#'   exit_codes(res)
+#' }
+#'
+#' @family search functions
 #' @export
 exit_codes <- function(blast_res) {
   if (isFALSE("BLASTr_metadata" %in% names(attributes(blast_res)))) {

@@ -1,5 +1,6 @@
-#' Retrieve System-Dependent Cache Path for BLASTr
+#' @title Path in the BLASTr cache directory
 #'
+#' @description
 #' Determines the appropriate user cache directory for the `BLASTr` package
 #' based on the operating system.
 #' On macOS, it avoids using paths with spaces and follows the XDG base
@@ -17,6 +18,12 @@
 #' A path character string representing the path to the user cache
 #' directory for the `BLASTr` package.
 #'
+#' @examples
+#' get_blastr_cache()
+#' # where get_tax() keeps the taxonomy of a BLAST database of a given date
+#' get_blastr_cache("taxonomy", "taxonomy_2026-01-01", ext = "sqlite")
+#'
+#' @family setup functions
 #' @export
 get_blastr_cache <- function(..., ext = NULL) {
   rlang::check_dots_unnamed()

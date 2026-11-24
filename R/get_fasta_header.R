@@ -1,4 +1,4 @@
-#' @title Get header from SubjectID
+#' @title Header of a subject in a BLAST database
 #'
 #' @description Retrieve complete sequence header from BLAST DB based on
 #'   SubjectIDs
@@ -10,15 +10,15 @@
 #' @returns Complete identifier for the SubjectID as is on the database.
 #'
 #' @examples
-#' \dontrun{
-#' dna_fasta_path <- fs::path_package(
-#'   "BLASTr", "extdata", "minimal_db_blast",
-#'   ext = "fasta"
-#' )
-#' temp_db_path <- fs::path_temp("minimal_db_blast")
-#' make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-#' get_fasta_header(id = "AP011979.1", db_path = temp_db_path)
+#' # needs BLAST+ (see install_dependencies())
+#' if (nzchar(Sys.which("blastn"))) {
+#'   fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+#'   db <- file.path(tempdir(), "minimal_db_blast")
+#'   make_blast_db(fasta, db_path = db)
+#'   seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+#'   get_fasta_header(id = "AP011979.1", db_path = db)
 #' }
+#'
 #' @export
 get_fasta_header <- function(
   id,

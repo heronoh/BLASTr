@@ -1,7 +1,7 @@
 ---
-title: "BLASTr-intro"
+title: "Long searches in the background"
 vignette: >
-  %\VignetteIndexEntry{BLASTr-intro}
+  %\VignetteIndexEntry{Long searches in the background}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 knitr:
@@ -26,7 +26,7 @@ The job keeps its batches and results in a directory (`job_dir`; by default a ne
 #| eval: false
 job <- parallel_blast(
   query_seqs = seqs,
-  db_path = "/data/databases/core_nt_2026-11-17/core_nt",
+  db_path = "~/blast_databases/core_nt_2026-11-17/core_nt",
   total_cores = 32,
   background = TRUE,
   job_dir = "~/blast_jobs/run_01" # a fixed place, to find it again
@@ -56,4 +56,11 @@ If the process running it stopped (for example, the machine was restarted), `bla
 #| eval: false
 blast_job_cancel(job)
 blast_job_resume("~/blast_jobs/run_01")
+```
+
+## Session information
+
+```{r}
+#| label: session-info
+sessionInfo()
 ```

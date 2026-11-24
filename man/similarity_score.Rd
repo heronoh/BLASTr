@@ -22,3 +22,12 @@ ten times more: \code{(10 * identity + qcovhsp) / 11}. It was called
 \examples{
 similarity_score(identity = c(100, 98.5), qcovhsp = c(100, 85))
 }
+\seealso{
+Other result functions:
+\code{\link[=as_blast_long]{as_blast_long()}},
+\code{\link[=blast_lca]{blast_lca()}},
+\code{\link[=blast_summary]{blast_summary()}},
+\code{\link[=check_hits]{check_hits()}},
+\code{\link[=uninformative_references]{uninformative_references()}}
+}
+\concept{result functions}

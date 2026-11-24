@@ -6,10 +6,42 @@
 \alias{BLASTr-package}
 \title{BLASTr: Parallel Taxonomic Classification of Metabarcoding Sequences}
 \description{
-\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
-
-Seamlessly run 'BLAST' searches within 'R', tailored for the taxonomic identification of amplicon sequences. This package offers a robust set of functions designed to efficiently identify and process sequences from high-throughput metabarcoding and metagenomic experiments, following best practices for sequence data analysis.
+BLASTr runs BLAST+ from R on many sequences at once and turns the hits into
+an identification that can be checked. The search is split in batches and
+processes chosen from the size of the database and the cores and RAM
+available (\code{\link[=blast_strategy]{blast_strategy()}}); the hits of each sequence are ranked by the
+Similarity score, and the hits tied with the best one give the summary per
+sequence (\verb{Check ID}) and the consensus lowest common ancestor, with the
+NCBI taxonomy from a local database.
 }
+\section{Main functions}{
+
+\itemize{
+\item \code{\link[=make_blast_db]{make_blast_db()}}, \code{\link[=download_blast_db]{download_blast_db()}}, \code{\link[=make_unite_db]{make_unite_db()}},
+\code{\link[=make_silva_db]{make_silva_db()}}: BLAST databases, from a FASTA file or downloaded.
+\item \code{\link[=parallel_blast]{parallel_blast()}}: the search; long results, one row per hit.
+\item \code{\link[=blast_summary]{blast_summary()}}: one row per sequence, with \verb{Check ID}.
+\item \code{\link[=blast_lca]{blast_lca()}}: consensus lowest common ancestor of the tied hits.
+\item \code{\link[=get_tax]{get_tax()}} and \code{\link[=make_taxonomy_db]{make_taxonomy_db()}}: NCBI taxonomy of the taxids, from
+a local SQLite database.
+\item \code{\link[=parallel_blast_hsps]{parallel_blast_hsps()}}: every HSP, with the BLAST fields chosen.
+\item \code{\link[=blast_job]{blast_job()}}: long searches in the background.
+}
+}
+
+\section{External programs}{
+
+BLAST+ (\code{blastn}, \code{makeblastdb}, \code{blastdbcmd}), installed in a conda
+environment by \code{\link[=install_dependencies]{install_dependencies()}} (through the condathis package).
+}
+
+\section{Vignettes}{
+
+\code{vignette("BLASTr", package = "BLASTr")} (get started) and
+\code{vignette("background-searches", package = "BLASTr")} (long searches in
+the background).
+}
+
 \seealso{
 Useful links:
 \itemize{

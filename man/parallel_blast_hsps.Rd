@@ -2,7 +2,7 @@
 % Please edit documentation in R/parallel_blast_hsps.R
 \name{parallel_blast_hsps}
 \alias{parallel_blast_hsps}
-\title{Run Parallelized BLAST and return every HSP}
+\title{Search sequences with BLAST and return every HSP}
 \usage{
 parallel_blast_hsps(
   query_seqs,
@@ -118,16 +118,26 @@ background jobs and log as \code{\link[=parallel_blast]{parallel_blast()}}. Inst
 \code{-subject}, no database needed); then each process uses one thread.
 }
 \examples{
-\dontrun{
-hsps <- parallel_blast_hsps(
-  query_seqs = seqs,
-  db_path = "/data/databases/core_nt/core_nt",
-  total_cores = 30,
-  perc_id = 80
-)
+# needs BLAST+ (see install_dependencies())
+if (nzchar(Sys.which("blastn"))) {
+  fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+  db <- file.path(tempdir(), "minimal_db_blast")
+  make_blast_db(fasta, db_path = db)
+  seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+  hsps <- parallel_blast_hsps(seqs, db, perc_id = 80)
+  hsps[, c("Sequence", "saccver", "pident", "qcovhsp", "evalue")]
 
-# against the sequences of a FASTA file, as BLAST -subject
-parallel_blast_hsps(seqs, subject = "controls.fasta", task = "blastn",
-  extra_args = c("-dust", "no"))
+  # against the sequences of a FASTA file, as BLAST -subject
+  parallel_blast_hsps(seqs[1], subject = fasta, task = "blastn")
 }
+
 }
+\seealso{
+Other search functions:
+\code{\link[=blast_job]{blast_job()}},
+\code{\link[=blast_log_path]{blast_log_path()}},
+\code{\link[=blast_strategy]{blast_strategy()}},
+\code{\link[=exit_codes]{exit_codes()}},
+\code{\link[=parallel_blast]{parallel_blast()}}
+}
+\concept{search functions}
