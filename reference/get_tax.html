@@ -5,15 +5,18 @@ minimal table, with one row per distinct taxid, to be joined to the BLAST
 hits by taxid.
 x can be a vector of taxids or any result of parallel_blast() (long
 or wide) or parallel_blast_hsps(): the taxids are taken from the
-staxid, k_staxid and Taxids at best identity columns. Unknown
+staxid, k_staxid and Taxids at best columns. Unknown
 taxids (0, empty, N/A) are dropped.
-When the database does not exist, it is built from the NCBI taxdump
-(downloaded once, then reused). If x is a BLASTr result, the taxdump is
-the first one the NCBI published after the date of its BLAST database, so
-the taxonomy matches the database; the database is kept in the BLASTr
-cache as taxonomy_&amp;lt;database date&amp;gt;.sqlite. With only taxids and no
-database set, the newest database in the cache is used, or one is built
-from the current taxdump.
+The database comes with the BLAST databases downloaded by
+download_blast_db() (taxonomy = TRUE). Without it, get_tax() builds
+it only when asked (download = TRUE, a taxdump, or a yes in an
+interactive session), from the NCBI taxdump (about 80 MB, downloaded once,
+then reused); otherwise it stops and says how. If x is a BLASTr result,
+the taxdump is the first one the NCBI published after the date of its
+BLAST database, so the taxonomy matches the database; the database is kept
+in the BLASTr cache as taxonomy_&amp;lt;database date&amp;gt;.sqlite. With only taxids
+and no database set, the newest database in the cache is used, or one is
+built from the current taxdump.
 The database has the tables nodes (id, rank, parent) and
 names (id, name, scientific, type), as built by
 make_taxonomy_db() (or by taxonomizr::prepareDatabase(), whose file
@@ -24,15 +27,18 @@ minimal table, with one row per distinct taxid, to be joined to the BLAST
 hits by taxid.
 x can be a vector of taxids or any result of parallel_blast() (long
 or wide) or parallel_blast_hsps(): the taxids are taken from the
-staxid, k_staxid and Taxids at best identity columns. Unknown
+staxid, k_staxid and Taxids at best columns. Unknown
 taxids (0, empty, N/A) are dropped.
-When the database does not exist, it is built from the NCBI taxdump
-(downloaded once, then reused). If x is a BLASTr result, the taxdump is
-the first one the NCBI published after the date of its BLAST database, so
-the taxonomy matches the database; the database is kept in the BLASTr
-cache as taxonomy_&amp;lt;database date&amp;gt;.sqlite. With only taxids and no
-database set, the newest database in the cache is used, or one is built
-from the current taxdump.
+The database comes with the BLAST databases downloaded by
+download_blast_db() (taxonomy = TRUE). Without it, get_tax() builds
+it only when asked (download = TRUE, a taxdump, or a yes in an
+interactive session), from the NCBI taxdump (about 80 MB, downloaded once,
+then reused); otherwise it stops and says how. If x is a BLASTr result,
+the taxdump is the first one the NCBI published after the date of its
+BLAST database, so the taxonomy matches the database; the database is kept
+in the BLASTr cache as taxonomy_&amp;lt;database date&amp;gt;.sqlite. With only taxids
+and no database set, the newest database in the cache is used, or one is
+built from the current taxdump.
 The database has the tables nodes (id, rank, parent) and
 names (id, name, scientific, type), as built by
 make_taxonomy_db() (or by taxonomizr::prepareDatabase(), whose file
@@ -57,7 +63,7 @@ BLAST database: taxids newer than the taxdump are not found."><meta property="og
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/BLASTr-intro.html">BLASTr-intro</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/background-searches.html">Long searches in the background</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -88,15 +94,18 @@ minimal table, with one row per distinct taxid, to be joined to the BLAST
 hits by taxid.</p>
 <p><code>x</code> can be a vector of taxids or any result of <code><a href="parallel_blast.html">parallel_blast()</a></code> (long
 or wide) or <code><a href="parallel_blast_hsps.html">parallel_blast_hsps()</a></code>: the taxids are taken from the
-<code>staxid</code>, <code>k_staxid</code> and <code>Taxids at best identity</code> columns. Unknown
+<code>staxid</code>, <code>k_staxid</code> and <code>Taxids at best</code> columns. Unknown
 taxids (<code>0</code>, empty, <code>N/A</code>) are dropped.</p>
-<p>When the database does not exist, it is built from the NCBI taxdump
-(downloaded once, then reused). If <code>x</code> is a BLASTr result, the taxdump is
-the first one the NCBI published after the date of its BLAST database, so
-the taxonomy matches the database; the database is kept in the BLASTr
-cache as <code>taxonomy_&lt;database date&gt;.sqlite</code>. With only taxids and no
-database set, the newest database in the cache is used, or one is built
-from the current taxdump.</p>
+<p>The database comes with the BLAST databases downloaded by
+<code><a href="ncbi_blast_dbs.html">download_blast_db()</a></code> (<code>taxonomy = TRUE</code>). Without it, <code>get_tax()</code> builds
+it only when asked (<code>download = TRUE</code>, a <code>taxdump</code>, or a yes in an
+interactive session), from the NCBI taxdump (about 80 MB, downloaded once,
+then reused); otherwise it stops and says how. If <code>x</code> is a BLASTr result,
+the taxdump is the first one the NCBI published after the date of its
+BLAST database, so the taxonomy matches the database; the database is kept
+in the BLASTr cache as <code>taxonomy_&lt;database date&gt;.sqlite</code>. With only taxids
+and no database set, the newest database in the cache is used, or one is
+built from the current taxdump.</p>
 <p>The database has the tables <code>nodes</code> (<code>id</code>, <code>rank</code>, <code>parent</code>) and
 <code>names</code> (<code>id</code>, <code>name</code>, <code>scientific</code>, <code>type</code>), as built by
 <code><a href="make_taxonomy_db.html">make_taxonomy_db()</a></code> (or by <code>taxonomizr::prepareDatabase()</code>, whose file
@@ -106,7 +115,13 @@ BLAST database: taxids newer than the taxdump are not found.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_tax</span><span class="op">(</span><span class="va">x</span>, taxonomy_db <span class="op">=</span> <span class="cn">NULL</span>, ranks <span class="op">=</span> <span class="va">tax_ranks_default</span>, taxdump <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_tax</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  taxonomy_db <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ranks <span class="op">=</span> <span class="va">tax_ranks_default</span>,</span>
+<span>  taxdump <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  download <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -135,6 +150,12 @@ option <code>BLASTr.taxonomy_db</code> or the environment variable
 of <code>x</code> (the first monthly NCBI archive after its date), or the current
 one.</p></dd>
 
+
+<dt id="arg-download">download<a class="anchor" aria-label="anchor" href="#arg-download"></a></dt>
+<dd><p>Download the NCBI taxdump and build the database when it
+does not exist. <code>FALSE</code> (default) stops with a message instead (or asks,
+in an interactive session).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -149,17 +170,75 @@ merged the taxid into another one; then the taxonomy is that of the
 current taxid; needs a database with the table <code>merged</code>, as built by
 <code><a href="make_taxonomy_db.html">make_taxonomy_db()</a></code>).</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other taxonomy functions:
+<code><a href="get_tax_online.html">get_tax_online</a></code>,
+<code><a href="make_taxonomy_db.html">make_taxonomy_db()</a></code></p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>BLASTr.taxonomy_db <span class="op">=</span> <span class="st">"/data/databases/tax/nameNode.sqlite"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">get_tax</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9606"</span>, <span class="st">"10090"</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># a simplified NCBI taxdump: Hominidae with the genera Homo and Pan</span></span></span>
+<span class="r-in"><span><span class="va">taxdump</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"taxdump"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">taxdump</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dmp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">...</span>, sep <span class="op">=</span> <span class="st">"\t|\t"</span><span class="op">)</span>, <span class="st">"\t|"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="st">"no rank"</span><span class="op">)</span>, <span class="fu">dmp</span><span class="op">(</span><span class="fl">2759</span>, <span class="fl">1</span>, <span class="st">"superkingdom"</span><span class="op">)</span>, <span class="fu">dmp</span><span class="op">(</span><span class="fl">9604</span>, <span class="fl">2759</span>, <span class="st">"family"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">9605</span>, <span class="fl">9604</span>, <span class="st">"genus"</span><span class="op">)</span>, <span class="fu">dmp</span><span class="op">(</span><span class="fl">9606</span>, <span class="fl">9605</span>, <span class="st">"species"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">9596</span>, <span class="fl">9604</span>, <span class="st">"genus"</span><span class="op">)</span>, <span class="fu">dmp</span><span class="op">(</span><span class="fl">9598</span>, <span class="fl">9596</span>, <span class="st">"species"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">taxdump</span>, <span class="st">"nodes.dmp"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">1</span>, <span class="st">"root"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span>, <span class="fu">dmp</span><span class="op">(</span><span class="fl">2759</span>, <span class="st">"Eukaryota"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">9604</span>, <span class="st">"Hominidae"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span>, <span class="fu">dmp</span><span class="op">(</span><span class="fl">9605</span>, <span class="st">"Homo"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">9606</span>, <span class="st">"Homo sapiens"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span>, <span class="fu">dmp</span><span class="op">(</span><span class="fl">9596</span>, <span class="st">"Pan"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">9598</span>, <span class="st">"Pan troglodytes"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">taxdump</span>, <span class="st">"names.dmp"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">tax_db</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_taxonomy_db.html">make_taxonomy_db</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".sqlite"</span><span class="op">)</span>, taxdump <span class="op">=</span> <span class="va">taxdump</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Taxonomy database: <span style="color: #0000BB;">/tmp/Rtmp39IRAe/file19211b790915.sqlite</span> (7 taxa).</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="parallel_blast.html">parallel_blast</a></span><span class="op">(</span><span class="va">seqs</span>, db_path <span class="op">=</span> <span class="st">"/data/databases/core_nt/core_nt"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">tax</span> <span class="op">&lt;-</span> <span class="fu">get_tax</span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">tax</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>staxid <span class="op">=</span> <span class="st">"taxid"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="co"># 1234 is not in this taxonomy: found = FALSE, with a warning</span></span></span>
+<span class="r-in"><span><span class="fu">get_tax</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9606"</span>, <span class="st">"9598"</span>, <span class="st">"1234"</span><span class="op">)</span>, taxonomy_db <span class="op">=</span> <span class="va">tax_db</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> 1 taxid not found in the taxonomy database: 1234</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use a taxonomy database as recent as the BLAST database (see</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   `make_taxonomy_db()`).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 19</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   taxid found sci_name      rank  domain kingdom phylum subphylum class subclass</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 9606  TRUE  Homo sapiens  spec… Eukar… <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 9598  TRUE  Pan troglody… spec… Eukar… <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 1234  FALSE <span style="color: #BB0000;">NA</span>            <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: order &lt;chr&gt;, suborder &lt;chr&gt;, family &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   subfamily &lt;chr&gt;, genus &lt;chr&gt;, species &lt;chr&gt;, lineage &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   lineage_taxids &lt;chr&gt;, merged_into &lt;chr&gt;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># hits of two sequences: the first one tied between Homo and Pan</span></span></span>
+<span class="r-in"><span><span class="va">wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  Sequence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ACGT"</span>, <span class="st">"TTGA"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  `1_subject` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"B1"</span><span class="op">)</span>, `1_identity` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">99</span><span class="op">)</span>, `1_qcovhsp` <span class="op">=</span> <span class="fl">100</span>,</span></span>
+<span class="r-in"><span>  `1_staxid` <span class="op">=</span> <span class="st">"9606"</span>,</span></span>
+<span class="r-in"><span>  `2_subject` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A2"</span>, <span class="st">"B2"</span><span class="op">)</span>, `2_identity` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">99.8</span>, <span class="fl">90</span><span class="op">)</span>, `2_qcovhsp` <span class="op">=</span> <span class="fl">100</span>,</span></span>
+<span class="r-in"><span>  `2_staxid` <span class="op">=</span> <span class="st">"9598"</span>,</span></span>
+<span class="r-in"><span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu"><a href="as_blast_long.html">as_blast_long</a></span><span class="op">(</span><span class="va">wide</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">tax</span> <span class="op">&lt;-</span> <span class="fu">get_tax</span><span class="op">(</span><span class="va">hits</span>, taxonomy_db <span class="op">=</span> <span class="va">tax_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">hits</span>, <span class="va">tax</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>staxid <span class="op">=</span> <span class="st">"taxid"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 43</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Sequence rank.x tie   at_best low_qcov informative uninformative_category</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ACGT          1 FALSE TRUE    FALSE    <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ACGT          2 FALSE TRUE    FALSE    <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> TTGA          1 FALSE TRUE    FALSE    <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> TTGA          2 FALSE FALSE   FALSE    <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 36 more variables: blast_rank &lt;int&gt;, subject &lt;chr&gt;, `subject header` &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   staxid &lt;chr&gt;, identity &lt;dbl&gt;, `Similarity score` &lt;dbl&gt;, qcovhsp &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   nident &lt;dbl&gt;, length &lt;dbl&gt;, mismatches &lt;dbl&gt;, gaps &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `query start` &lt;dbl&gt;, `query end` &lt;dbl&gt;, `subject start` &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `subject end` &lt;dbl&gt;, `subject strand` &lt;chr&gt;, `e-value` &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   bitscore &lt;dbl&gt;, found &lt;lgl&gt;, sci_name &lt;chr&gt;, rank.y &lt;chr&gt;, domain &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   kingdom &lt;chr&gt;, phylum &lt;chr&gt;, subphylum &lt;chr&gt;, class &lt;chr&gt;, …</span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

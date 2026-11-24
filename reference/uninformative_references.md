@@ -45,6 +45,15 @@ uninformative_references(x = NULL)
 A tibble with `field`, `pattern`, `category` and `note`, with the
 attribute `md5` (of its content, to record which table was used).
 
+## See also
+
+Other result functions:
+[`as_blast_long()`](https://heronoh.github.io/BLASTr/reference/as_blast_long.md),
+[`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md),
+[`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md),
+[`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md),
+[`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)
+
 ## Examples
 
 ``` r

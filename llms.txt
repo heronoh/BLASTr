@@ -324,15 +324,24 @@ species is tied with them (`named_first`), while “Picea sp.” still does
 (another species of the genus). When that taxon has no standard rank
 (e.g. the clade “Heliantheae alliance”), `LCA name` keeps it and
 `LCA ranked name` / `LCA ranked rank` give the nearest ranked taxon
-above it (here the subfamily Asteroideae). If the database does not
-exist, it is built once from the NCBI taxdump: for a BLASTr result, the
-taxdump published right after the date of its BLAST database, so the
-taxonomy matches the database (about a minute, then kept in the BLASTr
-cache).
+above it (here the subfamily Asteroideae). The database comes with the
+BLAST databases of
+[`download_blast_db()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md).
+For the results of other databases, or to use only
+[`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md),
+`get_tax(..., download = TRUE)` downloads the NCBI taxdump once (about
+80 MB) and builds it: for a BLASTr result, the taxdump published right
+after the date of its BLAST database, so the taxonomy matches the
+database (about a minute, then kept in the BLASTr cache). Without
+`download = TRUE`,
+[`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+does not download anything (in an interactive session it asks).
 
 ``` r
 
 taxonomy <- get_tax(blast_results)
+# the first time, for a database not downloaded by download_blast_db():
+# taxonomy <- get_tax(blast_results, download = TRUE)
 
 # taxon shared by the hits tied with the best one (90% consensus)
 lca <- blast_lca(blast_results)
@@ -404,8 +413,7 @@ guarantee. `log_dir` keeps a log of your own searches (see
 ## Main Functions
 
 - [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md):
-  Installs BLAST+ and Entrez Direct if they are not found on your
-  system.
+  Installs BLAST+ in a conda environment of its own.
 - [`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md):
   Creates a BLAST database from a FASTA file.
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md):
@@ -453,12 +461,12 @@ guarantee. `log_dir` keeps a log of your own searches (see
 
 ## Dependency Management
 
-`BLASTr` uses the `condathis` package to manage its dependencies (BLAST+
-and Entrez Direct). When you run a function that requires one of these
-tools, `BLASTr` will automatically check if it’s installed. If not, it
-will create a Conda environment and install the necessary software. This
-ensures that you always have the correct versions of the dependencies
-without having to install them manually.
+`BLASTr` uses the `condathis` package to manage its dependency, BLAST+.
+When you run a function that requires one of these tools, `BLASTr` will
+automatically check if it’s installed. If not, it will create a Conda
+environment and install the necessary software. This ensures that you
+always have the correct versions of the dependencies without having to
+install them manually.
 
 You can control the installation process with the `force` and `verbose`
 arguments in the
@@ -506,41 +514,43 @@ silhouettes are public domain, from
 - [`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md)
   : Check the agreement of the best BLAST hits
 - [`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md)
-  : Retrieve Exit Codes and Standard Error from BLASTr Results
+  : Exit codes and standard error of the BLAST runs
 - [`get_blast_results()`](https://heronoh.github.io/BLASTr/reference/get_blast_results.md)
-  : Run BLASTn
+  : Search one sequence with BLAST, as a table
 - [`get_blastr_cache()`](https://heronoh.github.io/BLASTr/reference/get_blastr_cache.md)
-  : Retrieve System-Dependent Cache Path for BLASTr
+  : Path in the BLASTr cache directory
 - [`get_fasta_header()`](https://heronoh.github.io/BLASTr/reference/get_fasta_header.md)
-  : Get header from SubjectID
+  : Header of a subject in a BLAST database
 - [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md) :
   Taxonomy of NCBI taxids from a local database
 - [`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
   [`get_tax_by_name()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
   [`parallel_get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
   : Taxonomy from the NCBI online, without a local database
+- [`has_blast()`](https://heronoh.github.io/BLASTr/reference/has_blast.md)
+  : Is BLAST+ ready for BLASTr?
 - [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md)
-  : Install Required Command-line Tool Dependencies
+  : Install BLAST+ in a conda environment
 - [`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md)
-  : Make BLAST Database
+  : Build a BLAST database from a FASTA file
 - [`make_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/make_taxonomy_db.md)
   : Build the local taxonomy database
 - [`list_ncbi_blast_dbs()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
   [`download_blast_db()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
   : BLAST databases of the NCBI
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
-  : Run Parallelized BLAST
+  : Search sequences with BLAST in parallel
 - [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md)
-  : Run Parallelized BLAST and return every HSP
+  : Search sequences with BLAST and return every HSP
 - [`parallel_blast_old()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_old.md)
   **\[deprecated\]** : Run parallel BLAST for a set of sequences.
 - [`parse_fasta()`](https://heronoh.github.io/BLASTr/reference/parse_fasta.md)
-  : Parsing fasta file to sequences only
+  : Read the sequences of a FASTA file
 - [`make_unite_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
   [`make_silva_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
   : UNITE and SILVA as BLAST databases
 - [`run_blast()`](https://heronoh.github.io/BLASTr/reference/run_blast.md)
-  : Run BLAST
+  : Search one sequence with BLAST, raw output
 - [`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)
   : Similarity score of BLAST hits
 - [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
@@ -550,5 +560,7 @@ silhouettes are public domain, from
 
 ### All vignettes
 
-- [BLASTr-intro](https://heronoh.github.io/BLASTr/articles/BLASTr-intro.md):
-- [BLASTr](https://heronoh.github.io/BLASTr/articles/BLASTr.md):
+- [Long searches in the
+  background](https://heronoh.github.io/BLASTr/articles/background-searches.md):
+- [Get started with
+  BLASTr](https://heronoh.github.io/BLASTr/articles/BLASTr.md):

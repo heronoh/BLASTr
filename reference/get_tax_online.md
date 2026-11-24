@@ -78,11 +78,28 @@ them, `name` (as given) and `matched_by` (`"scientific name"`,
 `"other name"` or `NA` when not found); a name with more than one taxid
 (a homonym) gets one row per taxid.
 
+## See also
+
+Other taxonomy functions:
+[`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md),
+[`make_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/make_taxonomy_db.md)
+
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-get_tax_by_taxID(c("9606", "10090"))
-get_tax_by_name(c("Homo sapiens", "Salminus brasiliensis"))
-} # }
+# \donttest{
+# needs internet
+if (requireNamespace("curl", quietly = TRUE) && curl::has_internet()) {
+  get_tax_by_taxID(c("9606", "10090"))
+  get_tax_by_name(c("Homo sapiens", "Salminus brasiliensis"))
+}
+#> # A tibble: 2 × 21
+#>   name     matched_by taxid found sci_name rank  domain kingdom phylum subphylum
+#>   <chr>    <chr>      <chr> <lgl> <chr>    <chr> <chr>  <chr>   <chr>  <chr>    
+#> 1 Homo sa… scientifi… 9606  TRUE  Homo sa… spec… Eukar… Metazoa Chord… Craniata 
+#> 2 Salminu… scientifi… 9302… TRUE  Salminu… spec… Eukar… Metazoa Chord… Craniata 
+#> # ℹ 11 more variables: class <chr>, subclass <chr>, order <chr>,
+#> #   suborder <chr>, family <chr>, subfamily <chr>, genus <chr>, species <chr>,
+#> #   lineage <chr>, lineage_taxids <chr>, merged_into <chr>
+# }
 ```

@@ -19,7 +19,7 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/BLASTr-intro.html">BLASTr-intro</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/background-searches.html">Long searches in the background</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -105,28 +105,28 @@
           <code><a href="exit_codes.html">exit_codes()</a></code>
 
         </dt>
-        <dd>Retrieve Exit Codes and Standard Error from BLASTr Results</dd>
+        <dd>Exit codes and standard error of the BLAST runs</dd>
 
         <dt>
 
           <code><a href="get_blast_results.html">get_blast_results()</a></code>
 
         </dt>
-        <dd>Run BLASTn</dd>
+        <dd>Search one sequence with BLAST, as a table</dd>
 
         <dt>
 
           <code><a href="get_blastr_cache.html">get_blastr_cache()</a></code>
 
         </dt>
-        <dd>Retrieve System-Dependent Cache Path for BLASTr</dd>
+        <dd>Path in the BLASTr cache directory</dd>
 
         <dt>
 
           <code><a href="get_fasta_header.html">get_fasta_header()</a></code>
 
         </dt>
-        <dd>Get header from SubjectID</dd>
+        <dd>Header of a subject in a BLAST database</dd>
 
         <dt>
 
@@ -144,17 +144,24 @@
 
         <dt>
 
+          <code><a href="has_blast.html">has_blast()</a></code>
+
+        </dt>
+        <dd>Is BLAST+ ready for BLASTr?</dd>
+
+        <dt>
+
           <code><a href="install_dependencies.html">install_dependencies()</a></code>
 
         </dt>
-        <dd>Install Required Command-line Tool Dependencies</dd>
+        <dd>Install BLAST+ in a conda environment</dd>
 
         <dt>
 
           <code><a href="make_blast_db.html">make_blast_db()</a></code>
 
         </dt>
-        <dd>Make BLAST Database</dd>
+        <dd>Build a BLAST database from a FASTA file</dd>
 
         <dt>
 
@@ -175,14 +182,14 @@
           <code><a href="parallel_blast.html">parallel_blast()</a></code>
 
         </dt>
-        <dd>Run Parallelized BLAST</dd>
+        <dd>Search sequences with BLAST in parallel</dd>
 
         <dt>
 
           <code><a href="parallel_blast_hsps.html">parallel_blast_hsps()</a></code>
 
         </dt>
-        <dd>Run Parallelized BLAST and return every HSP</dd>
+        <dd>Search sequences with BLAST and return every HSP</dd>
 
         <dt>
 
@@ -196,7 +203,7 @@
           <code><a href="parse_fasta.html">parse_fasta()</a></code>
 
         </dt>
-        <dd>Parsing fasta file to sequences only</dd>
+        <dd>Read the sequences of a FASTA file</dd>
 
         <dt>
 
@@ -210,7 +217,7 @@
           <code><a href="run_blast.html">run_blast()</a></code>
 
         </dt>
-        <dd>Run BLAST</dd>
+        <dd>Search one sequence with BLAST, raw output</dd>
 
         <dt>
 

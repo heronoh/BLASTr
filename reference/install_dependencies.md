@@ -1,8 +1,14 @@
-# Install Required Command-line Tool Dependencies
+# Install BLAST+ in a conda environment
 
-Installs BLAST+ (`blastn`, `makeblastdb`, ...) into the conda
-environment `blastr-blast-env` if it is not already there. The online
-taxonomy functions
+Installs BLAST+ 2.17.0 (`blastn`, `makeblastdb`, ...) from bioconda into
+the conda environment `blastr-blast-env`, through the condathis package.
+BLASTr runs BLAST+ from this environment; without it, from the system,
+if it is BLAST+ 2.16.0 or newer (see
+[`has_blast()`](https://heronoh.github.io/BLASTr/reference/has_blast.md)).
+When the environment exists with another version of BLAST+ (created by
+an older BLASTr), it is recreated with BLAST+ 2.17.0. Searches never
+install or update BLAST+: only this function does. The online taxonomy
+functions
 ([`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md),
 [`get_tax_by_name()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md))
 query the NCBI over HTTP and need no external tool.
@@ -26,12 +32,17 @@ install_dependencies(
 
 - force:
 
-  A logical value indicating whether to force the re-creation of the
-  Conda environments even if they already exist. Default is `FALSE`.
+  Recreate the conda environment even if it exists. Default is `FALSE`.
 
 ## Value
 
 Invisibly returns `TRUE` after attempting to install the dependencies.
+
+## See also
+
+Other setup functions:
+[`get_blastr_cache()`](https://heronoh.github.io/BLASTr/reference/get_blastr_cache.md),
+[`has_blast()`](https://heronoh.github.io/BLASTr/reference/has_blast.md)
 
 ## Examples
 

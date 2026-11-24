@@ -1,6 +1,8 @@
-# Parsing fasta file to sequences only
+# Read the sequences of a FASTA file
 
-Extract sequences From FASTA file
+Reads a FASTA file and returns its sequences, without the headers, to
+pass to
+[`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
 
 ## Usage
 

@@ -21,13 +21,13 @@ taxon, not a competing identification.
 
 - `NA`: no hits.
 
-The other columns use all the hits of the sequence: `N hits`, `N taxids`
-(distinct known taxids), `N hits same taxid as 1st`, `N hits at best`,
-`N taxids at best`, `Taxids at best` (the known taxids of the hits at
-best, in rank order, separated by `";"`, for a lowest common ancestor)
-and `At best truncated` (`TRUE` when the last subject BLAST returned is
-at best: more tied subjects may exist beyond `search_alignments`; `NA`
-when `search_alignments` is unknown).
+The other columns use all the hits given for the sequence: `N hits`,
+`N taxids` (distinct known taxids), `N hits same taxid as 1st`,
+`N hits at best`, `N taxids at best`, `Taxids at best` (the known taxids
+of the hits at best, in rank order, separated by `";"`, for a lowest
+common ancestor) and `At best truncated` (`TRUE` when the last subject
+BLAST returned is at best: more tied subjects may exist beyond
+`search_alignments`; `NA` when `search_alignments` is unknown).
 
 With an `informative` column (see
 [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)),
@@ -84,6 +84,15 @@ check_hits(
 ## Value
 
 A tibble with `query` and the summary columns.
+
+## See also
+
+Other result functions:
+[`as_blast_long()`](https://heronoh.github.io/BLASTr/reference/as_blast_long.md),
+[`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md),
+[`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md),
+[`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md),
+[`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
 
 ## Examples
 

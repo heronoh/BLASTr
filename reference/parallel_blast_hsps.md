@@ -1,4 +1,4 @@
-# Run Parallelized BLAST and return every HSP
+# Search sequences with BLAST and return every HSP
 
 Like
 [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md),
@@ -161,19 +161,28 @@ as in
 With `background = TRUE`, a `blastr_job` (see
 [`blast_job()`](https://heronoh.github.io/BLASTr/reference/blast_job.md)).
 
+## See also
+
+Other search functions:
+[`blast_job()`](https://heronoh.github.io/BLASTr/reference/blast_job.md),
+[`blast_log_path()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md),
+[`blast_strategy()`](https://heronoh.github.io/BLASTr/reference/blast_strategy.md),
+[`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md),
+[`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-hsps <- parallel_blast_hsps(
-  query_seqs = seqs,
-  db_path = "/data/databases/core_nt/core_nt",
-  total_cores = 30,
-  perc_id = 80
-)
+# needs BLAST+ (see install_dependencies())
+if (has_blast()) {
+  fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+  db <- file.path(tempdir(), "minimal_db_blast")
+  make_blast_db(fasta, db_path = db)
+  seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+  hsps <- parallel_blast_hsps(seqs, db, perc_id = 80)
+  hsps[, c("Sequence", "saccver", "pident", "qcovhsp", "evalue")]
 
-# against the sequences of a FASTA file, as BLAST -subject
-parallel_blast_hsps(seqs, subject = "controls.fasta", task = "blastn",
-  extra_args = c("-dust", "no"))
-} # }
+  # against the sequences of a FASTA file, as BLAST -subject
+  parallel_blast_hsps(seqs[1], subject = fasta, task = "blastn")
+}
 ```

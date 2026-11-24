@@ -67,12 +67,29 @@ read_blast_log(log_dir = NULL)
 `blast_log_path()` returns the path of the log file, or `NULL` when no
 log directory is set. `read_blast_log()` returns the log as a tibble.
 
+## See also
+
+Other search functions:
+[`blast_job()`](https://heronoh.github.io/BLASTr/reference/blast_job.md),
+[`blast_strategy()`](https://heronoh.github.io/BLASTr/reference/blast_strategy.md),
+[`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md),
+[`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md),
+[`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md)
+
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-options(BLASTr.log_dir = "~/analyses")
-res <- parallel_blast(query_seqs = seqs, db_path = db, total_cores = 8)
-read_blast_log()
-} # }
+log_dir <- tempfile("blastr_logs_")
+blast_log_path(log_dir)
+#> /tmp/Rtmp39IRAe/blastr_logs_19212dd23f4b/BLASTr_logs/blastr_runs.tsv
+
+# needs BLAST+ (see install_dependencies())
+if (has_blast()) {
+  fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+  db <- file.path(tempdir(), "minimal_db_blast")
+  make_blast_db(fasta, db_path = db)
+  seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+  res <- parallel_blast(seqs, db, log_dir = log_dir)
+  read_blast_log(log_dir)
+}
 ```

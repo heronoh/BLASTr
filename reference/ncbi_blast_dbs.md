@@ -74,12 +74,47 @@ database (directory and name, as `db_path` of
 [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)),
 invisibly.
 
+## See also
+
+Other database functions:
+[`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md),
+[`reference_dbs`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
+
 ## Examples
 
 ``` r
+# \donttest{
+# needs internet
+if (requireNamespace("curl", quietly = TRUE) && curl::has_internet()) {
+  dbs <- list_ncbi_blast_dbs()
+  dbs[dbs$download_gb < 1, c("db", "type", "description", "download_gb")]
+}
+#> # A tibble: 19 × 4
+#>    db                      type  description                         download_gb
+#>    <chr>                   <chr> <chr>                                     <dbl>
+#>  1 16S_ribosomal_RNA       nucl  16S ribosomal RNA (Bacteria and Ar…        0.07
+#>  2 18S_fungal_sequences    nucl  18S ribosomal RNA sequences (SSU) …        0.07
+#>  3 28S_fungal_sequences    nucl  28S ribosomal RNA sequences (LSU) …        0.07
+#>  4 ITS_RefSeq_Fungi        nucl  Internal transcribed spacer region…        0.07
+#>  5 ITS_eukaryote_sequences nucl  ITS eukaryote BLAST                        0.08
+#>  6 LSU_eukaryote_rRNA      nucl  Large subunit ribosomal nucleic ac…        0.06
+#>  7 LSU_prokaryote_rRNA     nucl  Large subunit ribosomal nucleic ac…        0.06
+#>  8 SSU_eukaryote_rRNA      nucl  Small subunit ribosomal nucleic ac…        0.06
+#>  9 env_nt                  nucl  environmental samples                      0.42
+#> 10 mito                    nucl  NCBI Genomic Mitochondrial Referen…        0.2 
+#> 11 pdbnt                   nucl  PDB nucleotide database                    0.07
+#> 12 ref_viroids_rep_genomes nucl  Refseq viroids reference genomes           0.07
+#> 13 ref_viruses_rep_genomes nucl  Refseq viruses reference genomes           0.21
+#> 14 refseq_select_rna       nucl  RefSeq Select RNA sequences                0.12
+#> 15 taxdb                   nucl  Taxonomy database                          0.07
+#> 16 landmark                prot  Landmark database for SmartBLAST           0.21
+#> 17 pataa                   prot  Protein sequences derived from the…        0.84
+#> 18 pdbaa                   prot  PDB protein database                       0.13
+#> 19 swissprot               prot  Non-redundant UniProtKB/SwissProt …        0.23
+# }
 if (FALSE) { # \dontrun{
-list_ncbi_blast_dbs()
-db <- download_blast_db("16S_ribosomal_RNA", dir = "/data/databases")
+# downloads the database and the taxonomy of the same date
+db <- download_blast_db("16S_ribosomal_RNA", dir = "~/blast_databases")
 parallel_blast(seqs, db_path = db, total_cores = 8)
 } # }
 ```

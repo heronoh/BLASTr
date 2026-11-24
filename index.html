@@ -36,7 +36,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/BLASTr-intro.html">BLASTr-intro</a></li>
+<li><a class="dropdown-item" href="articles/background-searches.html">Long searches in the background</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -250,9 +250,11 @@
 <div class="section level3">
 <h3 id="taxonomy">Taxonomy<a class="anchor" aria-label="anchor" href="#taxonomy"></a>
 </h3>
-<p><code><a href="reference/get_tax.html">get_tax()</a></code> reads the NCBI taxonomy from a local SQLite database. It takes taxids or a BLASTr result and returns one row per taxid, with the ranks, the full <code>lineage</code> and its <code>lineage_taxids</code>. <code><a href="reference/blast_lca.html">blast_lca()</a></code> gives, for each sequence, the deepest taxon that holds at least 90% of the hits tied with the best one (<code>consensus</code>): one mislabelled reference among many tied hits does not push the identification up to a high rank, and with up to 9 tied hits all of them must agree. Hits named only above genus (“Bacterium”, “Entolomataceae sp.”) do not vote when a named species is tied with them (<code>named_first</code>), while “Picea sp.” still does (another species of the genus). When that taxon has no standard rank (e.g. the clade “Heliantheae alliance”), <code>LCA name</code> keeps it and <code>LCA ranked name</code> / <code>LCA ranked rank</code> give the nearest ranked taxon above it (here the subfamily Asteroideae). If the database does not exist, it is built once from the NCBI taxdump: for a BLASTr result, the taxdump published right after the date of its BLAST database, so the taxonomy matches the database (about a minute, then kept in the BLASTr cache).</p>
+<p><code><a href="reference/get_tax.html">get_tax()</a></code> reads the NCBI taxonomy from a local SQLite database. It takes taxids or a BLASTr result and returns one row per taxid, with the ranks, the full <code>lineage</code> and its <code>lineage_taxids</code>. <code><a href="reference/blast_lca.html">blast_lca()</a></code> gives, for each sequence, the deepest taxon that holds at least 90% of the hits tied with the best one (<code>consensus</code>): one mislabelled reference among many tied hits does not push the identification up to a high rank, and with up to 9 tied hits all of them must agree. Hits named only above genus (“Bacterium”, “Entolomataceae sp.”) do not vote when a named species is tied with them (<code>named_first</code>), while “Picea sp.” still does (another species of the genus). When that taxon has no standard rank (e.g. the clade “Heliantheae alliance”), <code>LCA name</code> keeps it and <code>LCA ranked name</code> / <code>LCA ranked rank</code> give the nearest ranked taxon above it (here the subfamily Asteroideae). The database comes with the BLAST databases of <code><a href="reference/ncbi_blast_dbs.html">download_blast_db()</a></code>. For the results of other databases, or to use only <code><a href="reference/get_tax.html">get_tax()</a></code>, <code>get_tax(..., download = TRUE)</code> downloads the NCBI taxdump once (about 80 MB) and builds it: for a BLASTr result, the taxdump published right after the date of its BLAST database, so the taxonomy matches the database (about a minute, then kept in the BLASTr cache). Without <code>download = TRUE</code>, <code><a href="reference/get_tax.html">get_tax()</a></code> does not download anything (in an interactive session it asks).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">taxonomy</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_tax.html">get_tax</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
+<span><span class="co"># the first time, for a database not downloaded by download_blast_db():</span></span>
+<span><span class="co"># taxonomy &lt;- get_tax(blast_results, download = TRUE)</span></span>
 <span></span>
 <span><span class="co"># taxon shared by the hits tied with the best one (90% consensus)</span></span>
 <span><span class="va">lca</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/blast_lca.html">blast_lca</a></span><span class="op">(</span><span class="va">blast_results</span><span class="op">)</span></span>
@@ -326,7 +328,7 @@
 </h2>
 <ul>
 <li>
-<code><a href="reference/install_dependencies.html">install_dependencies()</a></code>: Installs BLAST+ and Entrez Direct if they are not found on your system.</li>
+<code><a href="reference/install_dependencies.html">install_dependencies()</a></code>: Installs BLAST+ in a conda environment of its own.</li>
 <li>
 <code><a href="reference/make_blast_db.html">make_blast_db()</a></code>: Creates a BLAST database from a FASTA file.</li>
 <li>
@@ -362,7 +364,7 @@
 <div class="section level2">
 <h2 id="dependency-management">Dependency Management<a class="anchor" aria-label="anchor" href="#dependency-management"></a>
 </h2>
-<p><code>BLASTr</code> uses the <code>condathis</code> package to manage its dependencies (BLAST+ and Entrez Direct). When you run a function that requires one of these tools, <code>BLASTr</code> will automatically check if it’s installed. If not, it will create a Conda environment and install the necessary software. This ensures that you always have the correct versions of the dependencies without having to install them manually.</p>
+<p><code>BLASTr</code> uses the <code>condathis</code> package to manage its dependency, BLAST+. When you run a function that requires one of these tools, <code>BLASTr</code> will automatically check if it’s installed. If not, it will create a Conda environment and install the necessary software. This ensures that you always have the correct versions of the dependencies without having to install them manually.</p>
 <p>You can control the installation process with the <code>force</code> and <code>verbose</code> arguments in the <code><a href="reference/install_dependencies.html">install_dependencies()</a></code> function.</p>
 </div>
 <div class="section level2">

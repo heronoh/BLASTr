@@ -1,6 +1,8 @@
-# Make BLAST Database
+# Build a BLAST database from a FASTA file
 
-Create a BLAST database from a FASTA file.
+Formats a FASTA file as a BLAST database with `makeblastdb`, optionally
+with the taxid of each sequence (`taxid_map`), so that the searches
+report `staxid`.
 
 ## Usage
 
@@ -36,8 +38,9 @@ make_blast_db(
 
 - taxid_map:
 
-  Optional path to a file mapping sequence IDs to taxonomy IDs. Must
-  have the same radical name than the .fasta db file
+  Optional path to a file mapping sequence IDs to taxonomy IDs (two
+  columns, separated by a space or a tab), passed to
+  `makeblastdb -taxid_map`.
 
 - parse_seqids:
 
@@ -45,7 +48,8 @@ make_blast_db(
 
 - verbose:
 
-  Should `[condathis::run()]` internal command be shown?
+  Should `[condathis::run()]` internal command be shown? With `"silent"`
+  (default) nothing is printed.
 
 - env_name:
 
@@ -56,25 +60,24 @@ make_blast_db(
 
 The result of the `makeblastdb` command.
 
+## See also
+
+Other database functions:
+[`ncbi_blast_dbs`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md),
+[`reference_dbs`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
+
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-make_blast_db(
-  fasta_path = fs::path_package(
-    "BLASTr", "extdata", "minimal_db_blast",
-    ext = "fasta"
-  ),
-  db_path = fs::path_temp("minimal_db_blast"),
-  db_type = "nucl"
-)
+# needs BLAST+ (see install_dependencies())
+if (has_blast()) {
+  fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+  make_blast_db(fasta, db_path = file.path(tempdir(), "minimal_db_blast"))
 
-# Without `db_path`, the database is written next to the FASTA file:
-fasta_copy <- fs::path_temp("my_db", ext = "fasta")
-fs::file_copy(
-  fs::path_package("BLASTr", "extdata", "minimal_db_blast", ext = "fasta"),
-  fasta_copy
-)
-make_blast_db(fasta_path = fasta_copy)
-} # }
+  # without `db_path`, the database is written next to the FASTA file
+  fasta_copy <- file.path(tempdir(), "my_db.fasta")
+  file.copy(fasta, fasta_copy, overwrite = TRUE)
+  make_blast_db(fasta_copy)
+  list.files(tempdir(), pattern = "^my_db")
+}
 ```

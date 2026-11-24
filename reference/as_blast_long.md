@@ -55,6 +55,15 @@ Long results (see
 [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)),
 with all the hits of `x`.
 
+## See also
+
+Other result functions:
+[`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md),
+[`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md),
+[`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md),
+[`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md),
+[`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
+
 ## Examples
 
 ``` r

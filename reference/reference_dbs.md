@@ -81,12 +81,19 @@ The path of the database (as `db_path` of
 [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)),
 invisibly.
 
+## See also
+
+Other database functions:
+[`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md),
+[`ncbi_blast_dbs`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
+
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-its <- make_unite_db("/data/databases")
-ssu <- make_silva_db("/data/databases")
+# downloads UNITE and SILVA and builds the BLAST databases
+its <- make_unite_db("~/blast_databases")
+ssu <- make_silva_db("~/blast_databases")
 parallel_blast(seqs, db_path = its, total_cores = 8)
 } # }
 ```

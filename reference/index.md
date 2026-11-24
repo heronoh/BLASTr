@@ -22,41 +22,43 @@
 - [`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md)
   : Check the agreement of the best BLAST hits
 - [`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md)
-  : Retrieve Exit Codes and Standard Error from BLASTr Results
+  : Exit codes and standard error of the BLAST runs
 - [`get_blast_results()`](https://heronoh.github.io/BLASTr/reference/get_blast_results.md)
-  : Run BLASTn
+  : Search one sequence with BLAST, as a table
 - [`get_blastr_cache()`](https://heronoh.github.io/BLASTr/reference/get_blastr_cache.md)
-  : Retrieve System-Dependent Cache Path for BLASTr
+  : Path in the BLASTr cache directory
 - [`get_fasta_header()`](https://heronoh.github.io/BLASTr/reference/get_fasta_header.md)
-  : Get header from SubjectID
+  : Header of a subject in a BLAST database
 - [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md) :
   Taxonomy of NCBI taxids from a local database
 - [`get_tax_by_taxID()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
   [`get_tax_by_name()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
   [`parallel_get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax_online.md)
   : Taxonomy from the NCBI online, without a local database
+- [`has_blast()`](https://heronoh.github.io/BLASTr/reference/has_blast.md)
+  : Is BLAST+ ready for BLASTr?
 - [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md)
-  : Install Required Command-line Tool Dependencies
+  : Install BLAST+ in a conda environment
 - [`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md)
-  : Make BLAST Database
+  : Build a BLAST database from a FASTA file
 - [`make_taxonomy_db()`](https://heronoh.github.io/BLASTr/reference/make_taxonomy_db.md)
   : Build the local taxonomy database
 - [`list_ncbi_blast_dbs()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
   [`download_blast_db()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
   : BLAST databases of the NCBI
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
-  : Run Parallelized BLAST
+  : Search sequences with BLAST in parallel
 - [`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md)
-  : Run Parallelized BLAST and return every HSP
+  : Search sequences with BLAST and return every HSP
 - [`parallel_blast_old()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_old.md)
   **\[deprecated\]** : Run parallel BLAST for a set of sequences.
 - [`parse_fasta()`](https://heronoh.github.io/BLASTr/reference/parse_fasta.md)
-  : Parsing fasta file to sequences only
+  : Read the sequences of a FASTA file
 - [`make_unite_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
   [`make_silva_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
   : UNITE and SILVA as BLAST databases
 - [`run_blast()`](https://heronoh.github.io/BLASTr/reference/run_blast.md)
-  : Run BLAST
+  : Search one sequence with BLAST, raw output
 - [`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md)
   : Similarity score of BLAST hits
 - [`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)

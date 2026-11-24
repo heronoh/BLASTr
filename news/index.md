@@ -237,6 +237,92 @@
   [`declare()`](https://rdrr.io/r/base/declare.html), which only exists
   from R 4.4, to keep the `carrier` import. `carrier` was not used
   otherwise and left `Imports`.
+- [`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md):
+  `N hits`, `N taxids`, `N uninformative`, `N hits same taxid as 1st`
+  and `Best uninformative score` were computed only on the rows kept in
+  the long results (the first `num_alignments` and the hits at best),
+  not on all the subjects BLAST returned, as documented.
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+  now computes them on all the subjects and keeps them in
+  `BLASTr_metadata$hit_counts`, which
+  [`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md)
+  uses; `N hits` equal to `search_alignments` now shows that BLAST
+  returned a full list. The summary of the wide results and of the log
+  is also computed on all the subjects. Results of older versions keep
+  the old counts.
+- [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+  ignored the `Taxids at best` column of wide results (it looked for its
+  old name, `Taxids at best identity`, still accepted).
+- [`parse_fasta()`](https://heronoh.github.io/BLASTr/reference/parse_fasta.md)
+  names the missing file in its error message.
+- [`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md)
+  accepts a `taxid_map` with any name (it required the base name of the
+  FASTA file), checks that it exists, and prints the `makeblastdb`
+  command only when `verbose` is not `"silent"`.
+- The documentation of `search_alignments` in
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+  named `-max_target_seqs`; the option passed to BLAST is
+  `-num_alignments`.
+
+### Changed
+
+- [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md):
+  `search_alignments` now defaults to `100` (was `50`). In 1260 GenBank
+  references searched in `core_nt`, it halved the sequences whose ties
+  with the best hit were cut at the limit (170 to 94) and those whose
+  ancestor differs from a search with 500 subjects (37 to 18), for 3% to
+  18% more time.
+- BLAST+ 2.17.0 (was 2.16.0), installed by
+  [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md)
+  from bioconda in the conda environment `blastr-blast-env`; an
+  environment created by an older BLASTr is recreated. On 300 GenBank
+  references searched in `core_nt`, 2.17.0 gave the same hits, summary
+  and ancestors as 2.16.0, in about the same time.
+- Which BLAST+ is used: the one of the conda environment; without it,
+  the one of the system, only if it is 2.16.0 or newer (BLAST+ 2.12, for
+  example, does not accept `-mt_mode 2`, used on large databases);
+  otherwise an error that says to run
+  [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md).
+  Searches no longer install or update BLAST+. The source is kept in
+  `BLASTr_metadata$blast_source` (`"conda"` or `"system"`).
+- New
+  [`has_blast()`](https://heronoh.github.io/BLASTr/reference/has_blast.md):
+  whether BLAST+ 2.16.0 or newer is ready (conda environment or system),
+  without installing anything. The examples and the vignette run their
+  BLAST code only when it is `TRUE`.
+- Tests: the ones that run BLAST+ use the BLAST+ already installed and
+  are skipped without it (before, they were skipped on CRAN, and the
+  test setup created a new conda environment at each run). A real BLAST+
+  output (`inst/extdata/blast_output_example.tsv`, made by
+  `data-raw/blast_output_example.R`) tests reading, ranking and summary
+  where BLAST+ is not installed.
+- [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+  no longer downloads the NCBI taxdump on its own: without the taxonomy
+  database it stops and says how to get it, or asks in an interactive
+  session. The new argument `download = TRUE` downloads the taxdump
+  (about 80 MB) and builds the database, for those who use only
+  [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md);
+  [`download_blast_db()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md)
+  (`taxonomy = TRUE`),
+  [`make_unite_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
+  and
+  [`make_silva_db()`](https://heronoh.github.io/BLASTr/reference/reference_dbs.md)
+  still bring it with the BLAST databases.
+
+### Documentation
+
+- Examples that run in 22 of the 25 help pages of exported functions (5
+  before), with the small database in `inst/extdata` and a small
+  taxonomy written in the example; they run only where `blastn` is found
+  and write only to [`tempdir()`](https://rdrr.io/r/base/tempfile.html).
+  Titles, families of functions and the package page
+  ([`?BLASTr`](https://heronoh.github.io/BLASTr/reference/BLASTr-package.md))
+  were rewritten.
+- New vignette “Get started with BLASTr”
+  ([`vignette("BLASTr")`](https://heronoh.github.io/BLASTr/articles/BLASTr.md));
+  the vignette on searches in the background is now
+  [`vignette("background-searches")`](https://heronoh.github.io/BLASTr/articles/background-searches.md).
+- `DESCRIPTION`: `SystemRequirements` (BLAST+, Quarto) and `biocViews`.
 
 ## BLASTr 0.1.7
 

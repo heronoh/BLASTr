@@ -24,6 +24,15 @@ similarity_score(identity, qcovhsp)
 
 Numeric vector, same length as the inputs.
 
+## See also
+
+Other result functions:
+[`as_blast_long()`](https://heronoh.github.io/BLASTr/reference/as_blast_long.md),
+[`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md),
+[`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md),
+[`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md),
+[`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
+
 ## Examples
 
 ``` r

@@ -324,15 +324,24 @@ species is tied with them (`named_first`), while “Picea sp.” still does
 (another species of the genus). When that taxon has no standard rank
 (e.g. the clade “Heliantheae alliance”), `LCA name` keeps it and
 `LCA ranked name` / `LCA ranked rank` give the nearest ranked taxon
-above it (here the subfamily Asteroideae). If the database does not
-exist, it is built once from the NCBI taxdump: for a BLASTr result, the
-taxdump published right after the date of its BLAST database, so the
-taxonomy matches the database (about a minute, then kept in the BLASTr
-cache).
+above it (here the subfamily Asteroideae). The database comes with the
+BLAST databases of
+[`download_blast_db()`](https://heronoh.github.io/BLASTr/reference/ncbi_blast_dbs.md).
+For the results of other databases, or to use only
+[`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md),
+`get_tax(..., download = TRUE)` downloads the NCBI taxdump once (about
+80 MB) and builds it: for a BLASTr result, the taxdump published right
+after the date of its BLAST database, so the taxonomy matches the
+database (about a minute, then kept in the BLASTr cache). Without
+`download = TRUE`,
+[`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
+does not download anything (in an interactive session it asks).
 
 ``` r
 
 taxonomy <- get_tax(blast_results)
+# the first time, for a database not downloaded by download_blast_db():
+# taxonomy <- get_tax(blast_results, download = TRUE)
 
 # taxon shared by the hits tied with the best one (90% consensus)
 lca <- blast_lca(blast_results)
@@ -404,8 +413,7 @@ guarantee. `log_dir` keeps a log of your own searches (see
 ## Main Functions
 
 - [`install_dependencies()`](https://heronoh.github.io/BLASTr/reference/install_dependencies.md):
-  Installs BLAST+ and Entrez Direct if they are not found on your
-  system.
+  Installs BLAST+ in a conda environment of its own.
 - [`make_blast_db()`](https://heronoh.github.io/BLASTr/reference/make_blast_db.md):
   Creates a BLAST database from a FASTA file.
 - [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md):
@@ -453,12 +461,12 @@ guarantee. `log_dir` keeps a log of your own searches (see
 
 ## Dependency Management
 
-`BLASTr` uses the `condathis` package to manage its dependencies (BLAST+
-and Entrez Direct). When you run a function that requires one of these
-tools, `BLASTr` will automatically check if it’s installed. If not, it
-will create a Conda environment and install the necessary software. This
-ensures that you always have the correct versions of the dependencies
-without having to install them manually.
+`BLASTr` uses the `condathis` package to manage its dependency, BLAST+.
+When you run a function that requires one of these tools, `BLASTr` will
+automatically check if it’s installed. If not, it will create a Conda
+environment and install the necessary software. This ensures that you
+always have the correct versions of the dependencies without having to
+install them manually.
 
 You can control the installation process with the `force` and `verbose`
 arguments in the

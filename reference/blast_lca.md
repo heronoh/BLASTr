@@ -90,12 +90,66 @@ rank), `LCA support` (fraction of the tied hits it contains), `N tied`
 (hits at best) and `N tied no taxid`. `NA` for sequences without hits.
 Join `get_tax(result$`LCA taxid`)` for its ranks and lineage.
 
+## See also
+
+Other result functions:
+[`as_blast_long()`](https://heronoh.github.io/BLASTr/reference/as_blast_long.md),
+[`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md),
+[`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md),
+[`similarity_score()`](https://heronoh.github.io/BLASTr/reference/similarity_score.md),
+[`uninformative_references()`](https://heronoh.github.io/BLASTr/reference/uninformative_references.md)
+
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-res <- parallel_blast(seqs, db_path)
-lca <- blast_lca(res)
-dplyr::left_join(lca, get_tax(lca$`LCA taxid`), by = c(`LCA taxid` = "taxid"))
-} # }
+# a simplified NCBI taxdump: Hominidae with the genera Homo and Pan
+taxdump <- file.path(tempdir(), "taxdump")
+dir.create(taxdump, showWarnings = FALSE)
+dmp <- function(...) paste0(paste(..., sep = "\t|\t"), "\t|")
+writeLines(c(
+  dmp(1, 1, "no rank"), dmp(2759, 1, "superkingdom"), dmp(9604, 2759, "family"),
+  dmp(9605, 9604, "genus"), dmp(9606, 9605, "species"),
+  dmp(9596, 9604, "genus"), dmp(9598, 9596, "species")
+), file.path(taxdump, "nodes.dmp"))
+writeLines(c(
+  dmp(1, "root", "", "scientific name"), dmp(2759, "Eukaryota", "", "scientific name"),
+  dmp(9604, "Hominidae", "", "scientific name"), dmp(9605, "Homo", "", "scientific name"),
+  dmp(9606, "Homo sapiens", "", "scientific name"), dmp(9596, "Pan", "", "scientific name"),
+  dmp(9598, "Pan troglodytes", "", "scientific name")
+), file.path(taxdump, "names.dmp"))
+tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
+#> ✔ Taxonomy database: /tmp/Rtmp39IRAe/file19216b1f6cf1.sqlite (7 taxa).
+
+# hits of two sequences: the first one tied between Homo and Pan
+wide <- data.frame(
+  Sequence = c("ACGT", "TTGA"),
+  `1_subject` = c("A1", "B1"), `1_identity` = c(100, 99), `1_qcovhsp` = 100,
+  `1_staxid` = "9606",
+  `2_subject` = c("A2", "B2"), `2_identity` = c(99.8, 90), `2_qcovhsp` = 100,
+  `2_staxid` = "9598",
+  check.names = FALSE
+)
+hits <- as_blast_long(wide)
+lca <- blast_lca(hits, taxonomy_db = tax_db)
+lca
+#> # A tibble: 2 × 10
+#>   Sequence `LCA taxid` `LCA name`   `LCA rank` `LCA ranked taxid`
+#>   <chr>    <chr>       <chr>        <chr>      <chr>             
+#> 1 ACGT     9604        Hominidae    family     9604              
+#> 2 TTGA     9606        Homo sapiens species    9606              
+#> # ℹ 5 more variables: `LCA ranked name` <chr>, `LCA ranked rank` <chr>,
+#> #   `LCA support` <dbl>, `N tied` <int>, `N tied no taxid` <int>
+# ranks and lineage of each ancestor
+dplyr::left_join(lca, get_tax(lca$`LCA taxid`, taxonomy_db = tax_db), by = c(`LCA taxid` = "taxid"))
+#> # A tibble: 2 × 28
+#>   Sequence `LCA taxid` `LCA name`   `LCA rank` `LCA ranked taxid`
+#>   <chr>    <chr>       <chr>        <chr>      <chr>             
+#> 1 ACGT     9604        Hominidae    family     9604              
+#> 2 TTGA     9606        Homo sapiens species    9606              
+#> # ℹ 23 more variables: `LCA ranked name` <chr>, `LCA ranked rank` <chr>,
+#> #   `LCA support` <dbl>, `N tied` <int>, `N tied no taxid` <int>, found <lgl>,
+#> #   sci_name <chr>, rank <chr>, domain <chr>, kingdom <chr>, phylum <chr>,
+#> #   subphylum <chr>, class <chr>, subclass <chr>, order <chr>, suborder <chr>,
+#> #   family <chr>, subfamily <chr>, genus <chr>, species <chr>, lineage <chr>,
+#> #   lineage_taxids <chr>, merged_into <chr>
 ```

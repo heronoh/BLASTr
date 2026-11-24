@@ -1,4 +1,4 @@
-# Run Parallelized BLAST
+# Search sequences with BLAST in parallel
 
 Search a set of sequences against one or more BLAST databases, using the
 cores and RAM given. The search strategy is chosen automatically (see
@@ -22,7 +22,7 @@ parallel_blast(
   total_cores = 1L,
   ram_gb = NULL,
   num_alignments = 10L,
-  search_alignments = 50L,
+  search_alignments = 100L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   search_qcov_hsp = 50L,
@@ -78,12 +78,18 @@ parallel_blast(
 
 - search_alignments:
 
-  Number of subjects BLAST keeps during the search (`-max_target_seqs`).
+  Number of subjects BLAST keeps during the search (`-num_alignments`).
   BLAST cuts its list of subjects before the `perc_qcov_hsp` filter, so
   asking only for `num_alignments` can lose valid hits. BLASTr searches
   `max(num_alignments, search_alignments)` subjects and keeps the
-  `num_alignments` best ones that pass the filters. In the benchmark, 50
-  instead of 10 added about 5% to the time.
+  `num_alignments` best ones that pass the filters. Subjects tied with
+  the best one beyond this limit are lost (`At best truncated`, see
+  [`check_hits()`](https://heronoh.github.io/BLASTr/reference/check_hits.md)).
+  Defaults to `100`: in the benchmark on `core_nt`, 50 instead of 10
+  added about 5% to the time, and 100 instead of 50 from 3% to 18%,
+  while halving the sequences with truncated ties (from 170 to 94 in
+  1260 GenBank references) and the ones whose ancestor differs from a
+  search with 500 subjects (from 37 to 18).
 
 - perc_id:
 
@@ -238,33 +244,35 @@ fields prefixed by `k_`.
 
 The attribute `BLASTr_metadata` keeps the parameters, the strategy, the
 BLAST command (`blast_cmd`, without the sequences), the BLAST version,
-the date of each database and the exit codes (see
-[`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md)).
+the date of each database, the exit codes (see
+[`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md))
+and, per sequence, the counts over all the subjects BLAST returned
+(`hit_counts`, used by
+[`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md)).
 With `background = TRUE`, a `blastr_job`.
+
+## See also
+
+Other search functions:
+[`blast_job()`](https://heronoh.github.io/BLASTr/reference/blast_job.md),
+[`blast_log_path()`](https://heronoh.github.io/BLASTr/reference/blast_log_path.md),
+[`blast_strategy()`](https://heronoh.github.io/BLASTr/reference/blast_strategy.md),
+[`exit_codes()`](https://heronoh.github.io/BLASTr/reference/exit_codes.md),
+[`parallel_blast_hsps()`](https://heronoh.github.io/BLASTr/reference/parallel_blast_hsps.md)
 
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-dna_fasta_path <- fs::path_package(
-  "BLASTr", "extdata", "minimal_db_blast",
-  ext = "fasta"
-)
-temp_db_path <- fs::path_temp("minimal_db_blast")
-make_blast_db(fasta_path = dna_fasta_path, db_path = temp_db_path)
-query_seqs_string <- c(
-  "CTAGCCATAAACTTAAATGAAGCTATACTAA",
-  "ACTCGTTCGCCAGAGTACTACAAGCGAAAG"
-)
-blast_res <- parallel_blast(
-  query_seqs = query_seqs_string,
-  db_path = temp_db_path
-)
-blast_res
-
-# in the background
-job <- parallel_blast(query_seqs_string, temp_db_path, background = TRUE)
-blast_job_status(job)
-blast_res <- blast_job_result(job)
-} # }
+# needs BLAST+ (see install_dependencies())
+if (has_blast()) {
+  fasta <- system.file("extdata", "minimal_db_blast.fasta", package = "BLASTr")
+  db <- file.path(tempdir(), "minimal_db_blast")
+  make_blast_db(fasta, db_path = db)
+  seqs <- readLines(system.file("extdata", "seqs_test.txt", package = "BLASTr"))
+  res <- parallel_blast(seqs, db)
+  # one row per hit, best first; one row with NA hit fields for a sequence without hits
+  res[, c("Sequence", "rank", "at_best", "subject", "identity", "qcovhsp", "Similarity score")]
+  # one row per sequence
+  blast_summary(res)
+}
 ```
