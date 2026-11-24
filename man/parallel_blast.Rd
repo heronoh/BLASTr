@@ -11,7 +11,7 @@ parallel_blast(
   total_cores = 1L,
   ram_gb = NULL,
   num_alignments = 10L,
-  search_alignments = 50L,
+  search_alignments = 100L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   search_qcov_hsp = 50L,
@@ -57,7 +57,13 @@ search (\code{-num_alignments}). BLAST cuts its list of subjects before the
 \code{perc_qcov_hsp} filter, so asking only for \code{num_alignments} can lose
 valid hits. BLASTr searches \code{max(num_alignments, search_alignments)}
 subjects and keeps the \code{num_alignments} best ones that pass the
-filters. In the benchmark, 50 instead of 10 added about 5\% to the time.}
+filters. Subjects tied with the best one beyond this limit are lost
+(\verb{At best truncated}, see \code{\link[=check_hits]{check_hits()}}). Defaults to \code{100}: in the
+benchmark on \code{core_nt}, 50 instead of 10 added about 5\% to the time,
+and 100 instead of 50 from 3\% to 18\%, while halving the sequences
+with truncated ties (from 170 to 94 in 1260 GenBank references) and
+the ones whose ancestor differs from a search with 500 subjects (from
+37 to 18).}
 
 \item{perc_id}{Lowest identity percentage cutoff.}
 

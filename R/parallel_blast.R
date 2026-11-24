@@ -25,7 +25,13 @@
 #'   `perc_qcov_hsp` filter, so asking only for `num_alignments` can lose
 #'   valid hits. BLASTr searches `max(num_alignments, search_alignments)`
 #'   subjects and keeps the `num_alignments` best ones that pass the
-#'   filters. In the benchmark, 50 instead of 10 added about 5% to the time.
+#'   filters. Subjects tied with the best one beyond this limit are lost
+#'   (`At best truncated`, see [check_hits()]). Defaults to `100`: in the
+#'   benchmark on `core_nt`, 50 instead of 10 added about 5% to the time,
+#'   and 100 instead of 50 from 3% to 18%, while halving the sequences
+#'   with truncated ties (from 170 to 94 in 1260 GenBank references) and
+#'   the ones whose ancestor differs from a search with 500 subjects (from
+#'   37 to 18).
 #' @param perc_id Lowest identity percentage cutoff.
 #' @param perc_qcov_hsp Query coverage per HSP (percent) expected of a
 #'   good hit. Hits below it are kept and flagged (`low_qcov`), not
@@ -147,7 +153,7 @@ parallel_blast <- function(
   total_cores = 1L,
   ram_gb = NULL,
   num_alignments = 10L,
-  search_alignments = 50L,
+  search_alignments = 100L,
   perc_id = 80L,
   perc_qcov_hsp = 80L,
   search_qcov_hsp = 50L,

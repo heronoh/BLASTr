@@ -11,7 +11,7 @@ testthat::test_that("search_alignments keeps the num_alignments best hits", {
   r2 <- parallel_blast(s, tmp_blast_db_path, num_alignments = 2, verbose = "silent")
   r10 <- parallel_blast(s, tmp_blast_db_path, num_alignments = 10, verbose = "silent")
   meta <- attr(r2, "BLASTr_metadata")
-  testthat::expect_equal(meta$search_alignments, 50L)
+  testthat::expect_equal(meta$search_alignments, 100L)
   testthat::expect_false(any(startsWith(names(r2), "3_")))
   for (k in 1:2) {
     testthat::expect_equal(r2[[paste0(k, "_subject")]], r10[[paste0(k, "_subject")]])

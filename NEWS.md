@@ -177,6 +177,14 @@
 * The documentation of `search_alignments` in `parallel_blast()` named
   `-max_target_seqs`; the option passed to BLAST is `-num_alignments`.
 
+### Changed
+
+* `parallel_blast()`: `search_alignments` now defaults to `100` (was
+  `50`). In 1260 GenBank references searched in `core_nt`, it halved the
+  sequences whose ties with the best hit were cut at the limit (170 to 94)
+  and those whose ancestor differs from a search with 500 subjects (37 to
+  18), for 3% to 18% more time.
+
 ### Documentation
 
 * Examples that run in 22 of the 25 help pages of exported functions (5

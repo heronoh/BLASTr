@@ -67,7 +67,7 @@ blast_strategy(n_seqs = length(seqs), db_path = db, total_cores = 2)
 res <- parallel_blast(seqs, db, total_cores = 2)
 ```
 
-By default, BLAST keeps up to 50 subjects per sequence (`search_alignments`) with at least 80% identity (`perc_id`) and 50% query coverage (`search_qcov_hsp`).
+By default, BLAST keeps up to 100 subjects per sequence (`search_alignments`) with at least 80% identity (`perc_id`) and 50% query coverage (`search_qcov_hsp`).
 
 ## Reading the results
 
