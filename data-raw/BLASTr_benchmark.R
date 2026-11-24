@@ -2,6 +2,7 @@
 #
 library(tictoc)
 library(BLASTr)
+nt_db <- Sys.getenv("BLASTR_NT_DB") # path and prefix of the nt database
 
 # load test ASVs ----
 ASVs_test <- readr::read_lines("dev/asv_test.txt")
@@ -12,7 +13,7 @@ ASVs_test <- readr::read_lines("dev/asv_test.txt")
 tictoc::tic("Sequential - Purrr - 80 threads")
 teste80 <- purrr::map_dfr(ASVs_test, get_blast_results,
   num_threads = 80,
-  db_path = "/data/databases/nt/nt"
+  db_path = nt_db
 )
 tictoc::toc()
 
@@ -20,7 +21,7 @@ tictoc::toc()
 tictoc::tic("Sequential - Purrr - 60 threads")
 teste60 <- purrr::map_dfr(ASVs_test, get_blast_results,
   num_threads = 60,
-  db_path = "/data/databases/nt/nt"
+  db_path = nt_db
 )
 tictoc::toc()
 
@@ -28,7 +29,7 @@ tictoc::toc()
 tictoc::tic("Sequential - Purrr - 40 threads")
 teste40 <- purrr::map_dfr(ASVs_test, get_blast_results,
   num_threads = 40,
-  db_path = "/data/databases/nt/nt"
+  db_path = nt_db
 )
 tictoc::toc()
 
@@ -36,9 +37,9 @@ tictoc::toc()
 tictoc::tic("Sequential - Purrr - 20 threads")
 teste20 <- purrr::map_dfr(ASVs_test, get_blast_results,
   num_threads = 20,
-  db_path = "/data/databases/nt/nt",
-  # out_file = "/home/heron/prjcts/omics/BLASTr_run/blast_out.csv",
-  # out_RDS = "/home/heron/prjcts/omics/BLASTr_run/blast_out.RDS",
+  db_path = nt_db,
+  # out_file = "blast_out.csv",
+  # out_RDS = "blast_out.RDS",
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -50,9 +51,9 @@ tictoc::toc()
 tictoc::tic("Sequential - Purrr - 10 threads")
 teste10 <- purrr::map_dfr(ASVs_test, get_blast_results,
   num_threads = 10,
-  db_path = "/data/databases/nt/nt",
-  # out_file = "/home/heron/prjcts/omics/BLASTr_run/blast_out.csv",
-  # out_RDS = "/home/heron/prjcts/omics/BLASTr_run/blast_out.RDS",
+  db_path = nt_db,
+  # out_file = "blast_out.csv",
+  # out_RDS = "blast_out.RDS",
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -64,9 +65,9 @@ tictoc::toc()
 tictoc::tic("Sequential - Purrr 5 threads")
 teste5 <- purrr::map_dfr(ASVs_test, get_blast_results,
   num_threads = 5,
-  db_path = "/data/databases/nt/nt",
-  # out_file = "/home/heron/prjcts/omics/BLASTr_run/blast_out.csv",
-  # out_RDS = "/home/heron/prjcts/omics/BLASTr_run/blast_out.RDS",
+  db_path = nt_db,
+  # out_file = "blast_out.csv",
+  # out_RDS = "blast_out.RDS",
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -76,9 +77,9 @@ tictoc::toc()
 # sequencial com 2 threads ----
 tictoc::tic("Sequential - Purrr 2 threads")
 teste2 <- purrr::map_dfr(ASVs_test, get_blast_results,
-  num_threads = 2, db_path = "/data/databases/nt/nt",
-  # out_file = "/home/heron/prjcts/omics/BLASTr_run/blast_out.csv",
-  # out_RDS = "/home/heron/prjcts/omics/BLASTr_run/blast_out.RDS",
+  num_threads = 2, db_path = nt_db,
+  # out_file = "blast_out.csv",
+  # out_RDS = "blast_out.RDS",
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -88,7 +89,7 @@ tictoc::toc()
 # sequencial com 1 threads ----
 tictoc::tic("Sequential - Purrr 1 threads")
 teste1 <- purrr::map_dfr(ASVs_test, get_blast_results,
-  num_threads = 1, db_path = "/data/databases/nt/nt",
+  num_threads = 1, db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -108,7 +109,7 @@ teste_F80 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
   num_threads = 80,
   .options = furrr::furrr_options(seed = NULL),
-  db_path = "/data/databases/nt/nt",
+  db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -123,7 +124,7 @@ teste_F60 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
   num_threads = 60,
   .options = furrr::furrr_options(seed = NULL),
-  db_path = "/data/databases/nt/nt",
+  db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -138,7 +139,7 @@ teste_F40 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
   num_threads = 40,
   .options = furrr::furrr_options(seed = NULL),
-  db_path = "/data/databases/nt/nt",
+  db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -153,7 +154,7 @@ teste_F20 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
   num_threads = 20,
   .options = furrr::furrr_options(seed = NULL),
-  db_path = "/data/databases/nt/nt",
+  db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -168,7 +169,7 @@ teste_F10 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
   num_threads = 10,
   .options = furrr::furrr_options(seed = NULL),
-  db_path = "/data/databases/nt/nt",
+  db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -183,7 +184,7 @@ teste_F5 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
   num_threads = 5,
   .options = furrr::furrr_options(seed = NULL),
-  db_path = "/data/databases/nt/nt",
+  db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -198,7 +199,7 @@ teste_F2 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
   num_threads = 2,
   .options = furrr::furrr_options(seed = NULL),
-  db_path = "/data/databases/nt/nt",
+  db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -213,7 +214,7 @@ teste_F1 <- furrr::future_map_dfr(ASVs_test,
   get_blast_results,
   num_threads = 1,
   .options = furrr::furrr_options(seed = NULL),
-  db_path = "/data/databases/nt/nt",
+  db_path = nt_db,
   perc_id = 80,
   perc_qcov_hsp = 80,
   num_alignments = 4,
@@ -222,7 +223,7 @@ teste_F1 <- furrr::future_map_dfr(ASVs_test,
 tictoc::toc()
 
 
-base::save.image("~/prjcts/omics/BLASTr/dev/BLASTr_benchmark.RData")
+base::save.image("dev/BLASTr_benchmark.RData")
 
 
 ASVs_test %>%
@@ -244,7 +245,7 @@ options(scipen = 33)
 options(pillar.sigfig = 7)
 
 
-bench_res <- "/home/heron/prjcts/omics/BLASTr_benchmark/BLASTr_bench_res.csv" |>
+bench_res <- "data-raw/BLASTr_bench_res.csv" |>
   read.csv(sep = ";") |>
   as_tibble()
 
@@ -281,7 +282,7 @@ bench_plot <- bench_res |>
   scale_x_continuous(breaks = seq(0, 80, 5))
 
 ggsave(bench_plot,
-  filename = "~/prjcts/omics/BLASTr/dev/bench_plot.pdf",
+  filename = "data-raw/bench_plot.pdf",
   device = "pdf",
   units = "in",
   width = 10,

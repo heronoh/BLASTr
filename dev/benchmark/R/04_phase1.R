@@ -1,7 +1,8 @@
 # Phase 1: strategy screening on core_nt with WARM page cache.
-# Constraints (2026-11-19): shared server, heron's BLAST paused (must stay
-# untouched), renato using ~30 cores -> at most 40 threads per run, no cache
-# eviction. Pauses automatically if heron's blastn resumes or load is high.
+# Constraints (2026-11-19): shared server, another user's BLAST paused (must
+# stay untouched; BLASTR_BENCH_WATCH_USER), another analysis using ~30 cores
+# -> at most 40 threads per run, no cache eviction. Pauses automatically if
+# the paused blastn resumes or load is high.
 # Run from repo root:
 #   nohup Rscript dev/benchmark/R/04_phase1.R > dev/benchmark/results/phase1.log 2>&1 &
 source("dev/benchmark/R/bench_lib.R")
@@ -50,9 +51,9 @@ for (i in seq_len(nrow(plan))) {
     message("ERROR: ", conditionMessage(e)); NULL
   })
   if (!is.null(r)) {
-    message(sprintf("[%d/%d] %s %s wall=%.0fs cpu=%.2fh hits=%d heron_running=%d load=%.0f",
+    message(sprintf("[%d/%d] %s %s wall=%.0fs cpu=%.2fh hits=%d watched_running=%d load=%.0f",
       i, nrow(plan), format(Sys.time(), "%H:%M"), r$run_id, r$wall_s, r$cpu_s / 3600, r$n_hits,
-      r$heron_running_max, r$load1_mean))
+      r$watched_running_max, r$load1_mean))
   }
 }
 message("Phase 1 done")

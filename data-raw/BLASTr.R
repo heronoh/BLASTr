@@ -21,7 +21,7 @@
 #
 # #1b - run_blast ----
 # ###                  function to run blast for each ASV/OTU                  ###
-# run_blast <- function(asv, db_path = "/data/databases/nt/nt", num_alignments = 3, num_threads = 40) {
+# run_blast <- function(asv, db_path = Sys.getenv("BLASTR_NT_DB"), num_alignments = 3, num_threads = 40) {
 #
 #   #BLAST command
 #   blast_cmd <- "echo -e '>seq1\n{asv}' | blastn -db {db_path} -outfmt '6 std qcovhsp' -max_hsps 1 -perc_identity 80 -qcov_hsp_perc 80 -num_threads {as.character(num_thread)} -num_alignments {as.character(num_alignments)}"
@@ -35,7 +35,7 @@
 # #1c - get_fasta_header ----
 #
 # ###          function to get fasta names from db based on subjectIDs         ###
-# get_fasta_header <- function(id, db_path = "/data/databases/nt/nt") {
+# get_fasta_header <- function(id, db_path = Sys.getenv("BLASTR_NT_DB")) {
 #   # id <- "JQ365494.1"
 #   command <- "blastdbcmd -db {db_path} -entry {id} -outfmt %t"
 #   result <- shell_exec(cmd = command)

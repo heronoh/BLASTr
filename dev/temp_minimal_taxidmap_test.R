@@ -10,17 +10,17 @@
 #   5. validar: BLAST contra o banco minimo deve trazer staxid
 #
 # Comandos de referencia (shell):
-# echo -e 'GAGGCCCCGCTACGAAAGTAACTTTATCACCTCCGACCCCACGAAAGCTAAGAAACAAACTGGGATTAGATACCCCACTATGCTTAGCCCTAAACCTAGATATTTATTCTACAAAAAATATCCGCCAGGGAACTACGAGCGCTAGCTTAAAACCCAAAGGACTTGACGGTGTCTCAGACCCACCTAGAGGAGCCTGTTCTAGAACCGATAATCCACGTTTAACCTCACCACCCCTTGTTTTCCCCGCCTATATACCGCCGTCGCAAGCTTACCCTGTGA' | blastn -db '/home/gabriel/projetos/db-LGC/old/database/blastr/LGC12Sdb_complete_noGaps-2024-09-20.fasta' -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
-# echo -e 'GAGGCCCCGCTACGAAAGTAACTTTATCACCTCCGACCCCACGAAAGCTAAGAAACAAACTGGGATTAGATACCCCACTATGCTTAGCCCTAAACCTAGATATTTATTCTACAAAAAATATCCGCCAGGGAACTACGAGCGCTAGCTTAAAACCCAAAGGACTTGACGGTGTCTCAGACCCACCTAGAGGAGCCTGTTCTAGAACCGATAATCCACGTTTAACCTCACCACCCCTTGTTTTCCCCGCCTATATACCGCCGTCGCAAGCTTACCCTGTGA' | blastn -db '/data/databases/core_nt/core_nt' -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
+# echo -e 'GAGGCCCCGCTACGAAAGTAACTTTATCACCTCCGACCCCACGAAAGCTAAGAAACAAACTGGGATTAGATACCCCACTATGCTTAGCCCTAAACCTAGATATTTATTCTACAAAAAATATCCGCCAGGGAACTACGAGCGCTAGCTTAAAACCCAAAGGACTTGACGGTGTCTCAGACCCACCTAGAGGAGCCTGTTCTAGAACCGATAATCCACGTTTAACCTCACCACCCCTTGTTTTCCCCGCCTATATACCGCCGTCGCAAGCTTACCCTGTGA' | blastn -db "$BLASTR_LOCAL_DB" -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
+# echo -e 'GAGGCCCCGCTACGAAAGTAACTTTATCACCTCCGACCCCACGAAAGCTAAGAAACAAACTGGGATTAGATACCCCACTATGCTTAGCCCTAAACCTAGATATTTATTCTACAAAAAATATCCGCCAGGGAACTACGAGCGCTAGCTTAAAACCCAAAGGACTTGACGGTGTCTCAGACCCACCTAGAGGAGCCTGTTCTAGAACCGATAATCCACGTTTAACCTCACCACCCCTTGTTTTCCCCGCCTATATACCGCCGTCGCAAGCTTACCCTGTGA' | blastn -db "$BLASTR_CORE_NT_DB" -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
 
-devtools::load_all(path = "/home/noreh/prjcts/BLASTr")
+devtools::load_all(path = ".")
 
-core_nt_path <- "/data/databases/core_nt/core_nt"
+core_nt_path <- Sys.getenv("BLASTR_CORE_NT_DB")
 minimal_db_fasta <- "data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta"
 taxid_map_path <- "data-raw/minimal_db/shortest_minimal_db_BLASTr.txt"
 
 # O BLAST precisa achar o taxdb (taxdb.btd/.bti) do core_nt.
-# Equivale a: export BLASTDB=/data/databases/core_nt:$BLASTDB
+# Equivale a: export BLASTDB="$(dirname "$BLASTR_CORE_NT_DB"):$BLASTDB"
 Sys.setenv(
   BLASTDB = paste(
     c(dirname(core_nt_path), Sys.getenv("BLASTDB")),
@@ -83,7 +83,7 @@ make_blast_db(
 
 # 5. Validar -----------------------------------------------------------------
 # Referencia em shell:
-# echo -e 'AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT' | blastn -db '/home/noreh/prjcts/BLASTr/data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta' -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
+# echo -e 'AACATTGTATTTTGTCTTTGGGGCCTGGGCAGGTGCAGTAGGAACTTCACTTAGAATAATTATTCGTACTGAGCTTGGGCATCCAGGAAGACTTATCGGGGATGATCAAATCTATAATGTAATTGTTACAGCACATGCATTTGTGATAATTTTTTTTATAGTAATACCTATTATGATT' | blastn -db 'data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta' -outfmt "6 std qcovhsp ssciname" -max_hsps 3 -perc_identity 80 -num_threads 80 -num_alignments 3
 
 blast_results <- parallel_blast(
   query_seqs = seqs,

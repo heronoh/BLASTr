@@ -5,8 +5,9 @@
 #   S2000: E with 64 cores (-> 2 processes x 32 threads); 2 reps
 #   S100: A (BLASTr 0.1.7, 32 processes x 1 thread); 1 rep
 # num_alignments 10 (the new default) everywhere. ~1 h.
-# Starts only when the server is idle: no EM291 (re)analysis running (barcodes
-# / curatR), no blastn of anyone, load1 < 10. Gives up after max_days.
+# Starts only when the server is idle: none of the analyses in
+# BLASTR_BENCH_WAIT_FOR running (see bench_lib.R), no blastn of anyone,
+# load1 < 10. Gives up after max_days.
 # Run from repo root:
 #   nohup nice -n 5 Rscript dev/benchmark/R/09_phase_validate.R > dev/benchmark/results/phase_validate.log 2>&1 &
 source("dev/benchmark/R/bench_lib.R")
@@ -14,14 +15,14 @@ set.seed(6)
 
 max_days <- 7
 load1 <- function() as.numeric(strsplit(readLines("/proc/loadavg"), " ")[[1]][1])
-# "[E]M291": the bracket keeps pgrep from matching the shell that runs it
+# "[b]in/blastn": the bracket keeps pgrep from matching the shell that runs it
 running <- function(pattern) {
   out <- suppressWarnings(system2("pgrep", c("-f", shQuote(pattern)), stdout = TRUE))
   length(out) > 0L
 }
 server_free <- function() {
   busy <- c(
-    EM291_analysis = running("[E]M291"),
+    busy_processes(),
     blastn = running("[b]in/blastn ")
   )
   list(ok = !any(busy) && load1() < 10, busy = c(names(busy)[busy], if (load1() >= 10) "load1>=10"))

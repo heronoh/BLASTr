@@ -19,7 +19,7 @@ packageVersion("purrr")
 
 BLASTr.db_path <- paste0(fs::path_wd(), "/data-raw/minimal_db/shortest_minimal_db_BLASTr.fasta")
 # here are 8 ASVs to be tested with the mock blast DB
-# options(BLASTr.dbapth = "/data/databases/nt/nt")
+# options(BLASTr.dbapth = Sys.getenv("BLASTR_NT_DB"))
 
 # fs::path_package()
 
@@ -59,7 +59,7 @@ purrr:::map_()
 # Test single process
 blast_single_res <- parallel_blast(
   asvs = ASVs_test,
-  # db_path = "/data/databases/nt/nt",
+  # db_path = Sys.getenv("BLASTR_NT_DB"),
   db_path = BLASTr.db_path,
   out_file = NA,
   out_RDS = NA,
@@ -75,8 +75,8 @@ blast_single_res <- parallel_blast(
 # Testing multiple processes
 blast_multi_res <- parallel_blast(
   asvs = ASVs_test,
-  db_path = "/data/databases/core_nt/core_nt /data/databases/LGC12Sdb/oct24/LGC12Sdb_complete_noGaps-2024-09-20.fasta",
-  # db_path = "/data/databases/core_nt/core_nt",
+  db_path = paste(Sys.getenv("BLASTR_CORE_NT_DB"), Sys.getenv("BLASTR_LOCAL_DB")),
+  # db_path = Sys.getenv("BLASTR_CORE_NT_DB"),
   # db_path = BLASTr.db_path,
   out_file = NA,
   out_RDS = NA,
@@ -94,7 +94,7 @@ blast_multi_res <- parallel_blast(
 
 identical(blast_multi_res, blast_single_res)
 
-teste <- readRDS(file = "/home/heron/prjcts/omics/metaseqs/blast_out.RDS")
+teste <- readRDS(file = "blast_out.RDS")
 
 # Close connections
 mirai::daemons(n = 0L, .compute = "blastr-cpu")
@@ -104,10 +104,10 @@ mirai::daemons(n = 0L, .compute = "blastr-cpu")
 
 ## To Run Background Job
 
-# rstudioapi::jobRunScript(path = "heron-otu-blastn.R", workingDir = ".", importEnv = TRUE, exportEnv = "R_GlobalEnv")
+# rstudioapi::jobRunScript(path = "otu-blastn.R", workingDir = ".", importEnv = TRUE, exportEnv = "R_GlobalEnv")
 
 # ----
 
 
-db_path <- "/data/databases/core_nt/core_nt /data/databases/LGC12Sdb/oct24/LGC12Sdb_complete_noGaps-2024-09-20.fasta"
+db_path <- paste(Sys.getenv("BLASTR_CORE_NT_DB"), Sys.getenv("BLASTR_LOCAL_DB"))
 rlang::check_required(db_path)

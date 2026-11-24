@@ -1,5 +1,21 @@
 # Benchmark driver helpers. Source from the BLASTr repo root:
 #   source("dev/benchmark/R/bench_lib.R")
+#
+# Paths and names from the server come from environment variables, so that
+# nothing about it is versioned:
+#   BLASTR_CORE_NT_DB             core_nt database (path and prefix)
+#   BLASTR_LOCAL_DB               local 12S reference database (FASTA), searched
+#                                 together with core_nt
+#   BLASTR_BENCH_LOCAL_ID_PREFIX  prefix of the ids of the local database (02_)
+#   BLASTR_BENCH_WATCH_USER       user whose paused blastn must stay paused
+#                                 (optional; sampler.sh, server_ok())
+#   BLASTR_BENCH_WAIT_FOR         other analyses to wait for, "pattern@user;..."
+#                                 or "pattern;..." (optional; 08_, 09_)
+#   BLASTR_BENCH_SOURCES          table of the source bases (01_; default
+#                                 dev/benchmark/data/sources.tsv, not versioned)
+#   BLASTR_BENCH_CONFIRMED        table of confirmed barcodes (12_)
+#   BLASTR_BENCH_PROJECTS         folder with the projects that log their BLASTr
+#                                 searches (05_; default ~/prjcts)
 
 bench_dir <- normalizePath("dev/benchmark", mustWork = TRUE)
 results_dir <- file.path(bench_dir, "results")
@@ -7,12 +23,20 @@ dir.create(file.path(results_dir, "runs"), recursive = TRUE, showWarnings = FALS
 
 DBS <- list(
   mini = file.path(bench_dir, "db", "mini_multimarker"),
-  core_nt = "/data/databases/core_nt_nov26/core_nt",
-  core_nt_lgc = paste(
-    "/data/databases/core_nt_nov26/core_nt",
-    "/data/databases/LGC12Sdb/jun26/LGC12Sdb_complete_noGaps-2026-06-02.fasta"
-  )
+  core_nt = Sys.getenv("BLASTR_CORE_NT_DB"),
+  core_nt_local = c(Sys.getenv("BLASTR_CORE_NT_DB"), Sys.getenv("BLASTR_LOCAL_DB"))
 )
+
+# Database(s) of a configuration, as one -db value; stops when a variable is unset.
+bench_db <- function(name) {
+  db <- DBS[[name]]
+  if (is.null(db)) stop("Unknown database: ", name, call. = FALSE)
+  if (!all(nzchar(db))) {
+    stop("Set BLASTR_CORE_NT_DB (and BLASTR_LOCAL_DB for core_nt_local); ",
+      "see dev/benchmark/R/bench_lib.R.", call. = FALSE)
+  }
+  paste(db, collapse = " ")
+}
 
 default_cfg <- list(
   phase = "p0", db_name = "mini", query_set = "S100", n_queries = NULL,
@@ -52,10 +76,12 @@ sampled_cpu <- function(pids_path) {
 
 summarise_ts <- function(path) {
   ts <- utils::read.delim(path)
+  # older files name these columns after the watched user
+  names(ts) <- sub("^[a-z]+_blast_(running|stopped)$", "watched_blast_\\1", names(ts))
   if (nrow(ts) < 2) {
     return(data.frame(
       sys_cpu_busy_pct = NA, sda_read_gb = NA, sda_util_pct = NA, load1_mean = NA,
-      run_pss_peak_gb = NA, run_read_gb = NA, heron_running_max = NA, mem_avail_min_gb = NA,
+      run_pss_peak_gb = NA, run_read_gb = NA, watched_running_max = NA, mem_avail_min_gb = NA,
       sampled_cpu_s = NA
     ))
   }
@@ -68,7 +94,7 @@ summarise_ts <- function(path) {
     load1_mean = mean(ts$load1),
     run_pss_peak_gb = max(ts$run_pss_kb) / 1024^2,
     run_read_gb = max(ts$run_read_bytes) / 1e9,
-    heron_running_max = max(ts$heron_blast_running),
+    watched_running_max = max(ts$watched_blast_running),
     mem_avail_min_gb = min(ts$mem_avail_kb) / 1024^2,
     sampled_cpu_s = sampled_cpu(paste0(path, ".pids"))
   )
@@ -76,7 +102,7 @@ summarise_ts <- function(path) {
 
 run_config <- function(..., sample_interval = 2) {
   cfg <- utils::modifyList(default_cfg, list(...))
-  cfg$db <- DBS[[cfg$db_name]]
+  cfg$db <- bench_db(cfg$db_name)
   cfg$query_fasta <- file.path(bench_dir, "data", paste0(cfg$query_set, ".fasta"))
   cfg$pkg_path <- normalizePath(file.path(bench_dir, "..", ".."))
   # BLASTr 0.1.7 (one blastn per sequence) for strategy A: a worktree at
@@ -149,18 +175,40 @@ run_config <- function(..., sample_interval = 2) {
   row
 }
 
-# Wait until heron's BLAST is still stopped and load is acceptable.
+# Running (not stopped) blastn of BLASTR_BENCH_WATCH_USER; 0 when it is unset.
+watched_blast <- function(user = Sys.getenv("BLASTR_BENCH_WATCH_USER")) {
+  if (!nzchar(user)) return(0L)
+  cmd <- sprintf("ps -u %s -o stat=,comm= | awk '$2==\"blastn\" && $1 !~ /^T/' | wc -l", shQuote(user))
+  as.integer(system(cmd, intern = TRUE))
+}
+
+# Wait until the watched user's BLAST is still stopped and load is acceptable.
 server_ok <- function(max_load = 45) {
-  st <- system("ps -u heron -o stat=,comm= | awk '$2==\"blastn\" && $1 !~ /^T/' | wc -l", intern = TRUE)
+  st <- watched_blast()
   load1 <- as.numeric(strsplit(readLines("/proc/loadavg"), " ")[[1]][1])
-  ok <- as.integer(st) == 0 && load1 < max_load
-  attr(ok, "detail") <- sprintf("heron running blastn=%s load1=%.1f", st, load1)
+  ok <- st == 0 && load1 < max_load
+  attr(ok, "detail") <- sprintf("watched user running blastn=%s load1=%.1f", st, load1)
   ok
+}
+
+# Which of the analyses in BLASTR_BENCH_WAIT_FOR are running ("pattern@user" or
+# "pattern", separated by ";"). The bracket in "[m]ake_barcodes.R" keeps pgrep
+# from matching the shell that runs it, whose command line has the pattern.
+busy_processes <- function(spec = Sys.getenv("BLASTR_BENCH_WAIT_FOR")) {
+  items <- strsplit(spec, ";", fixed = TRUE)[[1]]
+  items <- trimws(items[nzchar(trimws(items))])
+  vapply(items, function(it) {
+    parts <- strsplit(it, "@", fixed = TRUE)[[1]]
+    pattern <- paste0("[", substr(parts[[1]], 1, 1), "]", substring(parts[[1]], 2))
+    user <- if (length(parts) > 1L) c("-u", parts[[2]])
+    out <- suppressWarnings(system2("pgrep", c(user, "-f", shQuote(pattern)), stdout = TRUE))
+    length(out) > 0L
+  }, logical(1))
 }
 
 # Drop a database's files from the page cache (no root: posix_fadvise
 # DONTNEED; pages mapped by a running process stay). Returns the % still cached.
-evict_db <- function(db = DBS$core_nt) {
+evict_db <- function(db = bench_db("core_nt")) {
   files <- Sys.glob(paste0(db, "*"))
   py <- "import os,sys
 for f in sys.argv[1:]:
@@ -169,7 +217,7 @@ for f in sys.argv[1:]:
   cached_pct(db)
 }
 
-cached_pct <- function(db = DBS$core_nt) {
+cached_pct <- function(db = bench_db("core_nt")) {
   files <- Sys.glob(paste0(db, "*"))
   out <- system2("fincore", c("-b", "-n", "-o", "RES,SIZE", shQuote(files)), stdout = TRUE)
   v <- matrix(as.numeric(unlist(strsplit(trimws(out), "\\s+"))), ncol = 2, byrow = TRUE)
@@ -177,6 +225,7 @@ cached_pct <- function(db = DBS$core_nt) {
 }
 
 # Other users' blastn on the same machine (cold runs need the DB to ourselves)
-others_blast <- function() {
-  as.integer(system("ps -eo user=,comm= | awk '$2==\"blastn\" && $1!=\"noreh\"' | wc -l", intern = TRUE))
+others_blast <- function(me = Sys.info()[["user"]]) {
+  cmd <- sprintf("ps -eo user=,comm= | awk -v me=%s '$2==\"blastn\" && $1!=me' | wc -l", shQuote(me))
+  as.integer(system(cmd, intern = TRUE))
 }

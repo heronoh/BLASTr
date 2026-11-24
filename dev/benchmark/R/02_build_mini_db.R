@@ -5,7 +5,10 @@ suppressPackageStartupMessages(library(DBI))
 set.seed(20261119)
 prj <- path.expand("~/prjcts")
 bin <- path.expand("~/.local/share/R/condathis/envs/blastr-blast-env/bin")
-core_nt <- "/data/databases/core_nt_nov26/core_nt"
+core_nt <- Sys.getenv("BLASTR_CORE_NT_DB")
+if (!nzchar(core_nt)) stop("Set BLASTR_CORE_NT_DB to the core_nt database (path and prefix).")
+# subjects of the local reference database are not in core_nt
+local_prefix <- Sys.getenv("BLASTR_BENCH_LOCAL_ID_PREFIX")
 db_dir <- "dev/benchmark/db"
 dir.create(db_dir, showWarnings = FALSE)
 
@@ -19,7 +22,8 @@ acc <- lapply(fs, function(f) {
   on.exit(dbDisconnect(con))
   x <- unique(dbGetQuery(con, "select distinct subject from hits")$subject)
   x <- sub("^gi\\|[0-9]+\\|[a-z]+\\|([^|]+)\\|.*$", "\\1", x)
-  x <- x[!grepl("^LGC_", x) & !is.na(x)]
+  x <- x[!is.na(x)]
+  if (nzchar(local_prefix)) x <- x[!startsWith(x, local_prefix)]
   if (length(x) > 20000) x <- sample(x, 20000)
   x
 })

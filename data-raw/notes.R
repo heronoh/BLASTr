@@ -1,5 +1,5 @@
 
-source("~/prjcts/ecomol/R/extract_taxonomy_name.R")
+source("extract_taxonomy_name.R") # from another project
 extract_taxonomy_name(organism_name = "Mazama gouazoubira") %>% View()
 
 

@@ -1,7 +1,9 @@
 # Build the stratified seqs pool and nested benchmark subsets.
 #
-# Sources (read-only): mtbrcdR analysis bases (EM291, EM293, EM294) and curatR
-# bases (bee_iDNA, eDNA_Lagoinha, eDNA_Lycengraulis, iDNA_tadpoles).
+# Sources (read-only): mtbrcdR and curatR analysis bases, listed in a local
+# table that is not versioned (BLASTR_BENCH_SOURCES, default
+# dev/benchmark/data/sources.tsv; columns tool = mtbrcdR or curatR, path
+# relative to ~/prjcts or absolute, source = label kept in the pool).
 # Output: dev/benchmark/data/{seqs_pool,S100,S500,S2000}.{fasta,tsv} + MANIFEST.tsv
 #
 # Run from the BLASTr repo root: Rscript dev/benchmark/R/01_build_seqs.R
@@ -71,15 +73,17 @@ primer_marker <- function(primer) {
   )
 }
 
-raw <- bind_rows(
-  read_mtbrcdr(file.path(prj, "mtbrcdR/analyses/eDNA_vale_dmx/EM291_os1e2/db/dmx_Vale_nov26--complete_results_mtbrcdR.sqlite"), "EM291"),
-  read_mtbrcdr(file.path(prj, "mtbrcdR/analyses/MiSeqi100_Seq11/db/EM293--complete_results_mtbrcdR.sqlite"), "EM293"),
-  read_mtbrcdr(file.path(prj, "mtbrcdR/analyses/MiSeqi100_Seq11/db/EM294--complete_results_mtbrcdR.sqlite"), "EM294"),
-  read_curatr(file.path(prj, "curatR/db/bee_iDNA.data.sqlite"), "bee_iDNA"),
-  read_curatr(file.path(prj, "curatR/db/eDNA_Lagoinha.data.sqlite"), "eDNA_Lagoinha"),
-  read_curatr(file.path(prj, "curatR/db/eDNA_Lycengraulis.data.sqlite"), "eDNA_Lycengraulis"),
-  read_curatr(file.path(prj, "curatR/db/iDNA_tadpoles.data.sqlite"), "iDNA_tadpoles")
-)
+sources_file <- Sys.getenv("BLASTR_BENCH_SOURCES", file.path(out_dir, "sources.tsv"))
+src <- utils::read.delim(sources_file, colClasses = "character")
+raw <- bind_rows(lapply(seq_len(nrow(src)), function(i) {
+  f <- path.expand(src$path[[i]])
+  if (!startsWith(f, "/")) f <- file.path(prj, f)
+  switch(src$tool[[i]],
+    mtbrcdR = read_mtbrcdr(f, src$source[[i]]),
+    curatR = read_curatr(f, src$source[[i]]),
+    stop("Unknown tool in ", sources_file, ": ", src$tool[[i]])
+  )
+}))
 
 seqs <- raw |>
   filter(!is.na(sequence), nzchar(sequence)) |>

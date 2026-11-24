@@ -11,6 +11,8 @@ fig_dir <- file.path(res_dir, "figs")
 dir.create(fig_dir, showWarnings = FALSE)
 
 runs <- utils::read.delim(file.path(res_dir, "runs.tsv"))
+# older rows name this column after the watched user
+names(runs) <- sub("^[a-z]+_running_max$", "watched_running_max", names(runs))
 if (length(args)) runs <- filter(runs, phase %in% args)
 
 runs <- runs |>
@@ -45,7 +47,7 @@ summ <- runs |>
     pss_gb = median(run_pss_peak_gb), sda_gb = median(sda_read_gb),
     hits_med = median(n_hits), with_hit_med = median(n_queries_with_hit),
     with_hit_min = min(n_queries_with_hit), with_hit_max = max(n_queries_with_hit),
-    load = median(load1_mean), heron_running = max(heron_running_max),
+    load = median(load1_mean), watched_running = max(watched_running_max),
     .groups = "drop"
   ) |>
   arrange(phase, db, query_set, num_alignments, wall_med)
@@ -177,12 +179,14 @@ if (length(agree)) {
 
 # 7. Searches of the projects that use BLASTr (BLASTr_logs) -------------------
 # Each project writes <dir>/BLASTr_logs/blastr_runs.tsv (parallel_blast(log_dir =)).
-# Paths: BLASTR_BENCH_LOGS (":"-separated), or the known project folders.
+# Paths: BLASTR_BENCH_LOGS (":"-separated), or the project folders inside
+# BLASTR_BENCH_PROJECTS (default ~/prjcts).
 log_files <- strsplit(Sys.getenv("BLASTR_BENCH_LOGS", ""), ":", fixed = TRUE)[[1]]
 if (!length(log_files)) {
+  prj <- path.expand(Sys.getenv("BLASTR_BENCH_PROJECTS", "~/prjcts"))
   log_files <- unique(c(
-    Sys.glob("/home/noreh/prjcts/*/BLASTr_logs/blastr_runs.tsv"),
-    Sys.glob("/home/noreh/prjcts/*/mtbrcdR_logs/BLASTr_logs/blastr_runs.tsv")
+    Sys.glob(file.path(prj, "*", "BLASTr_logs", "blastr_runs.tsv")),
+    Sys.glob(file.path(prj, "*", "mtbrcdR_logs", "BLASTr_logs", "blastr_runs.tsv"))
   ))
 }
 log_files <- log_files[file.exists(log_files)]

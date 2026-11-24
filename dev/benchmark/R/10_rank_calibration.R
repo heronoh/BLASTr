@@ -17,7 +17,8 @@
 suppressMessages(devtools::load_all(".", quiet = TRUE))
 set.seed(10)
 
-db <- "/data/databases/core_nt_nov26/core_nt"
+db <- Sys.getenv("BLASTR_CORE_NT_DB")
+if (!nzchar(db)) stop("Set BLASTR_CORE_NT_DB to the core_nt database (path and prefix).")
 cores <- 32L
 out_dir <- "dev/benchmark/results/rank_calibration"
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)

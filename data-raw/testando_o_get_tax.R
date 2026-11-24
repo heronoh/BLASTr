@@ -8,7 +8,7 @@ get_tax_by_taxID(
 
 
 # parallel ----
-source("/home/heron/prjcts/BLASTr/R/parallel_get_tax.R")
+source("R/parallel_get_tax.R")
 
 parallel_get_tax(
   organisms_taxIDs = c(
@@ -34,13 +34,13 @@ total_cores <- 2
 retry_times <- 2
 
 
-teste <- xml2::read_xml(x = "/home/heron/prjcts/BLASTr/data-raw/broken_xml.xml") |>
+teste <- xml2::read_xml(x = "data-raw/broken_xml.xml") |>
   xml2::as_list()
 
 
 xml_teste <- tryCatch(
   {
-    xml_file <- xml2::read_xml(x = "/home/heron/prjcts/BLASTr/data-raw/broken_xml.xml")
+    xml_file <- xml2::read_xml(x = "data-raw/broken_xml.xml")
     "XML file is valid!"
   },
   error = function(e) {

@@ -23,11 +23,11 @@ ASVs_test <- c(
 
 future::availableCores()
 
-# options(BLASTr.dbapth = "/data/databases/nt/nt")
+# options(BLASTr.dbapth = Sys.getenv("BLASTR_NT_DB"))
 
 blast_res <- BLASTr::parallel_blast(
   asvs = ASVs_test,
-  db_path = "/data/databases/core_nt/core_nt",
+  db_path = Sys.getenv("BLASTR_CORE_NT_DB"),
   # db_path = BLASTr.db_path,
   out_file = NA,
   out_RDS = NA,
@@ -42,7 +42,7 @@ blast_res <- BLASTr::parallel_blast(
 
 # blast_res1 <- BLASTr::run_blast(
 #   asv = ASVs_test[3],
-#   db_path = "/data/databases/nt/nt",
+#   db_path = Sys.getenv("BLASTR_NT_DB"),
 #   perc_id = 80,
 #   num_threads = 1,
 #   perc_qcov_hsp = 80,

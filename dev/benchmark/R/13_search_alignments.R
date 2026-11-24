@@ -1,7 +1,7 @@
 # How many subjects should BLAST keep (search_alignments)? When more subjects
 # tie with the best one than BLAST returns (-max_target_seqs), the tied set is
 # cut (`At best truncated`) and the LCA is computed on part of it.
-# 30 seqs per marker from the benchmark pool, core_nt_nov26 + LGC12Sdb,
+# 30 seqs per marker from the benchmark pool, core_nt + the local 12S database,
 # search_alignments 50 / 100 / 200, 30 cores; runs in the order
 # 200 100 50 50 100 200 (warm cache; mean of 2 per setting).
 # For each setting: wall time, seqs truncated, tied hits, and how the LCA
@@ -11,7 +11,8 @@
 suppressMessages(devtools::load_all(".", quiet = TRUE))
 set.seed(13)
 
-db <- c("/data/databases/core_nt_nov26/core_nt", "/data/databases/LGC12Sdb/jun26/LGC12Sdb_complete_noGaps-2026-06-02.fasta")
+db <- c(Sys.getenv("BLASTR_CORE_NT_DB"), Sys.getenv("BLASTR_LOCAL_DB"))
+if (!all(nzchar(db))) stop("Set BLASTR_CORE_NT_DB and BLASTR_LOCAL_DB (see dev/benchmark/R/bench_lib.R).")
 tax_db <- path.expand("~/.cache/R/BLASTr/taxonomy/taxonomy_2026-11-12.sqlite")
 cores <- 30L
 markers <- c("12S", "16S", "COI", "ITS2", "rbcL", "trnL")

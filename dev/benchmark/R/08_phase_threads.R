@@ -2,7 +2,7 @@
 #   B 1x32 m2 | B 1x64 m2 | C 2x32 m2 (seqs split in 2 batches, one per process)
 #   on S500 and S2000, 2 reps each = 12 runs (~1 h).
 # Uses 64 of the 80 threads, so it only starts at night (22:00-07:00) once the
-# other analyses are over: renato's ipyrad and noreh's make_barcodes.R, no
+# other analyses are over (BLASTR_BENCH_WAIT_FOR, see bench_lib.R), with no
 # other user's blastn and a low load. Outside the window it waits for the
 # next night; it gives up after max_days.
 # Run from repo root:
@@ -15,18 +15,10 @@ night <- function() {
   h <- as.integer(format(Sys.time(), "%H"))
   h >= 22L || h < 7L
 }
-# "[m]ake_barcodes.R": the bracket keeps pgrep from matching the shell that
-# runs it, whose command line contains the pattern.
-running <- function(pattern, user) {
-  pattern <- paste0("[", substr(pattern, 1, 1), "]", substring(pattern, 2))
-  out <- suppressWarnings(system2("pgrep", c("-u", user, "-f", shQuote(pattern)), stdout = TRUE))
-  length(out) > 0L
-}
 load1 <- function() as.numeric(strsplit(readLines("/proc/loadavg"), " ")[[1]][1])
 server_free <- function() {
   busy <- c(
-    renato_ipyrad = running("ipyrad", "renato"),
-    noreh_barcodes = running("make_barcodes.R", "noreh"),
+    busy_processes(),
     others_blastn = others_blast() > 0
   )
   list(ok = !any(busy) && load1() < 12, busy = names(busy)[busy], load = load1())

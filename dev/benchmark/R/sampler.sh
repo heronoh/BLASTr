@@ -4,12 +4,14 @@
 # Every <interval_s> seconds writes one line with system and run-level metrics.
 # Run processes are found by the env var BLASTR_BENCH_RUN=<run_id>.
 # Stops when the file <out_tsv>.stop exists.
+# watched_blast_*: blastn of BLASTR_BENCH_WATCH_USER (0 when it is unset).
 
 run_id="$1"
+watch_user="${BLASTR_BENCH_WATCH_USER:-}"
 out="$2"
 interval="${3:-2}"
 
-printf 't\tcpu_busy_jiffies\tcpu_total_jiffies\tsda_read_sectors\tsda_io_ms\tload1\tmem_avail_kb\tcached_kb\trun_nproc\trun_pss_kb\trun_read_bytes\theron_blast_running\theron_blast_stopped\trun_cpu_ticks\n' >"$out"
+printf 't\tcpu_busy_jiffies\tcpu_total_jiffies\tsda_read_sectors\tsda_io_ms\tload1\tmem_avail_kb\tcached_kb\trun_nproc\trun_pss_kb\trun_read_bytes\twatched_blast_running\twatched_blast_stopped\trun_cpu_ticks\n' >"$out"
 
 run_pids() {
   local p
@@ -40,8 +42,11 @@ while [[ ! -e "$out.stop" ]]; do
     v=$(sed 's/.*) //' "/proc/$p/stat" 2>/dev/null | awk '{print $12+$13}'); ct=$((ct + ${v:-0}))
     printf '%s\t%s\t%s\n' "$p" "$(cat /proc/$p/comm 2>/dev/null)" "${v:-0}" >>"$out.pids"
   done
-  hr=$(ps -u heron -o stat=,comm= 2>/dev/null | awk '$2=="blastn" && $1 !~ /^T/' | wc -l)
-  hs=$(ps -u heron -o stat=,comm= 2>/dev/null | awk '$2=="blastn" && $1 ~ /^T/' | wc -l)
+  hr=0; hs=0
+  if [[ -n "$watch_user" ]]; then
+    hr=$(ps -u "$watch_user" -o stat=,comm= 2>/dev/null | awk '$2=="blastn" && $1 !~ /^T/' | wc -l)
+    hs=$(ps -u "$watch_user" -o stat=,comm= 2>/dev/null | awk '$2=="blastn" && $1 ~ /^T/' | wc -l)
+  fi
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
     "$t" "$busy" "$total" "$rs" "$ioms" "$load1" "$mavail" "$cached" "$np" "$pss" "$rb" "$hr" "$hs" "$ct" >>"$out"
   sleep "$interval"
