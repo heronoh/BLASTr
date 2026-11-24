@@ -17,7 +17,7 @@ parse_fasta <- function(file_path) {
   if (isFALSE(fs::file_exists(file_path))) {
     cli::cli_abort(
       c(
-        x = "{.file file_path} do not exist."
+        x = "{.file {file_path}} does not exist."
       ),
       class = "blastr_fasta_file_not_readable"
     )

@@ -55,6 +55,11 @@ hit_summary_cols <- c(
   "Best low qcov", "N uninformative", "Best uninformative score"
 )
 
+# Summary columns that need all the subjects BLAST returned, not only the
+# rows kept in the long results: parallel_blast() keeps them per sequence in
+# `BLASTr_metadata$hit_counts`. The last two depend on the ranking.
+hit_count_cols <- c("N hits", "N taxids", "N uninformative", "N hits same taxid as 1st", "Best uninformative score")
+
 #' @title Similarity score of BLAST hits
 #'
 #' @description
@@ -146,7 +151,7 @@ rank_blast_hits <- function(hits, rank_by = "similarity", tolerance = 0.5) {
 #'   empty, as in databases built without a taxid map).
 #' * `NA`: no hits.
 #'
-#' The other columns use all the hits of the sequence: `N hits`, `N taxids`
+#' The other columns use all the hits given for the sequence: `N hits`, `N taxids`
 #' (distinct known taxids), `N hits same taxid as 1st`, `N hits at best`,
 #' `N taxids at best`, `Taxids at best` (the known taxids of the hits at
 #' best, in rank order, separated by `";"`, for a lowest common ancestor) and
@@ -322,6 +327,17 @@ blast_long <- function(hits, seq_ids, seqs, num_alignments = Inf, rank_by = "sim
 #' query than `perc_qcov_hsp`: the identification rests on a partial
 #' alignment). Sequences without hits have `N hits = 0` and `NA` elsewhere.
 #'
+#' The long results keep only the first `num_alignments` hits and the ones
+#' tied with the best, but `N hits`, `N taxids` and `N uninformative` count
+#' all the subjects BLAST returned (up to `search_alignments`), as do
+#' `N hits same taxid as 1st` and `Best uninformative score` when `rank_by`
+#' is the one of the search: [parallel_blast()] keeps these counts in the
+#' attribute `BLASTr_metadata` (`hit_counts`). For sequences without them
+#' (results of older versions, other tables) they are computed from the
+#' rows of `x`. So `N hits` equal to `search_alignments` means BLAST
+#' returned as many subjects as it was asked for: the list may have been
+#' cut.
+#'
 #' @param x Long BLASTr results.
 #' @param check_n,tolerance,rank_by,search_alignments As in [check_hits()].
 #'   `NULL` (default) uses the values of the search, kept in the attribute
@@ -352,6 +368,17 @@ blast_summary <- function(x, check_n = NULL, tolerance = NULL, rank_by = NULL, s
   s <- check_hits(h, check_n = check_n, tolerance = tolerance, rank_by = rank_by, search_alignments = search_alignments)
   names(s)[names(s) == "query"] <- "Sequence"
   out <- dplyr::left_join(tibble::tibble(Sequence = unique(x$Sequence)), s, by = "Sequence")
+  # counts over all the subjects of the search (see Description)
+  counts <- meta$hit_counts
+  if (is.data.frame(counts) && all(c("Sequence", hit_count_cols) %in% names(counts))) {
+    i <- match(out$Sequence, counts$Sequence)
+    has <- !is.na(i)
+    same_rank <- identical(rank_by, if (is.null(meta$rank_by)) "similarity" else meta$rank_by)
+    for (k in hit_count_cols) {
+      if (k %in% c("N hits same taxid as 1st", "Best uninformative score") && !same_rank) next
+      out[[k]][has] <- counts[[k]][i[has]]
+    }
+  }
   out$`N hits`[is.na(out$`N hits`)] <- 0L
   out$`N uninformative`[is.na(out$`N uninformative`)] <- 0L
   # coverage of the best hit, as ranked in x (the first row of each sequence)
@@ -427,6 +454,8 @@ as_blast_long <- function(x, rank_by = c("similarity", "identity", "bitscore"), 
       hits, seq_ids = seqs, seqs = seqs, num_alignments = Inf, rank_by = rank_by, tolerance = tolerance,
       perc_qcov_hsp = perc_qcov_hsp, uninformative = uninformative
     )
+    # the counts of the search used the flags of another table
+    if (!is.null(meta)) meta$hit_counts <- NULL
     attr(out, "BLASTr_metadata") <- meta
     return(out)
   }

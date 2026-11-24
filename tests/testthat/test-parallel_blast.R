@@ -222,6 +222,11 @@ testthat::test_that("parallel_blast long output: one row per hit, best first", {
   testthat::expect_equal(s$Sequence, unique(res$Sequence))
   testthat::expect_true("Taxids at best" %in% names(s))
   meta <- attr(res, "BLASTr_metadata")
+  # N hits counts all the subjects BLAST returned, not only the kept rows
+  kept <- tapply(!is.na(res$blast_rank), res$Sequence, sum)[s$Sequence]
+  testthat::expect_true(all(s$`N hits` >= kept))
+  testthat::expect_equal(s$`N hits`, meta$hit_counts$`N hits`[match(s$Sequence, meta$hit_counts$Sequence)])
+  testthat::expect_true(any(s$`N hits` > kept))
   testthat::expect_match(meta$blast_cmd, "^blastn -db .* -query <batch.fasta>")
   testthat::expect_false(any(vapply(seqs_test, grepl, logical(1L), x = meta$blast_cmd, fixed = TRUE)))
   testthat::expect_type(meta$db_dates, "character")

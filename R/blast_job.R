@@ -583,21 +583,26 @@ collect_blast_job <- function(job) {
   } else {
     m <- st$meta
     rank_by <- if (is.null(m$rank_by)) "similarity" else m$rank_by
-    long <- blast_long(
-      read_blast_hits(out_files),
-      seq_ids = seqs$query,
-      seqs = seqs$sequence,
-      num_alignments = m$num_alignments,
-      rank_by = rank_by,
-      tolerance = m$check_tolerance,
-      perc_qcov_hsp = if (is.null(m$perc_qcov_hsp)) NA else m$perc_qcov_hsp,
-      uninformative = m$uninformative
-    )
+    hits <- read_blast_hits(out_files)
+    as_long <- function(n) {
+      blast_long(
+        hits,
+        seq_ids = seqs$query,
+        seqs = seqs$sequence,
+        num_alignments = n,
+        rank_by = rank_by,
+        tolerance = m$check_tolerance,
+        perc_qcov_hsp = if (is.null(m$perc_qcov_hsp)) NA else m$perc_qcov_hsp,
+        uninformative = m$uninformative
+      )
+    }
+    # the summary counts all the subjects BLAST returned, not only the kept rows
     summ <- blast_summary(
-      long,
+      as_long(Inf),
       check_n = m$check_n, tolerance = m$check_tolerance, rank_by = rank_by,
       search_alignments = m$search_alignments
     )
+    long <- as_long(m$num_alignments)
     if (identical(m$output, "wide")) widen_blast_hits(long, summ, m$num_alignments) else long
   }
   pr <- job_progress(b)
@@ -613,6 +618,7 @@ collect_blast_job <- function(job) {
     list(
       strategy = st$strategy,
       elapsed_s = pr$elapsed,
+      hit_counts = if (is.null(summ)) NULL else summ[, c("Sequence", hit_count_cols)],
       job_dir = as.character(job$dir),
       cpu_s = job_cpu_s(job$dir),
       log_file = if (is.null(log_path)) NULL else as.character(log_path),

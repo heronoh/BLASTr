@@ -59,7 +59,6 @@ testthat::test_that("`make_blast_db()` works with `taxid_map`", {
   testthat::skip_if_offline()
 
   db_path <- fs::file_temp("minimal_db_blast_")
-  # `taxid_map` must share the FASTA radical name (and directory)
   fasta_path <- local_fasta_copy()
   taxid_map_path <- fs::path_ext_set(fasta_path, "txt")
   write("AY882416	2759", taxid_map_path)
@@ -81,7 +80,6 @@ testthat::test_that("`make_blast_db()` works with `parse_seqids`", {
   testthat::skip_if_offline()
 
   db_path <- fs::file_temp("minimal_db_blast_")
-  # `taxid_map` must share the FASTA radical name (and directory)
   fasta_path <- local_fasta_copy()
   taxid_map_path <- fs::path_ext_set(fasta_path, "txt")
   write("AY882416	2759", taxid_map_path)
@@ -106,7 +104,6 @@ testthat::test_that("`make_blast_db()` output has valid taxid", {
   testthat::skip("The example fasta does not have taxid in the header")
 
   db_path <- fs::file_temp("minimal_db_blast_")
-  # `taxid_map` must share the FASTA radical name (and directory)
   fasta_path <- local_fasta_copy()
   taxid_map_path <- fs::path_ext_set(fasta_path, "txt")
   base::write("AY882416	2759", taxid_map_path)
@@ -206,5 +203,28 @@ testthat::test_that("`make_blast_db()` stops if `db_path` is not writable", {
       verbose = "silent"
     ),
     class = "blastr_error_db_dir_not_writable"
+  )
+})
+
+testthat::test_that("`make_blast_db()` takes a `taxid_map` with any name and is silent", {
+  testthat::skip_on_cran()
+
+  db_path <- fs::file_temp("minimal_db_blast_")
+  fasta_path <- local_fasta_copy()
+  taxid_map_path <- fs::file_temp("taxids_", ext = "tsv")
+  write("AY882416\t2759", taxid_map_path)
+
+  testthat::expect_silent(
+    db_res <- make_blast_db(
+      fasta_path = fasta_path,
+      db_path = db_path,
+      taxid_map = taxid_map_path,
+      verbose = "silent"
+    )
+  )
+  testthat::expect_equal(db_res$status, 0)
+  testthat::expect_error(
+    make_blast_db(fasta_path = fasta_path, db_path = db_path, taxid_map = fs::file_temp(), verbose = "silent"),
+    class = "blastr_error_taxid_map_not_found"
   )
 })

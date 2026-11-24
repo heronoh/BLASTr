@@ -53,7 +53,7 @@ the database fits in memory. \code{NULL} uses the total RAM of the machine.}
 Defaults to \code{10}.}
 
 \item{search_alignments}{Number of subjects BLAST keeps during the
-search (\code{-max_target_seqs}). BLAST cuts its list of subjects before the
+search (\code{-num_alignments}). BLAST cuts its list of subjects before the
 \code{perc_qcov_hsp} filter, so asking only for \code{num_alignments} can lose
 valid hits. BLASTr searches \code{max(num_alignments, search_alignments)}
 subjects and keeps the \code{num_alignments} best ones that pass the
@@ -166,8 +166,10 @@ in rank order, the hit fields prefixed by \code{k_}.
 
 The attribute \code{BLASTr_metadata} keeps the parameters, the strategy, the
 BLAST command (\code{blast_cmd}, without the sequences), the BLAST version,
-the date of each database and the exit codes (see \code{\link[=exit_codes]{exit_codes()}}). With
-\code{background = TRUE}, a \code{blastr_job}.
+the date of each database, the exit codes (see \code{\link[=exit_codes]{exit_codes()}}) and,
+per sequence, the counts over all the subjects BLAST returned
+(\code{hit_counts}, used by \code{\link[=blast_summary]{blast_summary()}}). With \code{background = TRUE}, a
+\code{blastr_job}.
 }
 \description{
 Search a set of sequences against one or more BLAST databases, using the

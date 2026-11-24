@@ -14,7 +14,7 @@ tax_ranks_default <- c(
 #'
 #' `x` can be a vector of taxids or any result of [parallel_blast()] (long
 #' or wide) or [parallel_blast_hsps()]: the taxids are taken from the
-#' `staxid`, `k_staxid` and `Taxids at best identity` columns. Unknown
+#' `staxid`, `k_staxid` and `Taxids at best` columns. Unknown
 #' taxids (`0`, empty, `N/A`) are dropped.
 #'
 #' When the database does not exist, it is built from the NCBI taxdump
@@ -56,7 +56,7 @@ tax_ranks_default <- c(
 #'
 #' @examples
 #' \dontrun{
-#' options(BLASTr.taxonomy_db = "/data/databases/tax/nameNode.sqlite")
+#' options(BLASTr.taxonomy_db = "path/to/taxonomy.sqlite")
 #' get_tax(c("9606", "10090"))
 #'
 #' res <- parallel_blast(seqs, db_path = "/data/databases/core_nt/core_nt")
@@ -170,10 +170,11 @@ sql_in <- function(con, sql, ids, chunk = 5000L) {
 # Distinct known taxids of a vector or of a BLASTr result.
 extract_taxids <- function(x) {
   if (is.data.frame(x)) {
-    cols <- grep("^([0-9]+_)?staxid$|^Taxids at best identity$", names(x), value = TRUE)
+    # "Taxids at best identity": its name before 0.2.0, in older wide results
+    cols <- grep("^([0-9]+_)?staxid$|^Taxids at best( identity)?$", names(x), value = TRUE)
     if (length(cols) == 0L) {
       cli::cli_abort(
-        c(`x` = "No taxid column ({.field staxid}, {.field k_staxid} or {.field Taxids at best identity}) in {.arg x}."),
+        c(`x` = "No taxid column ({.field staxid}, {.field k_staxid} or {.field Taxids at best}) in {.arg x}."),
         class = "blastr_no_taxids_error"
       )
     }

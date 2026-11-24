@@ -26,11 +26,13 @@ exist or cannot be written to.}
 \item{db_type}{Type of database to create, either "nucl" or "prot".}
 
 \item{taxid_map}{Optional path to a file mapping sequence IDs to
-taxonomy IDs. Must have the same radical name than the .fasta db file}
+taxonomy IDs (two columns, separated by a space or a tab), passed to
+\code{makeblastdb -taxid_map}.}
 
 \item{parse_seqids}{Whether to parse sequence IDs.}
 
-\item{verbose}{Should \verb{[condathis::run()]} internal command be shown?}
+\item{verbose}{Should \verb{[condathis::run()]} internal command be shown?
+With \code{"silent"} (default) nothing is printed.}
 
 \item{env_name}{The name of the conda environment with the parameter
 (i.e. "blastr-blast-env").}

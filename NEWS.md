@@ -159,6 +159,23 @@
 * `parse_fasta()` failed on R 4.3 (`could not find function "declare"`):
   it called `declare()`, which only exists from R 4.4, to keep the
   `carrier` import. `carrier` was not used otherwise and left `Imports`.
+* `blast_summary()`: `N hits`, `N taxids`, `N uninformative`,
+  `N hits same taxid as 1st` and `Best uninformative score` were computed
+  only on the rows kept in the long results (the first `num_alignments`
+  and the hits at best), not on all the subjects BLAST returned, as
+  documented. `parallel_blast()` now computes them on all the subjects and
+  keeps them in `BLASTr_metadata$hit_counts`, which `blast_summary()` uses;
+  `N hits` equal to `search_alignments` now shows that BLAST returned a full
+  list. The summary of the wide results and of the log is also computed on
+  all the subjects. Results of older versions keep the old counts.
+* `get_tax()` ignored the `Taxids at best` column of wide results (it
+  looked for its old name, `Taxids at best identity`, still accepted).
+* `parse_fasta()` names the missing file in its error message.
+* `make_blast_db()` accepts a `taxid_map` with any name (it required the
+  base name of the FASTA file), checks that it exists, and prints the
+  `makeblastdb` command only when `verbose` is not `"silent"`.
+* The documentation of `search_alignments` in `parallel_blast()` named
+  `-max_target_seqs`; the option passed to BLAST is `-num_alignments`.
 
 ## BLASTr 0.1.7
 

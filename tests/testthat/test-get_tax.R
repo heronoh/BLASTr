@@ -64,3 +64,10 @@ testthat::test_that("taxdump_url picks the first NCBI archive after the database
   testthat::expect_match(taxdump_url(format(Sys.Date())), "taxdump.tar.gz$")
   testthat::expect_match(taxdump_url(NA), "taxdump.tar.gz$")
 })
+
+testthat::test_that("extract_taxids reads `Taxids at best` of wide results (and its old name)", {
+  wide <- data.frame(`1_staxid` = "9606", `Taxids at best` = "9606;9598", check.names = FALSE)
+  testthat::expect_equal(extract_taxids(wide), c("9606", "9598"))
+  names(wide)[2] <- "Taxids at best identity"
+  testthat::expect_equal(extract_taxids(wide), c("9606", "9598"))
+})

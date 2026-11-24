@@ -72,3 +72,28 @@ testthat::test_that("blast_cmd_line hides the sequences and quotes arguments", {
     "blastn -db /x/core_nt -outfmt '6 qaccver saccver' -query <batch.fasta> -out <batch.tsv> -num_threads 32"
   )
 })
+
+testthat::test_that("blast_summary counts all the subjects of the search, kept in the metadata", {
+  h <- data.frame(
+    query = "q1", blast_rank = 1:30, subject = paste0("S", 1:30), `subject header` = "x",
+    staxid = as.character(c(1, 1, 2:29)), identity = seq(100, 85.5, by = -0.5), qcovhsp = 100,
+    bitscore = 300:271, check.names = FALSE
+  )
+  h$`Similarity score` <- similarity_score(h$identity, h$qcovhsp)
+  long <- blast_long(h, "q1", "ACGT", num_alignments = 10L)
+  testthat::expect_equal(sum(!is.na(long$blast_rank)), 10L)
+  # without the counts of the search: the rows of x
+  testthat::expect_equal(blast_summary(long)$`N hits`, 10L)
+  full <- blast_summary(blast_long(h, "q1", "ACGT", num_alignments = Inf))
+  attr(long, "BLASTr_metadata") <- list(rank_by = "similarity", hit_counts = full[, c("Sequence", hit_count_cols)])
+  s <- blast_summary(long)
+  testthat::expect_equal(s$`N hits`, 30L)
+  testthat::expect_equal(s$`N taxids`, 29L)
+  testthat::expect_equal(s$`N hits same taxid as 1st`, 2L)
+  testthat::expect_equal(s$`Check ID`, "best ID")
+  # another rank_by: the counts that depend on the ranking come from the rows
+  testthat::expect_equal(blast_summary(long, rank_by = "bitscore")$`N hits`, 30L)
+  # flagged again with another table: the counts of the search no longer apply
+  re <- as_blast_long(long, uninformative = uninformative_references())
+  testthat::expect_null(attr(re, "BLASTr_metadata")$hit_counts)
+})

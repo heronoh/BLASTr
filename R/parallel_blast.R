@@ -21,7 +21,7 @@
 #' @param num_alignments Number of hits to keep for each sequence.
 #'   Defaults to `10`.
 #' @param search_alignments Number of subjects BLAST keeps during the
-#'   search (`-max_target_seqs`). BLAST cuts its list of subjects before the
+#'   search (`-num_alignments`). BLAST cuts its list of subjects before the
 #'   `perc_qcov_hsp` filter, so asking only for `num_alignments` can lose
 #'   valid hits. BLASTr searches `max(num_alignments, search_alignments)`
 #'   subjects and keeps the `num_alignments` best ones that pass the
@@ -117,8 +117,10 @@
 #'
 #'   The attribute `BLASTr_metadata` keeps the parameters, the strategy, the
 #'   BLAST command (`blast_cmd`, without the sequences), the BLAST version,
-#'   the date of each database and the exit codes (see [exit_codes()]). With
-#'   `background = TRUE`, a `blastr_job`.
+#'   the date of each database, the exit codes (see [exit_codes()]) and,
+#'   per sequence, the counts over all the subjects BLAST returned
+#'   (`hit_counts`, used by [blast_summary()]). With `background = TRUE`, a
+#'   `blastr_job`.
 #'
 #' @examples
 #' \dontrun{

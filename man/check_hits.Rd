@@ -53,7 +53,7 @@ empty, as in databases built without a taxid map).
 \item \code{NA}: no hits.
 }
 
-The other columns use all the hits of the sequence: \verb{N hits}, \verb{N taxids}
+The other columns use all the hits given for the sequence: \verb{N hits}, \verb{N taxids}
 (distinct known taxids), \verb{N hits same taxid as 1st}, \verb{N hits at best},
 \verb{N taxids at best}, \verb{Taxids at best} (the known taxids of the hits at
 best, in rank order, separated by \code{";"}, for a lowest common ancestor) and

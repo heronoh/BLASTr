@@ -42,7 +42,7 @@ hits by taxid.
 
 \code{x} can be a vector of taxids or any result of \code{\link[=parallel_blast]{parallel_blast()}} (long
 or wide) or \code{\link[=parallel_blast_hsps]{parallel_blast_hsps()}}: the taxids are taken from the
-\code{staxid}, \code{k_staxid} and \verb{Taxids at best identity} columns. Unknown
+\code{staxid}, \code{k_staxid} and \verb{Taxids at best} columns. Unknown
 taxids (\code{0}, empty, \code{N/A}) are dropped.
 
 When the database does not exist, it is built from the NCBI taxdump
@@ -61,7 +61,7 @@ BLAST database: taxids newer than the taxdump are not found.
 }
 \examples{
 \dontrun{
-options(BLASTr.taxonomy_db = "/data/databases/tax/nameNode.sqlite")
+options(BLASTr.taxonomy_db = "path/to/taxonomy.sqlite")
 get_tax(c("9606", "10090"))
 
 res <- parallel_blast(seqs, db_path = "/data/databases/core_nt/core_nt")

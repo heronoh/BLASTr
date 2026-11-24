@@ -28,6 +28,17 @@ One row per sequence of a long \code{\link[=parallel_blast]{parallel_blast()}} r
 \code{\link[=check_hits]{check_hits()}}, and \verb{Best low qcov} (the best hit covers less of the
 query than \code{perc_qcov_hsp}: the identification rests on a partial
 alignment). Sequences without hits have \verb{N hits = 0} and \code{NA} elsewhere.
+
+The long results keep only the first \code{num_alignments} hits and the ones
+tied with the best, but \verb{N hits}, \verb{N taxids} and \verb{N uninformative} count
+all the subjects BLAST returned (up to \code{search_alignments}), as do
+\verb{N hits same taxid as 1st} and \verb{Best uninformative score} when \code{rank_by}
+is the one of the search: \code{\link[=parallel_blast]{parallel_blast()}} keeps these counts in the
+attribute \code{BLASTr_metadata} (\code{hit_counts}). For sequences without them
+(results of older versions, other tables) they are computed from the
+rows of \code{x}. So \verb{N hits} equal to \code{search_alignments} means BLAST
+returned as many subjects as it was asked for: the list may have been
+cut.
 }
 \examples{
 \dontrun{

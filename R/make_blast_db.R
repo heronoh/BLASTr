@@ -10,9 +10,11 @@
 #'   exist or cannot be written to.
 #' @param db_type Type of database to create, either "nucl" or "prot".
 #' @param taxid_map Optional path to a file mapping sequence IDs to
-#'  taxonomy IDs. Must have the same radical name than the .fasta db file
+#'   taxonomy IDs (two columns, separated by a space or a tab), passed to
+#'   `makeblastdb -taxid_map`.
 #' @param parse_seqids Whether to parse sequence IDs.
 #' @param verbose Should `[condathis::run()]` internal command be shown?
+#'   With `"silent"` (default) nothing is printed.
 #' @param env_name The name of the conda environment with the parameter
 #' (i.e. "blastr-blast-env").
 #'
@@ -58,8 +60,8 @@ make_blast_db <- function(
     fasta_path = fasta_path,
     db_path_missing = db_path_missing
   )
-  check_cmd(cmd = "makeblastdb", env_name = env_name, verbose = verbose)
   verbose <- rlang::arg_match(verbose)
+  check_cmd(cmd = "makeblastdb", env_name = env_name, verbose = verbose)
   args <- c(
     "-in",
     fasta_path,
@@ -74,12 +76,12 @@ make_blast_db <- function(
   }
 
   if (!is.null(taxid_map)) {
-#
-#     #check .fasta & .txt compatibility
-    if (tools::file_path_sans_ext(fasta_path) != tools::file_path_sans_ext(taxid_map)) {
-      stop("taxid_map file and DB fasta file names' radical do not match!")
+    if (!isTRUE(fs::file_exists(taxid_map))) {
+      cli::cli_abort(
+        c(`x` = "{.arg taxid_map} does not exist: {.file {taxid_map}}"),
+        class = "blastr_error_taxid_map_not_found"
+      )
     }
-
     args <- c(args, "-taxid_map", taxid_map)
   }
 
@@ -98,7 +100,9 @@ make_blast_db <- function(
     error = "continue"
   )
 
-  message("Command used:\n\t","makeblastdb ", paste0(args,collapse = " "))
+  if (!identical(verbose, "silent")) {
+    cli::cli_inform(c(`i` = "Command used: {.code makeblastdb {paste(args, collapse = ' ')}}"))
+  }
 
   if (isTRUE(blast_db_res$status != 0L)) {
     error_msg_list <- stringr::str_extract_all(blast_db_res$stderr, "Error:.*")
