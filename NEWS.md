@@ -154,6 +154,12 @@
   percentage of identifications. See `blast_log_path()` and
   `read_blast_log()`.
 
+### Fixed
+
+* `parse_fasta()` failed on R 4.3 (`could not find function "declare"`):
+  it called `declare()`, which only exists from R 4.4, to keep the
+  `carrier` import. `carrier` was not used otherwise and left `Imports`.
+
 ## BLASTr 0.1.7
 
 Release Date: 2025-11-04
