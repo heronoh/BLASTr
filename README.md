@@ -317,6 +317,9 @@ BLASTr result, the taxdump published right after the date of its BLAST
 database, so the taxonomy matches the database (about a minute, then
 kept in the BLASTr cache). Without `download = TRUE`, `get_tax()` does
 not download anything (in an interactive session it asks).
+`has_taxonomy_db()` tells, without downloading anything, whether the
+database is there (with `db_path`, the one for the results of a search
+in that BLAST database), so a pipeline can check it before the search.
 
 ``` r
 taxonomy <- get_tax(blast_results)

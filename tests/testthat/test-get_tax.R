@@ -84,3 +84,51 @@ testthat::test_that("get_tax() downloads the taxdump only when asked", {
   testthat::expect_equal(res$sci_name, "Homo sapiens")
   testthat::expect_true(fs::file_exists(db))
 })
+
+testthat::test_that("has_taxonomy_db() checks the database get_tax() would use, creating nothing", {
+  cache_dir <- withr::local_tempdir()
+  withr::local_envvar(R_USER_CACHE_DIR = cache_dir, BLASTR_TAXONOMY_DB = "")
+  withr::local_options(BLASTr.taxonomy_db = NULL)
+  # empty cache: FALSE, no directory created, no download
+  x <- has_taxonomy_db()
+  testthat::expect_false(x)
+  testthat::expect_false(fs::dir_exists(get_blastr_cache()))
+  testthat::expect_equal(attr(x, "path"), taxonomy_db_path())
+
+  dir <- tiny_taxdump(withr::local_tempdir())
+  db <- make_taxonomy_db(fs::path(withr::local_tempdir(), "tax.sqlite"), taxdump = dir) |> suppressMessages()
+  testthat::expect_true(has_taxonomy_db(db))
+  testthat::expect_equal(attr(has_taxonomy_db(db), "path"), as.character(db))
+  # the option and the environment variable, as in get_tax()
+  withr::with_options(list(BLASTr.taxonomy_db = db), testthat::expect_true(has_taxonomy_db()))
+  withr::with_envvar(c(BLASTR_TAXONOMY_DB = db), testthat::expect_true(has_taxonomy_db()))
+
+  # a file that is not SQLite, and an SQLite file without the taxonomy tables
+  junk <- fs::path(withr::local_tempdir(), "junk.sqlite")
+  writeLines("not a database", junk)
+  testthat::expect_false(has_taxonomy_db(junk))
+  empty <- fs::path(withr::local_tempdir(), "empty.sqlite")
+  con <- DBI::dbConnect(RSQLite::SQLite(), empty)
+  DBI::dbWriteTable(con, "nodes", data.frame(id = 1L))
+  DBI::dbDisconnect(con)
+  testthat::expect_false(has_taxonomy_db(empty))
+})
+
+testthat::test_that("has_taxonomy_db(db_path =) looks for the database of the BLAST database date", {
+  withr::local_envvar(R_USER_CACHE_DIR = withr::local_tempdir(), BLASTR_TAXONOMY_DB = "")
+  withr::local_options(BLASTr.taxonomy_db = NULL)
+  blast_db <- fs::path(withr::local_tempdir(), "core_nt")
+  writeLines('{\n  "last-updated": "2026-11-12T01:19:00"\n}', paste0(blast_db, ".njs"))
+  x <- has_taxonomy_db(db_path = blast_db)
+  testthat::expect_false(x)
+  testthat::expect_equal(fs::path_file(attr(x, "path")), "taxonomy_2026-11-12.sqlite")
+  # the database get_tax() builds for the results of a search in it
+  res <- data.frame(Sequence = "A", staxid = "9606")
+  attr(res, "BLASTr_metadata") <- list(db_dates = db_dates(blast_db))
+  get_tax(res, taxdump = tiny_taxdump(withr::local_tempdir())) |> suppressMessages()
+  testthat::expect_true(has_taxonomy_db(db_path = blast_db))
+  # a newer taxonomy database in the cache does not count for an older BLAST database
+  fs::file_move(attr(x, "path"), fs::path(fs::path_dir(attr(x, "path")), "taxonomy_2026-12-01.sqlite"))
+  testthat::expect_false(has_taxonomy_db(db_path = blast_db))
+  testthat::expect_true(has_taxonomy_db())
+})

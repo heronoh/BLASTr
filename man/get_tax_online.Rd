@@ -77,6 +77,7 @@ if (requireNamespace("curl", quietly = TRUE) && curl::has_internet()) {
 \seealso{
 Other taxonomy functions:
 \code{\link[=get_tax]{get_tax()}},
+\code{\link[=has_taxonomy_db]{has_taxonomy_db()}},
 \code{\link[=make_taxonomy_db]{make_taxonomy_db()}}
 }
 \concept{taxonomy functions}

@@ -58,6 +58,7 @@ options(BLASTr.taxonomy_db = "~/blast_databases/taxonomy.sqlite")
 \seealso{
 Other taxonomy functions:
 \code{\link[=get_tax]{get_tax()}},
-\code{\link{get_tax_online}}
+\code{\link{get_tax_online}},
+\code{\link[=has_taxonomy_db]{has_taxonomy_db()}}
 }
 \concept{taxonomy functions}

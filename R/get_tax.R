@@ -217,26 +217,96 @@ extract_taxids <- function(x) {
   unique(x)
 }
 
-# The taxonomy database to use, building it when it does not exist:
+#' @title Is there a taxonomy database for get_tax()?
+#'
+#' @description
+#' Checks, without downloading or building anything, whether [get_tax()] has
+#' its taxonomy database: the one it would use with the same `taxonomy_db`,
+#' or, for the results of a search in `db_path`, the one of the date of those
+#' BLAST databases in the BLASTr cache. Useful to stop at the start of a long
+#' analysis instead of after the BLAST search, as [has_blast()] does for
+#' BLAST+.
+#'
+#' The database counts when it is an SQLite file with the tables `nodes` and
+#' `names`. When there is none, [download_blast_db()] brings it with the BLAST
+#' database, and `get_tax(..., download = TRUE)` builds it from the NCBI
+#' taxdump.
+#'
+#' @param taxonomy_db Path to the SQLite taxonomy database, as in
+#'   [get_tax()]. `NULL` uses the option `BLASTr.taxonomy_db` or the
+#'   environment variable `BLASTR_TAXONOMY_DB`; with none set, a database in
+#'   the BLASTr cache.
+#' @param db_path Path(s) of the BLAST database(s) to be searched, as in
+#'   [parallel_blast()]: the database in the cache is then the one of their
+#'   date, the one [get_tax()] uses for the results of that search. `NULL`:
+#'   the newest database in the cache, the one [get_tax()] uses for taxids
+#'   alone. Ignored when a `taxonomy_db` is set.
+#'
+#' @returns `TRUE` or `FALSE`, with the path of the database looked for in the
+#'   attribute `"path"`.
+#'
+#' @examples
+#' has_taxonomy_db()
+#'
+#' # a database that does not exist: FALSE, and nothing is created
+#' x <- has_taxonomy_db(file.path(tempdir(), "taxonomy.sqlite"))
+#' x
+#' attr(x, "path")
+#' @family taxonomy functions
+#' @export
+has_taxonomy_db <- function(taxonomy_db = NULL, db_path = NULL) {
+  dates <- if (!is.null(db_path)) db_dates(blast_db_info(db_path)$path)
+  db <- taxonomy_db_path(taxonomy_db, db_dates = dates)
+  structure(taxonomy_db_ok(db), path = db)
+}
+
+# TRUE when `db` is an SQLite file with the tables `nodes` and `names`.
+taxonomy_db_ok <- function(db) {
+  if (!isTRUE(unname(fs::file_exists(db)))) {
+    return(FALSE)
+  }
+  con <- tryCatch(
+    # synchronous = NULL: no pragma, which warns on a file that is not SQLite
+    DBI::dbConnect(RSQLite::SQLite(), db, flags = RSQLite::SQLITE_RO, synchronous = NULL),
+    error = function(e) NULL
+  )
+  if (is.null(con)) {
+    return(FALSE)
+  }
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+  tables <- tryCatch(DBI::dbListTables(con), error = function(e) character(0L))
+  all(c("nodes", "names") %in% tables)
+}
+
+# Path of the taxonomy database (it may not exist yet; nothing is created):
 # `taxonomy_db` (argument, option BLASTr.taxonomy_db or variable
 # BLASTR_TAXONOMY_DB) or else one in the BLASTr cache, named after the date
 # of the BLAST database(s) of the search (`db_dates`), or the newest one
 # there.
-resolve_taxonomy_db <- function(taxonomy_db = NULL, taxdump = NULL, db_dates = NULL, download = FALSE) {
+taxonomy_db_path <- function(taxonomy_db = NULL, taxdump = NULL, db_dates = NULL) {
   db <- if (is.null(taxonomy_db)) getOption("BLASTr.taxonomy_db") else taxonomy_db
   if (is.null(db) || !nzchar(db)) db <- Sys.getenv("BLASTR_TAXONOMY_DB")
-  db_date <- latest_date(db_dates)
-  if (!nzchar(db)) {
-    cache <- get_blastr_cache("taxonomy")
-    if (!is.na(db_date)) {
-      db <- fs::path(cache, paste0("taxonomy_", db_date, ".sqlite"))
-    } else if (!is.null(taxdump)) {
-      db <- fs::path(cache, paste0("taxonomy_", taxdump_label(taxdump), ".sqlite"))
-    } else {
-      old <- if (fs::dir_exists(cache)) fs::dir_ls(cache, glob = "*/taxonomy_*.sqlite") else character(0L)
-      db <- if (length(old) > 0L) sort(old, decreasing = TRUE)[1L] else fs::path(cache, paste0("taxonomy_", Sys.Date(), ".sqlite"))
-    }
+  if (nzchar(db)) {
+    return(as.character(db))
   }
+  db_date <- latest_date(db_dates)
+  cache <- get_blastr_cache("taxonomy")
+  if (!is.na(db_date)) {
+    db <- fs::path(cache, paste0("taxonomy_", db_date, ".sqlite"))
+  } else if (!is.null(taxdump)) {
+    db <- fs::path(cache, paste0("taxonomy_", taxdump_label(taxdump), ".sqlite"))
+  } else {
+    old <- if (fs::dir_exists(cache)) fs::dir_ls(cache, glob = "*/taxonomy_*.sqlite") else character(0L)
+    db <- if (length(old) > 0L) sort(old, decreasing = TRUE)[1L] else fs::path(cache, paste0("taxonomy_", Sys.Date(), ".sqlite"))
+  }
+  as.character(db)
+}
+
+# The taxonomy database to use (see taxonomy_db_path()), building it when it
+# does not exist and the user asked for it.
+resolve_taxonomy_db <- function(taxonomy_db = NULL, taxdump = NULL, db_dates = NULL, download = FALSE) {
+  db <- taxonomy_db_path(taxonomy_db, taxdump = taxdump, db_dates = db_dates)
+  db_date <- latest_date(db_dates)
   if (!fs::file_exists(db)) {
     # build it only when asked: a taxdump given, `download = TRUE`, or a yes
     # in an interactive session; never a download nobody asked for

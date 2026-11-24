@@ -110,6 +110,7 @@ dplyr::left_join(hits, tax, by = c(staxid = "taxid"))
 \seealso{
 Other taxonomy functions:
 \code{\link{get_tax_online}},
+\code{\link[=has_taxonomy_db]{has_taxonomy_db()}},
 \code{\link[=make_taxonomy_db]{make_taxonomy_db()}}
 }
 \concept{taxonomy functions}
