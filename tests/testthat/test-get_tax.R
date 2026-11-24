@@ -132,3 +132,21 @@ testthat::test_that("has_taxonomy_db(db_path =) looks for the database of the BL
   testthat::expect_false(has_taxonomy_db(db_path = blast_db))
   testthat::expect_true(has_taxonomy_db())
 })
+
+testthat::test_that("taxonomy_db = NA or \"\" is not set, like NULL", {
+  withr::local_envvar(R_USER_CACHE_DIR = withr::local_tempdir(), BLASTR_TAXONOMY_DB = "")
+  withr::local_options(BLASTr.taxonomy_db = NULL)
+  dir <- tiny_taxdump(withr::local_tempdir())
+  db <- get_blastr_cache("taxonomy", "taxonomy_2026-11-12.sqlite")
+  fs::dir_create(fs::path_dir(db))
+  make_taxonomy_db(db, taxdump = dir) |> suppressMessages()
+  for (x in list(NULL, NA, NA_character_, "")) {
+    testthat::expect_true(has_taxonomy_db(x))
+    testthat::expect_equal(attr(has_taxonomy_db(x), "path"), as.character(db))
+    testthat::expect_equal(get_tax("9606", taxonomy_db = x)$genus, "Homo")
+  }
+  # NA in the option falls back to the environment variable
+  withr::local_options(BLASTr.taxonomy_db = NA_character_)
+  withr::local_envvar(BLASTR_TAXONOMY_DB = db)
+  testthat::expect_equal(attr(has_taxonomy_db(NA), "path"), as.character(db))
+})

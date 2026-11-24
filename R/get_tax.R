@@ -35,10 +35,11 @@ tax_ranks_default <- c(
 #' BLAST database: taxids newer than the taxdump are not found.
 #'
 #' @param x Taxids (character or numeric) or a BLASTr result.
-#' @param taxonomy_db Path to the SQLite taxonomy database. `NULL` uses the
-#'   option `BLASTr.taxonomy_db` or the environment variable
-#'   `BLASTR_TAXONOMY_DB`; with none set, a database in the BLASTr cache
-#'   (see below). If the file does not exist, it is built.
+#' @param taxonomy_db Path to the SQLite taxonomy database. `NULL` (or `NA`
+#'   or `""`) uses the option `BLASTr.taxonomy_db` or the environment
+#'   variable `BLASTR_TAXONOMY_DB`; with none set, a database in the BLASTr
+#'   cache (see below). If the file does not exist, it is built only when
+#'   asked (see `download`).
 #' @param taxdump NCBI taxdump used to build a missing database (see
 #'   [make_taxonomy_db()]). `NULL`: the taxdump matching the BLAST database
 #'   of `x` (the first monthly NCBI archive after its date), or the current
@@ -233,9 +234,9 @@ extract_taxids <- function(x) {
 #' taxdump.
 #'
 #' @param taxonomy_db Path to the SQLite taxonomy database, as in
-#'   [get_tax()]. `NULL` uses the option `BLASTr.taxonomy_db` or the
-#'   environment variable `BLASTR_TAXONOMY_DB`; with none set, a database in
-#'   the BLASTr cache.
+#'   [get_tax()]. `NULL` (or `NA` or `""`) uses the option
+#'   `BLASTr.taxonomy_db` or the environment variable `BLASTR_TAXONOMY_DB`;
+#'   with none set, a database in the BLASTr cache.
 #' @param db_path Path(s) of the BLAST database(s) to be searched, as in
 #'   [parallel_blast()]: the database in the cache is then the one of their
 #'   date, the one [get_tax()] uses for the results of that search. `NULL`:
@@ -284,10 +285,12 @@ taxonomy_db_ok <- function(db) {
 # of the BLAST database(s) of the search (`db_dates`), or the newest one
 # there.
 taxonomy_db_path <- function(taxonomy_db = NULL, taxdump = NULL, db_dates = NULL) {
-  db <- if (is.null(taxonomy_db)) getOption("BLASTr.taxonomy_db") else taxonomy_db
-  if (is.null(db) || !nzchar(db)) db <- Sys.getenv("BLASTR_TAXONOMY_DB")
-  if (nzchar(db)) {
-    return(as.character(db))
+  # NULL, NA and "" all mean "not set" (callers often keep NA as the default)
+  set <- function(x) !is.null(x) && length(x) > 0L && !is.na(x[[1L]]) && nzchar(x[[1L]])
+  db <- if (set(taxonomy_db)) taxonomy_db else getOption("BLASTr.taxonomy_db")
+  if (!set(db)) db <- Sys.getenv("BLASTR_TAXONOMY_DB")
+  if (set(db)) {
+    return(as.character(db[[1L]]))
   }
   db_date <- latest_date(db_dates)
   cache <- get_blastr_cache("taxonomy")

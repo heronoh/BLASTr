@@ -8,9 +8,9 @@ has_taxonomy_db(taxonomy_db = NULL, db_path = NULL)
 }
 \arguments{
 \item{taxonomy_db}{Path to the SQLite taxonomy database, as in
-\code{\link[=get_tax]{get_tax()}}. \code{NULL} uses the option \code{BLASTr.taxonomy_db} or the
-environment variable \code{BLASTR_TAXONOMY_DB}; with none set, a database in
-the BLASTr cache.}
+\code{\link[=get_tax]{get_tax()}}. \code{NULL} (or \code{NA} or \code{""}) uses the option
+\code{BLASTr.taxonomy_db} or the environment variable \code{BLASTR_TAXONOMY_DB};
+with none set, a database in the BLASTr cache.}
 
 \item{db_path}{Path(s) of the BLAST database(s) to be searched, as in
 \code{\link[=parallel_blast]{parallel_blast()}}: the database in the cache is then the one of their

@@ -15,10 +15,11 @@ get_tax(
 \arguments{
 \item{x}{Taxids (character or numeric) or a BLASTr result.}
 
-\item{taxonomy_db}{Path to the SQLite taxonomy database. \code{NULL} uses the
-option \code{BLASTr.taxonomy_db} or the environment variable
-\code{BLASTR_TAXONOMY_DB}; with none set, a database in the BLASTr cache
-(see below). If the file does not exist, it is built.}
+\item{taxonomy_db}{Path to the SQLite taxonomy database. \code{NULL} (or \code{NA}
+or \code{""}) uses the option \code{BLASTr.taxonomy_db} or the environment
+variable \code{BLASTR_TAXONOMY_DB}; with none set, a database in the BLASTr
+cache (see below). If the file does not exist, it is built only when
+asked (see \code{download}).}
 
 \item{ranks}{Ranks returned as columns. \code{"domain"} is also filled from
 \code{"superkingdom"}, its name in taxdumps before 2025.}
