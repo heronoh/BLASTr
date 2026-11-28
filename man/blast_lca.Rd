@@ -8,6 +8,7 @@ blast_lca(
   x,
   consensus = 0.9,
   named_first = TRUE,
+  ties = c("at_best", "at_best_refs"),
   taxonomy = NULL,
   taxonomy_db = NULL,
   taxdump = NULL
@@ -29,7 +30,12 @@ vote: they are other species of that genus (or of another one), and
 keep the ancestor at the genus (or above) instead of on the named
 species. They count in \verb{N tied}; \verb{LCA support} is among the voters.}
 
-\item{taxonomy}{The table of \code{\link[=get_tax]{get_tax()}} for the taxids of \code{x}. \code{NULL}
+\item{ties}{Column of \code{x} with the tied hits: \code{"at_best"} (default, the
+rule of \code{check_tolerance} in \code{\link[=parallel_blast]{parallel_blast()}}) or \code{"at_best_refs"} (the
+rule by references; needs results of \code{\link[=parallel_blast]{parallel_blast()}} with \code{btop}).}
+
+\item{taxonomy}{The table of \code{\link[=get_tax]{get_tax()}} for the taxids of \code{x} (with
+\code{ties = "at_best_refs"}, of all its ranked hits, for the species flag). \code{NULL}
 (default) calls \code{get_tax(x, taxonomy_db, taxdump = taxdump)}. Its rank
 columns define the ranks of \verb{LCA ranked ...}: keep only some (e.g.
 \code{species}, \code{genus}, \code{family}, \code{order}) to place the ranked ancestor on
@@ -47,7 +53,8 @@ it that has one; a species in open nomenclature, e.g. "Picea sp. X",
 goes to its genus: for tables by rank), \verb{LCA support} (fraction of the
 tied hits it contains), \verb{N tied} (hits at best) and \verb{N tied no taxid}.
 \code{NA} for sequences without hits. Join \verb{get_tax(result$}LCA taxid\verb{)} for
-its ranks and lineage.
+its ranks and lineage. With \code{ties = "at_best_refs"}, also
+\verb{Species flag} and \verb{Flagged species} (see Description).
 }
 \description{
 For each sequence, the taxon shared by the hits tied with the best one
@@ -56,6 +63,17 @@ taxonomy that contains at least \code{consensus} of them. With
 \code{consensus = 1} it is the strict lowest common ancestor; below 1, a few
 mislabelled references among many tied hits (e.g. one "Picramnia" among
 44 \emph{Picea}) do not push the identification up to a high rank.
+
+With \code{ties = "at_best_refs"}, the tied hits are the ones of the tie rule by
+references (\code{at_best_refs}, see \code{\link[=parallel_blast]{parallel_blast()}}), and two columns are
+added: \verb{Species flag} and \verb{Flagged species}. When the query differs from its
+closest reference and the closest references are of one named species, the
+flag is \code{"single reference"} when that species has only references
+identical to the closest one among the hits kept, and \code{"beyond spread"} when
+the query is farther from the closest reference than the references of the
+species are from each other: in both cases the species of the reference may
+not be the one of the query (its own species may be missing from the
+database). \code{NA} otherwise. The flag does not change the ancestor.
 
 The lineages come from \code{\link[=get_tax]{get_tax()}} (\code{lineage_taxids}), so the ancestor is
 exact even with homonyms and clades without rank. Hits without a known

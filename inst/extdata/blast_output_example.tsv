@@ -1,16 +1,16 @@
-s000001	AP011979.1	96.970	99	3	0	1	99	31	129	2.18e-45	167	100	96	plus	N/A	Gymnotus carapo mitochondrial DNA, almost complete genome
-s000003	CP030121.1	96.154	78	3	0	1	78	108	31	8.03e-34	128	98	75	minus	N/A	Brasilonema octagenarum UFV-E1 chromosome
-s000004	MG967958.1	84.916	179	25	2	1	178	1	178	5.26e-49	180	100	152	plus	N/A	Symphoromyia crassicornis voucher USNM:ENT:00023207 cytochrome oxidase subunit 1 (COI) gene, partial cds; mitochondrial
-s000005	MN849868.1	100.000	226	0	0	1	226	31	256	1.32e-120	418	100	226	plus	N/A	Homo sapiens isolate PNG99 haplogroup Q1a mitochondrion, complete genome
-s000006	KX381515.1	98.990	99	1	0	1	99	31	129	1.01e-48	178	100	98	plus	N/A	Hydrochoerus hydrochaeris isolate M194 12S ribosomal RNA gene, partial sequence; mitochondrial >KX381584.1 Hydrochoerus hydrochaeris isolate M79 12S ribosomal RNA gene, partial sequence; mitochondrial >KX381638.1 Hydrochoerus hydrochaeris isolate T1618 12S ribosomal RNA gene, partial sequence; mitochondrial
-s000006	KR020500.1	88.119	101	8	4	1	98	31	130	2.22e-30	117	99	89	plus	N/A	Mus musculus strain CAST/EiJ mitochondrion, complete genome
-s000006	KT818547.1	87.755	98	8	4	2	97	32	127	1.03e-28	111	97	86	plus	N/A	Dasypus yepesi voucher MLP_30.III.90.2 mitochondrion, complete genome
-s000006	KX381509.1	87.129	101	7	5	1	97	31	129	3.72e-28	110	98	88	plus	N/A	Panthera onca isolate M1875 12S ribosomal RNA gene, partial sequence; mitochondrial >KX381533.1 Panthera onca isolate M33 12S ribosomal RNA gene, partial sequence; mitochondrial >KX381628.1 Panthera onca isolate T1069 12S ribosomal RNA gene, partial sequence; mitochondrial
-s000006	KX381634.1	87.129	101	8	5	1	97	31	130	3.72e-28	110	98	88	plus	N/A	Nasua nasua isolate T1560 12S ribosomal RNA gene, partial sequence; mitochondrial
-s000006	MT048504.1	87.000	100	8	5	1	97	31	128	1.34e-27	108	98	87	plus	N/A	Bos taurus isolate N61_H1259 small subunit ribosomal RNA gene, partial sequence; mitochondrial
-s000006	JN319671.1	86.000	100	9	5	1	97	3	100	6.22e-26	102	98	86	plus	N/A	Chordate environmental sample clone 1_E_140733_0924_2335 12S ribosomal RNA gene, partial sequence; mitochondrial
-s000006	KX180157.1	85.859	99	8	6	2	97	32	127	2.24e-25	100	97	85	plus	N/A	Zaedyus pichiy mitochondrion, partial genome
-s000006	KP202276.1	85.000	100	11	4	1	97	31	129	8.05e-25	99.0	98	85	plus	N/A	Felis margarita isolate FMA mitochondrion, complete genome
-s000006	KX786344.1	85.000	100	11	4	1	97	31	129	8.05e-25	99.0	98	85	plus	N/A	Felis catus voucher N22b 12S ribosomal RNA gene, partial sequence; mitochondrial
-s000006	KU290564.1	85.000	100	9	5	1	97	31	127	2.90e-24	97.1	98	85	plus	N/A	Canis lupus familiaris isolate 362T mitochondrion, complete genome
-s000006	AP011979.1	80.645	93	11	6	2	91	32	120	8.17e-15	65.8	91	75	plus	N/A	Gymnotus carapo mitochondrial DNA, almost complete genome
+s000001	AP011979.1	96.970	99	3	0	1	99	31	129	2.18e-45	167	100	96	plus	N/A	21GA13GA36TA26	Gymnotus carapo mitochondrial DNA, almost complete genome
+s000003	CP030121.1	96.154	78	3	0	1	78	108	31	8.03e-34	128	98	75	minus	N/A	11GC31GA27TG6	Brasilonema octagenarum UFV-E1 chromosome
+s000004	MG967958.1	84.916	179	25	2	1	178	1	178	5.26e-49	180	100	152	plus	N/A	6GA6GA1CT11GA6GACT3AT2AT5AT2TA6AC1TA5TAAG4GA2TG2GC2TC5A-2AC3-A2CT2GT32AT5AT5GA29GA3	Symphoromyia crassicornis voucher USNM:ENT:00023207 cytochrome oxidase subunit 1 (COI) gene, partial cds; mitochondrial
+s000005	MN849868.1	100.000	226	0	0	1	226	31	256	1.32e-120	418	100	226	plus	N/A	226	Homo sapiens isolate PNG99 haplogroup Q1a mitochondrion, complete genome
+s000006	KX381515.1	98.990	99	1	0	1	99	31	129	1.01e-48	178	100	98	plus	N/A	38TC60	Hydrochoerus hydrochaeris isolate M194 12S ribosomal RNA gene, partial sequence; mitochondrial >KX381584.1 Hydrochoerus hydrochaeris isolate M79 12S ribosomal RNA gene, partial sequence; mitochondrial >KX381638.1 Hydrochoerus hydrochaeris isolate T1618 12S ribosomal RNA gene, partial sequence; mitochondrial
+s000006	KR020500.1	88.119	101	8	4	1	98	31	130	2.22e-30	117	99	89	plus	N/A	12AC4-T1GA2CA1CAAT-T6G-4-A6CA13AC29GA11	Mus musculus strain CAST/EiJ mitochondrion, complete genome
+s000006	KT818547.1	87.755	98	8	4	2	97	32	127	1.03e-28	111	97	86	plus	N/A	5AC5ATTA3-C8T-5G-4-G2TC3CA3AT11CT33TC4	Dasypus yepesi voucher MLP_30.III.90.2 mitochondrion, complete genome
+s000006	KX381509.1	87.129	101	7	5	1	97	31	129	3.72e-28	110	98	88	plus	N/A	6AC5AC2-G1AT4-A-G1AT2T-5G-4-A1TCTC3CA54	Panthera onca isolate M1875 12S ribosomal RNA gene, partial sequence; mitochondrial >KX381533.1 Panthera onca isolate M33 12S ribosomal RNA gene, partial sequence; mitochondrial >KX381628.1 Panthera onca isolate T1069 12S ribosomal RNA gene, partial sequence; mitochondrial
+s000006	KX381634.1	87.129	101	8	5	1	97	31	130	3.72e-28	110	98	88	plus	N/A	6AC8-G1-T2-TGT2CA1CT7G-2CT1TG-CTA4CA54	Nasua nasua isolate T1560 12S ribosomal RNA gene, partial sequence; mitochondrial
+s000006	MT048504.1	87.000	100	8	5	1	97	31	128	1.34e-27	108	98	87	plus	N/A	6AC6TC1-G1AT1GA2C-4-A5G-2CT1TA2-C3CA3AT50	Bos taurus isolate N61_H1259 small subunit ribosomal RNA gene, partial sequence; mitochondrial
+s000006	JN319671.1	86.000	100	9	5	1	97	3	100	6.22e-26	102	98	86	plus	N/A	6AC6TC1-G1AT1GA2C-4-A5G-2CT1TA2-C3CA3AT5TC44	Chordate environmental sample clone 1_E_140733_0924_2335 12S ribosomal RNA gene, partial sequence; mitochondrial
+s000006	KX180157.1	85.859	99	8	6	2	97	32	127	2.24e-25	100	97	85	plus	N/A	5AG5ACTA3-C1GA2C-1C-2-A5G-2CT1TG2-C3CA3AT50	Zaedyus pichiy mitochondrion, partial genome
+s000006	KP202276.1	85.000	100	11	4	1	97	31	129	8.05e-25	99.0	98	85	plus	N/A	6AC5AT2-G1AT4CAAC1AC1-A5G-4-A1TCTC3CA15CT33TC4	Felis margarita isolate FMA mitochondrion, complete genome
+s000006	KX786344.1	85.000	100	11	4	1	97	31	129	8.05e-25	99.0	98	85	plus	N/A	6AC5AT2-G1AT4CAAT1AC1-A5G-4-A1TCTC3CA15CT33TC4	Felis catus voucher N22b 12S ribosomal RNA gene, partial sequence; mitochondrial
+s000006	KU290564.1	85.000	100	9	5	1	97	31	127	2.90e-24	97.1	98	85	plus	N/A	6AC8-G1AT2-T2CT2A-T-5G-2CTTA-A2TC3CA3AG11CT38	Canis lupus familiaris isolate 362T mitochondrion, complete genome
+s000006	AP011979.1	80.645	93	11	6	2	91	32	120	8.17e-15	65.8	91	75	plus	N/A	11AT4AT1T-TACA2A-2-T2AT1G-4-C-A2TC3CA3AT5TA3AG1CA28C-3	Gymnotus carapo mitochondrial DNA, almost complete genome

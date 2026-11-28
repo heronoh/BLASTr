@@ -27,7 +27,7 @@ testthat::test_that("parallel_blast works", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * 21L)
+  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * length(hit_fields))
 
   exit_codes_df <- exit_codes(blast_res)
   testthat::expect_s3_class(exit_codes_df, "data.frame")
@@ -155,7 +155,7 @@ testthat::test_that("parallel_blast - single thread", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * 21L)
+  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * length(hit_fields))
 })
 
 testthat::test_that("parallel blast - empty args", {
@@ -199,7 +199,7 @@ testthat::test_that("parallel_blast - depracated arguments", {
   testthat::expect_s3_class(blast_res, "tbl_df")
   testthat::expect_equal(nrow(blast_res), length(seqs_test))
   testthat::expect_equal(nrow(blast_res), 6L)
-  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * 21L)
+  testthat::expect_equal(ncol(blast_res), 1L + 11L + 4L * length(hit_fields))
 })
 
 testthat::test_that("parallel_blast long output: one row per hit, best first", {
@@ -211,6 +211,11 @@ testthat::test_that("parallel_blast long output: one row per hit, best first", {
   hit <- res[!is.na(res$rank), ]
   testthat::expect_true(all(hit$rank[!duplicated(hit$Sequence)] == 1L))
   testthat::expect_true(all(stats::ave(hit$rank, hit$Sequence, FUN = function(r) all(diff(r) >= 0)) == 1))
+  # the tie rule by references: btop of every hit, at_best_refs of every ranked one
+  testthat::expect_false(anyNA(hit$btop))
+  testthat::expect_false(anyNA(hit$at_best_refs))
+  testthat::expect_true(all(tapply(hit$at_best_refs, hit$Sequence, any)))
+  testthat::expect_equal(attr(res, "BLASTr_metadata")$refs_floor, 0.005)
   s <- blast_summary(res)
   testthat::expect_equal(s$Sequence, unique(res$Sequence))
   testthat::expect_true("Taxids at best" %in% names(s))

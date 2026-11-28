@@ -26,3 +26,10 @@ tiny_taxdump <- function(dir) {
   dir
 }
 
+
+# A taxonomy database of tiny_taxdump(), removed with the calling test.
+lca_db <- function() {
+  dir <- tiny_taxdump(withr::local_tempdir(.local_envir = parent.frame()))
+  make_taxonomy_db(file.path(withr::local_tempdir(.local_envir = parent.frame()), "tax.sqlite"), taxdump = dir) |>
+    suppressMessages()
+}

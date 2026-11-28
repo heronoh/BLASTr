@@ -1,8 +1,3 @@
-lca_db <- function() {
-  dir <- tiny_taxdump(withr::local_tempdir(.local_envir = parent.frame()))
-  make_taxonomy_db(file.path(withr::local_tempdir(.local_envir = parent.frame()), "tax.sqlite"), taxdump = dir) |>
-    suppressMessages()
-}
 long_of <- function(seq, staxid, at_best = TRUE) {
   tibble::tibble(
     Sequence = seq, rank = 1L, tie = TRUE, at_best = at_best, low_qcov = FALSE,

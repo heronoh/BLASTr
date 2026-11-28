@@ -8,6 +8,17 @@
 #' mislabelled references among many tied hits (e.g. one "Picramnia" among
 #' 44 *Picea*) do not push the identification up to a high rank.
 #'
+#' With `ties = "at_best_refs"`, the tied hits are the ones of the tie rule by
+#' references (`at_best_refs`, see [parallel_blast()]), and two columns are
+#' added: `Species flag` and `Flagged species`. When the query differs from its
+#' closest reference and the closest references are of one named species, the
+#' flag is `"single reference"` when that species has only references
+#' identical to the closest one among the hits kept, and `"beyond spread"` when
+#' the query is farther from the closest reference than the references of the
+#' species are from each other: in both cases the species of the reference may
+#' not be the one of the query (its own species may be missing from the
+#' database). `NA` otherwise. The flag does not change the ancestor.
+#'
 #' The lineages come from [get_tax()] (`lineage_taxids`), so the ancestor is
 #' exact even with homonyms and clades without rank. Hits without a known
 #' taxid (`0`, empty, not in the taxonomy) do not vote, nor do the hits
@@ -33,7 +44,11 @@
 #'   vote: they are other species of that genus (or of another one), and
 #'   keep the ancestor at the genus (or above) instead of on the named
 #'   species. They count in `N tied`; `LCA support` is among the voters.
-#' @param taxonomy The table of [get_tax()] for the taxids of `x`. `NULL`
+#' @param ties Column of `x` with the tied hits: `"at_best"` (default, the
+#'   rule of `check_tolerance` in [parallel_blast()]) or `"at_best_refs"` (the
+#'   rule by references; needs results of [parallel_blast()] with `btop`).
+#' @param taxonomy The table of [get_tax()] for the taxids of `x` (with
+#'   `ties = "at_best_refs"`, of all its ranked hits, for the species flag). `NULL`
 #'   (default) calls `get_tax(x, taxonomy_db, taxdump = taxdump)`. Its rank
 #'   columns define the ranks of `LCA ranked ...`: keep only some (e.g.
 #'   `species`, `genus`, `family`, `order`) to place the ranked ancestor on
@@ -49,7 +64,8 @@
 #'   goes to its genus: for tables by rank), `LCA support` (fraction of the
 #'   tied hits it contains), `N tied` (hits at best) and `N tied no taxid`.
 #'   `NA` for sequences without hits. Join `get_tax(result$`LCA taxid`)` for
-#'   its ranks and lineage.
+#'   its ranks and lineage. With `ties = "at_best_refs"`, also
+#'   `Species flag` and `Flagged species` (see Description).
 #'
 #' @examples
 #' # a simplified NCBI taxdump: Hominidae with the genera Homo and Pan
@@ -86,21 +102,40 @@
 #'
 #' @family result functions
 #' @export
-blast_lca <- function(x, consensus = 0.9, named_first = TRUE, taxonomy = NULL, taxonomy_db = NULL, taxdump = NULL) {
+blast_lca <- function(x, consensus = 0.9, named_first = TRUE, ties = c("at_best", "at_best_refs"), taxonomy = NULL,
+                      taxonomy_db = NULL, taxdump = NULL) {
   if (!is.numeric(consensus) || length(consensus) != 1L || consensus <= 0.5 || consensus > 1) {
     cli::cli_abort(c(`x` = "{.arg consensus} must be a number above 0.5 and at most 1."))
   }
+  ties <- rlang::arg_match(ties)
   meta <- attr(x, "BLASTr_metadata")
   x <- as_blast_long(x)
   seqs <- unique(x$Sequence)
-  voter <- !is.na(x$at_best) & x$at_best
+  refs <- identical(ties, "at_best_refs")
+  if (refs && (is.null(x[["at_best_refs"]]) || all(is.na(x$at_best_refs[!is.na(x$rank)])))) {
+    cli::cli_abort(
+      c(
+        `x` = "{.arg x} has no {.field at_best_refs}: the tie rule by references needs the {.field btop} of the hits.",
+        `i` = "Search again with {.fun parallel_blast} of this version of {.pkg BLASTr}."
+      ),
+      class = "blastr_no_btop_error"
+    )
+  }
+  taxid_of <- function(v) {
+    t <- trimws(sub(";.*", "", as.character(v)))
+    t[is.na(t) | t %in% unknown_taxids] <- NA_character_
+    t
+  }
+  voter <- !is.na(x[[ties]]) & x[[ties]]
   if (!is.null(x[["informative"]])) voter <- voter & !(x[["informative"]] %in% FALSE)
   tied <- x[voter, c("Sequence", "staxid"), drop = FALSE]
-  tied$taxid <- trimws(sub(";.*", "", as.character(tied$staxid)))
-  tied$taxid[is.na(tied$taxid) | tied$taxid %in% unknown_taxids] <- NA_character_
+  tied$taxid <- taxid_of(tied$staxid)
 
   if (is.null(taxonomy)) {
     q <- tied[!is.na(tied$taxid), "taxid", drop = FALSE]
+    if (refs) {
+      q <- unique(rbind(q, data.frame(taxid = as.character(stats::na.omit(taxid_of(x$staxid[!is.na(x$rank)]))))))
+    }
     names(q) <- "staxid"
     attr(q, "BLASTr_metadata") <- meta
     taxonomy <- if (nrow(q) > 0L) {
@@ -200,8 +235,22 @@ blast_lca <- function(x, consensus = 0.9, named_first = TRUE, taxonomy = NULL, t
   out$`LCA ranked name` <- vapply(info, `[`, character(1L), 4L)
   out$`LCA ranked rank` <- vapply(info, `[`, character(1L), 5L)
   out$`N tied`[out$`N tied` == 0L] <- NA_integer_
-  out[, c(
+  cols <- c(
     "Sequence", "LCA taxid", "LCA name", "LCA rank", "LCA ranked taxid", "LCA ranked name", "LCA ranked rank",
     "LCA support", "N tied", "N tied no taxid"
-  )]
+  )
+  if (refs) {
+    kk <- match(taxid_of(x$staxid), taxonomy$taxid)
+    sp <- if (!is.null(taxonomy[["species"]])) taxonomy$species[kk] else rep(NA_character_, nrow(x))
+    fl <- reference_species_flag(
+      x$Sequence, !is.na(x$rank), x$btop, as.numeric(x[["query start"]]), as.numeric(x[["query end"]]),
+      as.numeric(x$length), as.numeric(x$nident), nchar(as.character(x$Sequence)),
+      species = sp, named = !is.na(sp) & !grepl(open_nomenclature_pattern, sp, perl = TRUE)
+    )
+    i <- match(out$Sequence, fl$query)
+    out$`Species flag` <- fl$`Species flag`[i]
+    out$`Flagged species` <- fl$`Flagged species`[i]
+    cols <- c(cols, "Species flag", "Flagged species")
+  }
+  out[, cols]
 }

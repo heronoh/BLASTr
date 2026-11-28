@@ -585,8 +585,8 @@ collect_blast_job <- function(job) {
   } else {
     m <- st$meta
     rank_by <- if (is.null(m$rank_by)) "similarity" else m$rank_by
-    hits <- read_blast_hits(out_files)
-    as_long <- function(n) {
+    hits <- read_blast_hits(out_files, outfmt_cols(st$blast_args))
+    as_long <- function(n, refs = TRUE) {
       blast_long(
         hits,
         seq_ids = seqs$query,
@@ -595,12 +595,13 @@ collect_blast_job <- function(job) {
         rank_by = rank_by,
         tolerance = m$check_tolerance,
         perc_qcov_hsp = if (is.null(m$perc_qcov_hsp)) NA else m$perc_qcov_hsp,
-        uninformative = m$uninformative
+        uninformative = m$uninformative,
+        refs = refs
       )
     }
     # the summary counts all the subjects BLAST returned, not only the kept rows
     summ <- blast_summary(
-      as_long(Inf),
+      as_long(Inf, refs = FALSE),
       check_n = m$check_n, tolerance = m$check_tolerance, rank_by = rank_by,
       search_alignments = m$search_alignments
     )

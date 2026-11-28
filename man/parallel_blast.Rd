@@ -159,12 +159,34 @@ and \code{uninformative_category} (see \code{uninformative}), \code{blast_rank}
 (order given by BLAST), \code{subject}, \verb{subject header},
 \code{staxid}, \code{identity}, \verb{Similarity score}, \code{qcovhsp}, \code{nident},
 \code{length}, \code{mismatches}, \code{gaps}, \verb{query start}, \verb{query end},
-\verb{subject start}, \verb{subject end}, \verb{subject strand}, \code{e-value} and
-\code{bitscore}. The first \code{num_alignments} hits are kept (informative
-ones, when there are), plus all the hits at best and the uninformative
-hits among the first \code{num_alignments} of all (after the ranked ones,
-with \code{rank} \code{NA}). A sequence without hits has one row with \code{NA} hit fields. The
-summary per sequence (\verb{Check ID}, ...) comes from \code{\link[=blast_summary]{blast_summary()}}.
+\verb{subject start}, \verb{subject end}, \verb{subject strand}, \code{e-value},
+\code{bitscore}, \code{at_best_refs} and \code{btop}. The first \code{num_alignments} hits
+are kept (informative ones, when there are), plus all the hits at best
+(by either rule), the hits with the taxid of a closest reference (see
+below) and the uninformative hits among the first \code{num_alignments} of
+all (after the ranked ones, with \code{rank} \code{NA}). A sequence without hits
+has one row with \code{NA} hit fields. The summary per sequence
+(\verb{Check ID}, ...) comes from \code{\link[=blast_summary]{blast_summary()}}.
+
+\code{at_best_refs} marks the hits tied by a second rule, by references,
+kept beside \code{at_best} to compare the two (it does not change \code{rank},
+\code{at_best} or the summary; \code{\link[=blast_lca]{blast_lca()}} uses it with
+\code{ties = "at_best_refs"}). After the rule of OBITools' \code{obitag}: the
+closest references to the query are found by distance (differences in
+the alignment plus query bases outside it, over the query length), and
+the references as close to one of them as the query is are tied with
+it, comparing references with each other on the query region both cover
+(from \code{btop}, BLAST's summary of the alignment). The window is at least
+0.5\% of the query, even when the query is identical to its closest
+reference: in markers whose species differ by few bases (e.g. long rbcL
+amplicons), an identical reference of a neighbour species is not taken
+for the query's own. The price: a query identical to a reference of its
+own species, with another species within 0.5\%, goes up to the genus. A
+reference that shares less than half of the
+query with the closest one is tied. Unlike \code{at_best}, the window does
+not grow with the length of the sequence: 0.5 point of Similarity score
+is under one base in 100 bp and four in 800 bp. \code{NA} for results without
+\code{btop} (searches of earlier versions).
 
 With \code{output = "wide"}, one row per sequence: \code{Sequence}, the summary
 of \code{\link[=blast_summary]{blast_summary()}} and, for each hit \code{k} from 1 to \code{num_alignments}

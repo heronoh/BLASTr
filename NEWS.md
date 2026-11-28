@@ -61,6 +61,32 @@
 
 ### New features
 
+* A second tie rule, by references, kept beside the current one to compare
+  the two on real data (the default does not change). `parallel_blast()`
+  asks BLAST for the `btop` of each hit (a short summary of the alignment)
+  and its long results gain two columns at the end: `btop` and
+  `at_best_refs`, the hits tied by the new rule. After the rule of OBITools'
+  `obitag`: the references as close to the closest reference as the query
+  is are tied with it, comparing references with each other on the region
+  of the query both cover; the window is at least 0.5% of the query, also
+  when the query is identical to its closest reference. The rows tied by
+  the new rule, and the hits with the taxid of a closest reference, are
+  kept too, after the first `num_alignments`.
+  `blast_lca(ties = "at_best_refs")` gives the ancestor of those hits and
+  two more columns, `Species flag` and `Flagged species`: `"single
+  reference"` (the species of the closest reference has only references
+  identical to it) or `"beyond spread"` (the query is farther from it than
+  the references of the species are from each other), when the query is
+  not identical to it; the flag does not change the ancestor. On a
+  benchmark of 47 primer pairs of vertebrates, invertebrates and plants,
+  with the species cut of the mtbrcdR (Similarity score 98), the new rule
+  called a species wrongly less often (by 0.3 to 1.4 points) and rightly
+  less often (by 1.2 to 2.1 points) than the current one; flagged species
+  calls were wrong 3 to 8 times as often as the others (species in the
+  database, without the cut). Searches of earlier
+  versions have no `btop`: `at_best_refs` is `NA` and
+  `blast_lca(ties = "at_best_refs")` stops with an error.
+
 * Reference databases: `list_ncbi_blast_dbs()` lists the BLAST databases of
   the NCBI with their sizes and dates; `download_blast_db()` downloads one
   (e.g. `"core_nt"`), checking the md5 of each file, into a directory named

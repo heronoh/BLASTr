@@ -17,11 +17,23 @@ blast_out_cols <- c(
   nident = "nident",
   `subject strand` = "sstrand",
   staxid = "staxid",
+  btop = "btop",
   `subject header` = "stitle"
 )
 
 blast_outfmt <- function() {
   paste("6", paste(blast_out_cols, collapse = " "))
+}
+
+# Names of the columns of a tabular output, from the `-outfmt` of the search
+# (jobs of earlier versions have no btop).
+outfmt_cols <- function(blast_args) {
+  i <- match("-outfmt", blast_args)
+  if (is.na(i)) return(names(blast_out_cols))
+  f <- strsplit(blast_args[[i + 1L]], " ", fixed = TRUE)[[1L]][-1L]
+  k <- match(f, blast_out_cols)
+  if (anyNA(k)) return(names(blast_out_cols))
+  names(blast_out_cols)[k]
 }
 
 # Fields of each hit in the wide results, in display order.
@@ -30,7 +42,7 @@ hit_fields <- c(
   "mismatches", "gaps", "query start", "query end", "subject start",
   "subject end", "e-value", "bitscore", "qcovhsp", "staxid", "nident",
   "subject strand", "blast_rank", "low_qcov", "informative",
-  "uninformative_category"
+  "uninformative_category", "at_best_refs", "btop"
 )
 
 # Columns of the long results, in order.
@@ -39,7 +51,8 @@ long_cols <- c(
   "uninformative_category", "blast_rank", "subject",
   "subject header", "staxid", "identity", "Similarity score", "qcovhsp",
   "nident", "length", "mismatches", "gaps", "query start", "query end",
-  "subject start", "subject end", "subject strand", "e-value", "bitscore"
+  "subject start", "subject end", "subject strand", "e-value", "bitscore",
+  "at_best_refs", "btop"
 )
 
 hit_num_cols <- c(
@@ -253,9 +266,18 @@ check_hits <- function(
 }
 
 # Read the tabular outputs of a job into one row per hit (`query`,
-# `blast_rank`, the hit fields and `Similarity score`).
-read_blast_hits <- function(out_files) {
+# `blast_rank`, the hit fields and `Similarity score`). `cols`: names of the
+# columns (see outfmt_cols()); NULL takes them from the number of fields
+# (outputs of earlier versions have no btop).
+read_blast_hits <- function(out_files, cols = NULL) {
   out_files <- out_files[file.exists(out_files) & file.size(out_files) > 0]
+  if (is.null(cols)) {
+    cols <- names(blast_out_cols)
+    if (length(out_files) > 0L) {
+      n <- length(strsplit(readLines(out_files[[1L]], n = 1L, warn = FALSE), "\t")[[1L]])
+      if (n == length(cols) - 1L) cols <- setdiff(cols, "btop")
+    }
+  }
   empty <- tibble::as_tibble(stats::setNames(
     rep(list(character(0L)), length(blast_out_cols)),
     names(blast_out_cols)
@@ -263,7 +285,7 @@ read_blast_hits <- function(out_files) {
   hits <- lapply(out_files, function(f) {
     readr::read_tsv(
       f,
-      col_names = names(blast_out_cols),
+      col_names = cols,
       col_types = readr::cols(.default = readr::col_character()),
       quote = "",
       comment = "",
@@ -273,6 +295,7 @@ read_blast_hits <- function(out_files) {
     )
   })
   hits <- dplyr::bind_rows(c(list(empty), hits))
+  hits$btop[!is.na(hits$btop) & !nzchar(hits$btop)] <- NA_character_
   for (k in intersect(hit_num_cols, names(hits))) {
     hits[[k]] <- suppressWarnings(as.numeric(hits[[k]]))
   }
@@ -285,11 +308,15 @@ read_blast_hits <- function(out_files) {
 # Long results: one row per kept hit, ranked; one row with NA hit fields for
 # each sequence without hits. With a table of `uninformative` references,
 # the hits are flagged (`informative`, `uninformative_category`) and ranked
-# among the informative ones. Kept: the first `num_alignments` ranked hits,
-# all the hits at best, and the uninformative hits among the first
-# `num_alignments` of all.
+# among the informative ones. With `btop`, the hits tied by the rule by
+# references are flagged (`at_best_refs`, see reference_ties()). Kept: the
+# first `num_alignments` ranked hits, all the hits at best (by either rule),
+# the hits with the taxid of a best one by references (for the species flag
+# of blast_lca()), and the uninformative hits among the first `num_alignments`
+# of all. `refs = FALSE` skips the rule by references (for the summary, which
+# does not use it).
 blast_long <- function(hits, seq_ids, seqs, num_alignments = Inf, rank_by = "similarity", tolerance = 0.5,
-                       perc_qcov_hsp = NA, uninformative = NULL) {
+                       perc_qcov_hsp = NA, uninformative = NULL, refs = TRUE) {
   if (!is.null(uninformative)) {
     hits$uninformative_category <- uninformative_category(hits$subject, hits[["subject header"]], uninformative)
     hits$informative <- is.na(hits$uninformative_category)
@@ -300,7 +327,22 @@ blast_long <- function(hits, seq_ids, seqs, num_alignments = Inf, rank_by = "sim
   hits <- rank_blast_hits(hits, rank_by = rank_by, tolerance = tolerance)
   hits$low_qcov <- if (is.na(perc_qcov_hsp)) NA else as.numeric(hits[["qcovhsp"]]) < perc_qcov_hsp
   pool <- !is.na(hits$rank)
-  hits <- hits[(pool & (hits$.pos <= num_alignments | hits$at_best)) | (!pool & hits$.all_pos <= num_alignments), , drop = FALSE]
+  refs_best <- rep(FALSE, nrow(hits))
+  if (!isTRUE(refs) || is.null(hits[["btop"]]) || all(is.na(hits[["btop"]]))) {
+    hits$at_best_refs <- rep(NA, nrow(hits))
+  } else {
+    qseq <- seqs[match(hits$query, seq_ids)]
+    rt <- reference_ties(
+      hits$query, pool, hits$btop, as.numeric(hits[["query start"]]), as.numeric(hits[["query end"]]),
+      as.numeric(hits$length), as.numeric(hits$nident), nchar(qseq)
+    )
+    hits$at_best_refs <- ifelse(pool, rt$tied, NA)
+    known <- !is.na(hits$staxid) & !as.character(hits$staxid) %in% unknown_taxids
+    bt <- unique(paste(hits$query, hits$staxid, sep = "\r")[rt$best %in% TRUE & known])
+    refs_best <- pool & known & paste(hits$query, hits$staxid, sep = "\r") %in% bt
+  }
+  keep <- hits$.pos <= num_alignments | hits$at_best | hits$at_best_refs %in% TRUE | refs_best
+  hits <- hits[(pool & keep) | (!pool & hits$.all_pos <= num_alignments), , drop = FALSE]
   hits$Sequence <- seqs[match(hits$query, seq_ids)]
   none <- seq_ids[!seq_ids %in% hits$query]
   if (length(none) > 0L) {
@@ -314,6 +356,8 @@ blast_long <- function(hits, seq_ids, seqs, num_alignments = Inf, rank_by = "sim
   hits$blast_rank <- as.integer(hits$blast_rank)
   hits$tie <- as.logical(hits$tie)
   hits$at_best <- as.logical(hits$at_best)
+  hits$at_best_refs <- as.logical(hits$at_best_refs)
+  hits$btop <- as.character(hits$btop)
   hits$low_qcov <- as.logical(hits$low_qcov)
   hits$informative <- as.logical(hits$informative)
   hits$uninformative_category <- as.character(hits$uninformative_category)
@@ -470,7 +514,7 @@ as_blast_long <- function(x, rank_by = c("similarity", "identity", "bitscore"), 
     }
     # flag the hits of a long result again, with this table
     seqs <- unique(as.character(x$Sequence))
-    hits <- x[!is.na(x$blast_rank), setdiff(names(x), c("rank", "tie", "at_best", "informative", "uninformative_category")), drop = FALSE]
+    hits <- x[!is.na(x$blast_rank), setdiff(names(x), c("rank", "tie", "at_best", "at_best_refs", "informative", "uninformative_category")), drop = FALSE]
     hits$query <- as.character(hits$Sequence)
     out <- blast_long(
       hits, seq_ids = seqs, seqs = seqs, num_alignments = Inf, rank_by = rank_by, tolerance = tolerance,
@@ -494,7 +538,7 @@ as_blast_long <- function(x, rank_by = c("similarity", "identity", "bitscore"), 
     h[] <- lapply(names(h), function(f) {
       if (f %in% hit_num_cols || f == "blast_rank") {
         suppressWarnings(as.numeric(h[[f]]))
-      } else if (f %in% c("informative", "low_qcov")) {
+      } else if (f %in% c("informative", "low_qcov", "at_best_refs")) {
         as.logical(h[[f]])
       } else {
         as.character(h[[f]])
