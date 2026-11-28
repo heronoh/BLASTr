@@ -120,17 +120,17 @@ them among the informative ones, as <code><a href="parallel_blast.html">parallel
 <span class="r-in"><span>  `2_qcovhsp` <span class="op">=</span> <span class="fl">100</span>, `2_staxid` <span class="op">=</span> <span class="st">"9598"</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">as_blast_long</span><span class="op">(</span><span class="va">wide</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 25</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 27</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Sequence  rank tie   at_best low_qcov informative uninformative_category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ACGT         1 FALSE TRUE    FALSE    <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ACGT         2 FALSE FALSE   FALSE    <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18 more variables: blast_rank &lt;int&gt;, subject &lt;chr&gt;, `subject header` &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 20 more variables: blast_rank &lt;int&gt;, subject &lt;chr&gt;, `subject header` &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   staxid &lt;chr&gt;, identity &lt;dbl&gt;, `Similarity score` &lt;dbl&gt;, qcovhsp &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   nident &lt;dbl&gt;, length &lt;dbl&gt;, mismatches &lt;dbl&gt;, gaps &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `query start` &lt;dbl&gt;, `query end` &lt;dbl&gt;, `subject start` &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `subject end` &lt;dbl&gt;, `subject strand` &lt;chr&gt;, `e-value` &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   bitscore &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   bitscore &lt;dbl&gt;, at_best_refs &lt;lgl&gt;, btop &lt;chr&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

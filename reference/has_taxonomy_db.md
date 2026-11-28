@@ -60,14 +60,14 @@ Other taxonomy functions:
 has_taxonomy_db()
 #> [1] FALSE
 #> attr(,"path")
-#> [1] "/home/runner/.cache/R/BLASTr/taxonomy/taxonomy_2026-11-24.sqlite"
+#> [1] "/home/runner/.cache/R/BLASTr/taxonomy/taxonomy_2026-11-28.sqlite"
 
 # a database that does not exist: FALSE, and nothing is created
 x <- has_taxonomy_db(file.path(tempdir(), "taxonomy.sqlite"))
 x
 #> [1] FALSE
 #> attr(,"path")
-#> [1] "/tmp/RtmpQHmQ5B/taxonomy.sqlite"
+#> [1] "/tmp/RtmpROkON7/taxonomy.sqlite"
 attr(x, "path")
-#> [1] "/tmp/RtmpQHmQ5B/taxonomy.sqlite"
+#> [1] "/tmp/RtmpROkON7/taxonomy.sqlite"
 ```

@@ -229,13 +229,35 @@ is shared), `at_best` (within `check_tolerance` of the best hit),
 given by BLAST), `subject`, `subject header`, `staxid`, `identity`,
 `Similarity score`, `qcovhsp`, `nident`, `length`, `mismatches`, `gaps`,
 `query start`, `query end`, `subject start`, `subject end`,
-`subject strand`, `e-value` and `bitscore`. The first `num_alignments`
-hits are kept (informative ones, when there are), plus all the hits at
-best and the uninformative hits among the first `num_alignments` of all
-(after the ranked ones, with `rank` `NA`). A sequence without hits has
-one row with `NA` hit fields. The summary per sequence (`Check ID`, ...)
-comes from
+`subject strand`, `e-value`, `bitscore`, `at_best_refs` and `btop`. The
+first `num_alignments` hits are kept (informative ones, when there are),
+plus all the hits at best (by either rule), the hits with the taxid of a
+closest reference (see below) and the uninformative hits among the first
+`num_alignments` of all (after the ranked ones, with `rank` `NA`). A
+sequence without hits has one row with `NA` hit fields. The summary per
+sequence (`Check ID`, ...) comes from
 [`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md).
+
+`at_best_refs` marks the hits tied by a second rule, by references, kept
+beside `at_best` to compare the two (it does not change `rank`,
+`at_best` or the summary;
+[`blast_lca()`](https://heronoh.github.io/BLASTr/reference/blast_lca.md)
+uses it with `ties = "at_best_refs"`). After the rule of OBITools'
+`obitag`: the closest references to the query are found by distance
+(differences in the alignment plus query bases outside it, over the
+query length), and the references as close to one of them as the query
+is are tied with it, comparing references with each other on the query
+region both cover (from `btop`, BLAST's summary of the alignment). The
+window is at least 0.5% of the query, even when the query is identical
+to its closest reference: in markers whose species differ by few bases
+(e.g. long rbcL amplicons), an identical reference of a neighbour
+species is not taken for the query's own. The price: a query identical
+to a reference of its own species, with another species within 0.5%,
+goes up to the genus. A reference that shares less than half of the
+query with the closest one is tied. Unlike `at_best`, the window does
+not grow with the length of the sequence: 0.5 point of Similarity score
+is under one base in 100 bp and four in 800 bp. `NA` for results without
+`btop` (searches of earlier versions).
 
 With `output = "wide"`, one row per sequence: `Sequence`, the summary of
 [`blast_summary()`](https://heronoh.github.io/BLASTr/reference/blast_summary.md)

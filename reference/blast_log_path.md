@@ -81,7 +81,7 @@ Other search functions:
 ``` r
 log_dir <- tempfile("blastr_logs_")
 blast_log_path(log_dir)
-#> /tmp/RtmpQHmQ5B/blastr_logs_1a0572f5395c/BLASTr_logs/blastr_runs.tsv
+#> /tmp/RtmpROkON7/blastr_logs_1970333a1633/BLASTr_logs/blastr_runs.tsv
 
 # needs BLAST+ (see install_dependencies())
 if (has_blast()) {

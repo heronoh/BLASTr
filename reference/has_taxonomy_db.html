@@ -116,16 +116,16 @@ attribute <code>"path"</code>.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">has_taxonomy_db</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"path")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/home/runner/.cache/R/BLASTr/taxonomy/taxonomy_2026-11-24.sqlite"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/home/runner/.cache/R/BLASTr/taxonomy/taxonomy_2026-11-28.sqlite"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># a database that does not exist: FALSE, and nothing is created</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">has_taxonomy_db</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"taxonomy.sqlite"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">x</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"path")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpQHmQ5B/taxonomy.sqlite"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpROkON7/taxonomy.sqlite"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"path"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpQHmQ5B/taxonomy.sqlite"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpROkON7/taxonomy.sqlite"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

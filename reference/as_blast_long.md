@@ -73,15 +73,15 @@ wide <- data.frame(
   `2_qcovhsp` = 100, `2_staxid` = "9598", check.names = FALSE
 )
 as_blast_long(wide)
-#> # A tibble: 2 × 25
+#> # A tibble: 2 × 27
 #>   Sequence  rank tie   at_best low_qcov informative uninformative_category
 #>   <chr>    <int> <lgl> <lgl>   <lgl>    <lgl>       <chr>                 
 #> 1 ACGT         1 FALSE TRUE    FALSE    NA          NA                    
 #> 2 ACGT         2 FALSE FALSE   FALSE    NA          NA                    
-#> # ℹ 18 more variables: blast_rank <int>, subject <chr>, `subject header` <chr>,
+#> # ℹ 20 more variables: blast_rank <int>, subject <chr>, `subject header` <chr>,
 #> #   staxid <chr>, identity <dbl>, `Similarity score` <dbl>, qcovhsp <dbl>,
 #> #   nident <dbl>, length <dbl>, mismatches <dbl>, gaps <dbl>,
 #> #   `query start` <dbl>, `query end` <dbl>, `subject start` <dbl>,
 #> #   `subject end` <dbl>, `subject strand` <chr>, `e-value` <dbl>,
-#> #   bitscore <dbl>
+#> #   bitscore <dbl>, at_best_refs <lgl>, btop <chr>
 ```

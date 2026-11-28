@@ -114,7 +114,7 @@ writeLines(c(
   dmp(9598, "Pan troglodytes", "", "scientific name")
 ), file.path(taxdump, "names.dmp"))
 tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
-#> ✔ Taxonomy database: /tmp/RtmpQHmQ5B/file1a0558778049.sqlite (7 taxa).
+#> ✔ Taxonomy database: /tmp/RtmpROkON7/file1970582f3d09.sqlite (7 taxa).
 
 # 1234 is not in this taxonomy: found = FALSE, with a warning
 get_tax(c("9606", "9598", "1234"), taxonomy_db = tax_db)
@@ -143,18 +143,18 @@ wide <- data.frame(
 hits <- as_blast_long(wide)
 tax <- get_tax(hits, taxonomy_db = tax_db)
 dplyr::left_join(hits, tax, by = c(staxid = "taxid"))
-#> # A tibble: 4 × 43
+#> # A tibble: 4 × 45
 #>   Sequence rank.x tie   at_best low_qcov informative uninformative_category
 #>   <chr>     <int> <lgl> <lgl>   <lgl>    <lgl>       <chr>                 
 #> 1 ACGT          1 FALSE TRUE    FALSE    NA          NA                    
 #> 2 ACGT          2 FALSE TRUE    FALSE    NA          NA                    
 #> 3 TTGA          1 FALSE TRUE    FALSE    NA          NA                    
 #> 4 TTGA          2 FALSE FALSE   FALSE    NA          NA                    
-#> # ℹ 36 more variables: blast_rank <int>, subject <chr>, `subject header` <chr>,
+#> # ℹ 38 more variables: blast_rank <int>, subject <chr>, `subject header` <chr>,
 #> #   staxid <chr>, identity <dbl>, `Similarity score` <dbl>, qcovhsp <dbl>,
 #> #   nident <dbl>, length <dbl>, mismatches <dbl>, gaps <dbl>,
 #> #   `query start` <dbl>, `query end` <dbl>, `subject start` <dbl>,
 #> #   `subject end` <dbl>, `subject strand` <chr>, `e-value` <dbl>,
-#> #   bitscore <dbl>, found <lgl>, sci_name <chr>, rank.y <chr>, domain <chr>,
-#> #   kingdom <chr>, phylum <chr>, subphylum <chr>, class <chr>, …
+#> #   bitscore <dbl>, at_best_refs <lgl>, btop <chr>, found <lgl>,
+#> #   sci_name <chr>, rank.y <chr>, domain <chr>, kingdom <chr>, phylum <chr>, …
 ```

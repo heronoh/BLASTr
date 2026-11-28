@@ -5,6 +5,16 @@ taxonomy that contains at least consensus of them. With
 consensus = 1 it is the strict lowest common ancestor; below 1, a few
 mislabelled references among many tied hits (e.g. one &quot;Picramnia&quot; among
 44 Picea) do not push the identification up to a high rank.
+With ties = &quot;at_best_refs&quot;, the tied hits are the ones of the tie rule by
+references (at_best_refs, see parallel_blast()), and two columns are
+added: Species flag and Flagged species. When the query differs from its
+closest reference and the closest references are of one named species, the
+flag is &quot;single reference&quot; when that species has only references
+identical to the closest one among the hits kept, and &quot;beyond spread&quot; when
+the query is farther from the closest reference than the references of the
+species are from each other: in both cases the species of the reference may
+not be the one of the query (its own species may be missing from the
+database). NA otherwise. The flag does not change the ancestor.
 The lineages come from get_tax() (lineage_taxids), so the ancestor is
 exact even with homonyms and clades without rank. Hits without a known
 taxid (0, empty, not in the taxonomy) do not vote, nor do the hits
@@ -21,6 +31,16 @@ taxonomy that contains at least consensus of them. With
 consensus = 1 it is the strict lowest common ancestor; below 1, a few
 mislabelled references among many tied hits (e.g. one &quot;Picramnia&quot; among
 44 Picea) do not push the identification up to a high rank.
+With ties = &quot;at_best_refs&quot;, the tied hits are the ones of the tie rule by
+references (at_best_refs, see parallel_blast()), and two columns are
+added: Species flag and Flagged species. When the query differs from its
+closest reference and the closest references are of one named species, the
+flag is &quot;single reference&quot; when that species has only references
+identical to the closest one among the hits kept, and &quot;beyond spread&quot; when
+the query is farther from the closest reference than the references of the
+species are from each other: in both cases the species of the reference may
+not be the one of the query (its own species may be missing from the
+database). NA otherwise. The flag does not change the ancestor.
 The lineages come from get_tax() (lineage_taxids), so the ancestor is
 exact even with homonyms and clades without rank. Hits without a known
 taxid (0, empty, not in the taxonomy) do not vote, nor do the hits
@@ -82,6 +102,16 @@ taxonomy that contains at least <code>consensus</code> of them. With
 <code>consensus = 1</code> it is the strict lowest common ancestor; below 1, a few
 mislabelled references among many tied hits (e.g. one "Picramnia" among
 44 <em>Picea</em>) do not push the identification up to a high rank.</p>
+<p>With <code>ties = "at_best_refs"</code>, the tied hits are the ones of the tie rule by
+references (<code>at_best_refs</code>, see <code><a href="parallel_blast.html">parallel_blast()</a></code>), and two columns are
+added: <code>Species flag</code> and <code>Flagged species</code>. When the query differs from its
+closest reference and the closest references are of one named species, the
+flag is <code>"single reference"</code> when that species has only references
+identical to the closest one among the hits kept, and <code>"beyond spread"</code> when
+the query is farther from the closest reference than the references of the
+species are from each other: in both cases the species of the reference may
+not be the one of the query (its own species may be missing from the
+database). <code>NA</code> otherwise. The flag does not change the ancestor.</p>
 <p>The lineages come from <code><a href="get_tax.html">get_tax()</a></code> (<code>lineage_taxids</code>), so the ancestor is
 exact even with homonyms and clades without rank. Hits without a known
 taxid (<code>0</code>, empty, not in the taxonomy) do not vote, nor do the hits
@@ -101,6 +131,7 @@ the strict ancestor.</p>
 <span>  <span class="va">x</span>,</span>
 <span>  consensus <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  named_first <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"at_best"</span>, <span class="st">"at_best_refs"</span><span class="op">)</span>,</span>
 <span>  taxonomy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  taxonomy_db <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  taxdump <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -132,8 +163,15 @@ keep the ancestor at the genus (or above) instead of on the named
 species. They count in <code>N tied</code>; <code>LCA support</code> is among the voters.</p></dd>
 
 
+<dt id="arg-ties">ties<a class="anchor" aria-label="anchor" href="#arg-ties"></a></dt>
+<dd><p>Column of <code>x</code> with the tied hits: <code>"at_best"</code> (default, the
+rule of <code>check_tolerance</code> in <code><a href="parallel_blast.html">parallel_blast()</a></code>) or <code>"at_best_refs"</code> (the
+rule by references; needs results of <code><a href="parallel_blast.html">parallel_blast()</a></code> with <code>btop</code>).</p></dd>
+
+
 <dt id="arg-taxonomy">taxonomy<a class="anchor" aria-label="anchor" href="#arg-taxonomy"></a></dt>
-<dd><p>The table of <code><a href="get_tax.html">get_tax()</a></code> for the taxids of <code>x</code>. <code>NULL</code>
+<dd><p>The table of <code><a href="get_tax.html">get_tax()</a></code> for the taxids of <code>x</code> (with
+<code>ties = "at_best_refs"</code>, of all its ranked hits, for the species flag). <code>NULL</code>
 (default) calls <code>get_tax(x, taxonomy_db, taxdump = taxdump)</code>. Its rank
 columns define the ranks of <code>LCA ranked ...</code>: keep only some (e.g.
 <code>species</code>, <code>genus</code>, <code>family</code>, <code>order</code>) to place the ranked ancestor on
@@ -155,7 +193,8 @@ it that has one; a species in open nomenclature, e.g. "Picea sp. X",
 goes to its genus: for tables by rank), <code>LCA support</code> (fraction of the
 tied hits it contains), <code>N tied</code> (hits at best) and <code>N tied no taxid</code>.
 <code>NA</code> for sequences without hits. Join <code>get_tax(result$</code>LCA taxid<code>)</code> for
-its ranks and lineage.</p>
+its ranks and lineage. With <code>ties = "at_best_refs"</code>, also
+<code>Species flag</code> and <code>Flagged species</code> (see Description).</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -185,7 +224,7 @@ its ranks and lineage.</p>
 <span class="r-in"><span>  <span class="fu">dmp</span><span class="op">(</span><span class="fl">9598</span>, <span class="st">"Pan troglodytes"</span>, <span class="st">""</span>, <span class="st">"scientific name"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">taxdump</span>, <span class="st">"names.dmp"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tax_db</span> <span class="op">&lt;-</span> <span class="fu"><a href="make_taxonomy_db.html">make_taxonomy_db</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".sqlite"</span><span class="op">)</span>, taxdump <span class="op">=</span> <span class="va">taxdump</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Taxonomy database: <span style="color: #0000BB;">/tmp/RtmpQHmQ5B/file1a0575fec0d4.sqlite</span> (7 taxa).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Taxonomy database: <span style="color: #0000BB;">/tmp/RtmpROkON7/file19707089a85a.sqlite</span> (7 taxa).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># hits of two sequences: the first one tied between Homo and Pan</span></span></span>
 <span class="r-in"><span><span class="va">wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>

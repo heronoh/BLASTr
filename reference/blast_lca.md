@@ -9,6 +9,19 @@ below 1, a few mislabelled references among many tied hits (e.g. one
 "Picramnia" among 44 *Picea*) do not push the identification up to a
 high rank.
 
+With `ties = "at_best_refs"`, the tied hits are the ones of the tie rule
+by references (`at_best_refs`, see
+[`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)),
+and two columns are added: `Species flag` and `Flagged species`. When
+the query differs from its closest reference and the closest references
+are of one named species, the flag is `"single reference"` when that
+species has only references identical to the closest one among the hits
+kept, and `"beyond spread"` when the query is farther from the closest
+reference than the references of the species are from each other: in
+both cases the species of the reference may not be the one of the query
+(its own species may be missing from the database). `NA` otherwise. The
+flag does not change the ancestor.
+
 The lineages come from
 [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
 (`lineage_taxids`), so the ancestor is exact even with homonyms and
@@ -31,6 +44,7 @@ blast_lca(
   x,
   consensus = 0.9,
   named_first = TRUE,
+  ties = c("at_best", "at_best_refs"),
   taxonomy = NULL,
   taxonomy_db = NULL,
   taxdump = NULL
@@ -62,11 +76,21 @@ blast_lca(
   at the genus (or above) instead of on the named species. They count in
   `N tied`; `LCA support` is among the voters.
 
+- ties:
+
+  Column of `x` with the tied hits: `"at_best"` (default, the rule of
+  `check_tolerance` in
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md))
+  or `"at_best_refs"` (the rule by references; needs results of
+  [`parallel_blast()`](https://heronoh.github.io/BLASTr/reference/parallel_blast.md)
+  with `btop`).
+
 - taxonomy:
 
   The table of
   [`get_tax()`](https://heronoh.github.io/BLASTr/reference/get_tax.md)
-  for the taxids of `x`. `NULL` (default) calls
+  for the taxids of `x` (with `ties = "at_best_refs"`, of all its ranked
+  hits, for the species flag). `NULL` (default) calls
   `get_tax(x, taxonomy_db, taxdump = taxdump)`. Its rank columns define
   the ranks of `LCA ranked ...`: keep only some (e.g. `species`,
   `genus`, `family`, `order`) to place the ranked ancestor on them.
@@ -88,7 +112,9 @@ otherwise the deepest node above it that has one; a species in open
 nomenclature, e.g. "Picea sp. X", goes to its genus: for tables by
 rank), `LCA support` (fraction of the tied hits it contains), `N tied`
 (hits at best) and `N tied no taxid`. `NA` for sequences without hits.
-Join `get_tax(result$`LCA taxid`)` for its ranks and lineage.
+Join `get_tax(result$`LCA taxid`)` for its ranks and lineage. With
+`ties = "at_best_refs"`, also `Species flag` and `Flagged species` (see
+Description).
 
 ## See also
 
@@ -118,7 +144,7 @@ writeLines(c(
   dmp(9598, "Pan troglodytes", "", "scientific name")
 ), file.path(taxdump, "names.dmp"))
 tax_db <- make_taxonomy_db(tempfile(fileext = ".sqlite"), taxdump = taxdump)
-#> ✔ Taxonomy database: /tmp/RtmpQHmQ5B/file1a0575fec0d4.sqlite (7 taxa).
+#> ✔ Taxonomy database: /tmp/RtmpROkON7/file19707089a85a.sqlite (7 taxa).
 
 # hits of two sequences: the first one tied between Homo and Pan
 wide <- data.frame(

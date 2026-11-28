@@ -282,12 +282,33 @@ and <code>uninformative_category</code> (see <code>uninformative</code>), <code>
 (order given by BLAST), <code>subject</code>, <code>subject header</code>,
 <code>staxid</code>, <code>identity</code>, <code>Similarity score</code>, <code>qcovhsp</code>, <code>nident</code>,
 <code>length</code>, <code>mismatches</code>, <code>gaps</code>, <code>query start</code>, <code>query end</code>,
-<code>subject start</code>, <code>subject end</code>, <code>subject strand</code>, <code>e-value</code> and
-<code>bitscore</code>. The first <code>num_alignments</code> hits are kept (informative
-ones, when there are), plus all the hits at best and the uninformative
-hits among the first <code>num_alignments</code> of all (after the ranked ones,
-with <code>rank</code> <code>NA</code>). A sequence without hits has one row with <code>NA</code> hit fields. The
-summary per sequence (<code>Check ID</code>, ...) comes from <code><a href="blast_summary.html">blast_summary()</a></code>.</p>
+<code>subject start</code>, <code>subject end</code>, <code>subject strand</code>, <code>e-value</code>,
+<code>bitscore</code>, <code>at_best_refs</code> and <code>btop</code>. The first <code>num_alignments</code> hits
+are kept (informative ones, when there are), plus all the hits at best
+(by either rule), the hits with the taxid of a closest reference (see
+below) and the uninformative hits among the first <code>num_alignments</code> of
+all (after the ranked ones, with <code>rank</code> <code>NA</code>). A sequence without hits
+has one row with <code>NA</code> hit fields. The summary per sequence
+(<code>Check ID</code>, ...) comes from <code><a href="blast_summary.html">blast_summary()</a></code>.</p>
+<p><code>at_best_refs</code> marks the hits tied by a second rule, by references,
+kept beside <code>at_best</code> to compare the two (it does not change <code>rank</code>,
+<code>at_best</code> or the summary; <code><a href="blast_lca.html">blast_lca()</a></code> uses it with
+<code>ties = "at_best_refs"</code>). After the rule of OBITools' <code>obitag</code>: the
+closest references to the query are found by distance (differences in
+the alignment plus query bases outside it, over the query length), and
+the references as close to one of them as the query is are tied with
+it, comparing references with each other on the query region both cover
+(from <code>btop</code>, BLAST's summary of the alignment). The window is at least
+0.5% of the query, even when the query is identical to its closest
+reference: in markers whose species differ by few bases (e.g. long rbcL
+amplicons), an identical reference of a neighbour species is not taken
+for the query's own. The price: a query identical to a reference of its
+own species, with another species within 0.5%, goes up to the genus. A
+reference that shares less than half of the
+query with the closest one is tied. Unlike <code>at_best</code>, the window does
+not grow with the length of the sequence: 0.5 point of Similarity score
+is under one base in 100 bp and four in 800 bp. <code>NA</code> for results without
+<code>btop</code> (searches of earlier versions).</p>
 <p>With <code>output = "wide"</code>, one row per sequence: <code>Sequence</code>, the summary
 of <code><a href="blast_summary.html">blast_summary()</a></code> and, for each hit <code>k</code> from 1 to <code>num_alignments</code>
 in rank order, the hit fields prefixed by <code>k_</code>.</p>
